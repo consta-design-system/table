@@ -1,0 +1,22 @@
+/* --table-data-cell-level - задается в компоненте */
+.ct--HeaderDataCell {
+  width: 100%;
+  &_size {
+    &_m {
+      --table-data-cell-slot-size: var(--space-2xl);
+    }
+
+    &_s {
+      --table-data-cell-slot-size: var(--space-xl);
+    }
+  }
+
+  &-ControlSlot {
+    min-height: var(--table-data-cell-slot-size);
+    min-width: var(--table-data-cell-slot-size);
+  }
+
+  &-ContentSlot {
+    min-height: var(--table-data-cell-slot-size);
+  }
+}

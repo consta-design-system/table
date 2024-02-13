@@ -1,0 +1,11 @@
+.ct--TableData {
+  display: contents;
+  &-Cell {
+    &_separator {
+      background: var(--color-bg-stripe);
+    }
+  }
+  &-Row {
+    display: contents;
+  }
+}

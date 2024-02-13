@@ -1,0 +1,13 @@
+.ct--TableSeporatorTitles {
+  display: contents;
+  &-Cell {
+    position: sticky;
+    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
+  }
+  &-Title {
+    position: absolute;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    padding: var(--space-xs) 0;
+  }
+}

@@ -1,0 +1,53 @@
+/* --table-data-cell-level - задается в компоненте */
+.ct--DataCell {
+  width: 100%;
+  padding-right: var(--table-data-cell-horisontal-spase);
+  padding-left: calc(
+    var(--table-data-cell-horisontal-spase) +
+      var(--table-data-cell-control-size) * var(--table-data-cell-level, 0)
+  );
+
+  &_size {
+    &_m {
+      --table-data-cell-control-size: var(--space-2xl);
+      --table-data-cell-controls-height: var(--space-4xl);
+      --table-data-cell-content-height: var(--space-xl);
+      --table-data-cell-horisontal-spase: var(--space-s);
+    }
+
+    &_s {
+      --table-data-cell-control-size: var(--space-xl);
+      --table-data-cell-controls-height: var(--space-3xl);
+      --table-data-cell-content-height: var(--space-xl);
+      --table-data-cell-horisontal-spase: var(--space-xs);
+    }
+  }
+
+  &_indicator {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: var(--space-2xs) solid transparent;
+      border-top: var(--space-2xs) solid var(--table-data-cell-indicator-color);
+      border-right: var(--space-2xs) solid
+        var(--table-data-cell-indicator-color);
+    }
+  }
+
+  &-Controls {
+    min-height: var(--table-data-cell-controls-height);
+  }
+
+  &-ControlSlot {
+    min-height: var(--table-data-cell-control-size);
+    min-width: var(--table-data-cell-control-size);
+  }
+
+  &-ContentSlot {
+    min-height: var(--table-data-cell-content-height);
+  }
+}

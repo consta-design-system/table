@@ -1,0 +1,389 @@
+import { TableExampleSimple } from './examples/TableExampleSimple/TableExampleSimple';
+import { TableExampleWidth } from './examples/TableExampleWidth/TableExampleWidth';
+import { TableExampleSeporator } from './examples/TableExampleSeporator/TableExampleSeporator';
+import { TableExamplePinned } from './examples/TableExamplePinned/TableExamplePinned';
+import { TableExampleGroupColums } from './examples/TableExampleGroupColums/TableExampleGroupColums';
+import { MdxTabs } from '@consta/stand';
+
+## Как формируется таблица
+
+Для вывода самой простой таблици вам необходимо использовать 2 свойства:
+
+- `row` - строки, тип строки может быть любым массивом обьекта `Record<string, unknown>`.
+- `colmuns`- колонки, представляют массив обьектов, укоторого `accessor` это свойство обьекта ваших данных.
+
+К примеру:
+
+<MdxTabs>
+
+```tsx
+import { Table, TableColumn } from '@consta/uikit/Table';
+
+type Row = { name: string; profession: string; status: string };
+
+const rows: Row[] = [
+  {
+    name: 'Антон',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    name: 'Василий',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+  },
+];
+
+export const TableExampleSimple = () => <Table rows={rows} columns={columns} />;
+```
+
+<TableExampleSimple />
+
+</MdxTabs>
+
+## Колонка
+
+Построение колонок базируется на `display: grid` и `grid-template-columns`
+
+Тип колонки:
+
+```ts
+export type TableColumn<ROW> = {
+  title?: string;
+  width?:
+    | number
+    | 'auto'
+    | '1fr'
+    | '2fr'
+    | '3fr'
+    | '4fr'
+    | '5fr'
+    | '6fr'
+    | '7fr'
+    | '8fr'
+    | '9fr'
+    | '10fr';
+  maxWidth?: number;
+  minWidth?: number;
+  isSeparator?: boolean;
+  pinned?: 'left' | 'right';
+  columns?: TableColumn<ROW>[];
+  renderCell?: (props: { row: T }) => React.ReactElement | null;
+  renderHeaderCell?: (props: { title?: string }) => React.ReactElement | null;
+} & ValueOf<{
+  [K in keyof ROW]: {
+    accessor?: K extends string ? K : never;
+  };
+}>;
+```
+
+- `accessor`, содержимое колонки
+- `title`, заголовок колнки.
+- `width`, ширина колонки, можно указать число, а также `'auto'` и значение в `'*fr'`.
+- `maxWidth`, максимальная ширина колонки.
+- `minWidth`, минимальная ширина колонки.
+- `isSeparator`, при включении колонка стоновится разделителем.
+- `pinned`, закрепление колонки слева или справа.
+- `columns`, вложенные колоки.
+- `renderCell`, функция(компонент) для вывода данных ячеки.
+- `renderHeaderCell`, функция(компонент) для вывода данных ячеки в шапке.
+
+## Ширина колонки
+
+Для настройки ширины колонок используйте `width`, `maxWidth`, `minWidth`.
+Где `width` это желаемая ширина колонки, если все колонки будут помещатся втаблицу без скрола она останется не изменной,
+для того, чтобы таблица не уменьшала или не увеличивала колонку вне желаемых размеров ограничте ее используя `maxWidth` и `minWidth`.
+
+К примеру требуется, зафиксировать размер первой колонки на `180px`, вторая и третия должны быть одинаковыми, но треться должна быть не меньше `150px`
+
+<MdxTabs>
+
+```tsx
+import { Table, TableColumn } from '@consta/uikit/Table';
+
+type Row = { name: string; profession: string; status: string };
+
+const rows: Row[] = [
+  {
+    name: 'Антон',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    name: 'Василий',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 180,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+  },
+];
+
+export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
+```
+
+<TableExampleWidth />
+
+</MdxTabs>
+
+### Разделитель колонок
+
+Чтобы поставить разделитель колоки, вам необходимо указать еще одну колонку с указанием `{isSeparator: true}` и при необходимости указать `title`.
+
+Пример:
+
+<MdxTabs>
+
+```tsx
+import { Table, TableColumn } from '@consta/uikit/Table';
+
+type Row = { name: string; profession: string; status: string };
+
+const rows: Row[] = [
+  {
+    name: 'Антон',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    name: 'Василий',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+  },
+  {
+    title: 'Разделитель',
+    isSeparator: true,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+  },
+  {
+    isSeparator: true,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+  },
+];
+
+export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
+```
+
+<TableExampleSeporator />
+
+</MdxTabs>
+
+### Закрепление колонок
+
+Если в таблице есть горизонтальный скролл, вы можете закрепить несколько колонок справа или слева, используя свойство `pinned`.
+
+<MdxTabs>
+
+```tsx
+import { Table, TableColumn } from '@consta/uikit/Table';
+
+type Row = {
+  name: string;
+  profession: string;
+  status: string;
+  phone: string;
+  grade: number;
+};
+
+const rows: Row[] = [
+  {
+    name: 'Антон',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+    phone: '+7 976 543 21 00',
+    grade: 3,
+  },
+  {
+    name: 'Василий',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+    phone: '+7 976 543 21 00',
+    grade: 3,
+  },
+];
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+    pinned: 'left',
+    minWidth: 180,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    minWidth: 360,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    minWidth: 200,
+  },
+  {
+    title: 'Телефон',
+    accessor: 'phone',
+    minWidth: 260,
+  },
+  {
+    title: 'Грейд',
+    accessor: 'grade',
+    pinned: 'right',
+    minWidth: 80,
+  },
+];
+
+export const TableExamplePinned = () => <Table rows={rows} columns={columns} />;
+```
+
+<TableExamplePinned />
+
+</MdxTabs>
+
+### Группировка колонок
+
+При необходимости обьеденить колонки в группу, мы можете вложить в колонку другие колонки, тем самым родитель будет группой колонок.
+
+<MdxTabs>
+
+```tsx
+import { Table, TableColumn } from '@consta/uikit/Table';
+
+type Row = {
+  firstName: string;
+  lastName: string;
+  secondName: string;
+  profession: string;
+  status: string;
+  phone: string;
+  grade: number;
+  email: string;
+};
+
+const rows: Row[] = [
+  {
+    firstName: 'Антон',
+    lastName: 'Григорьев',
+    secondName: 'Петров',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+    phone: '+7 976 543 21 00',
+    email: 'tema@company.ru',
+    grade: 3,
+  },
+  {
+    firstName: 'Василий',
+    lastName: 'Пупкин',
+    secondName: 'Игоревич',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+    phone: '+7 976 543 21 00',
+    email: 'vasya@company.ru',
+    grade: 3,
+  },
+];
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'Работник',
+    columns: [
+      {
+        title: 'Фамилия',
+        accessor: 'lastName',
+        minWidth: 140,
+      },
+      {
+        title: 'Имя',
+        accessor: 'firstName',
+        minWidth: 140,
+      },
+      {
+        title: 'Отчество',
+        accessor: 'secondName',
+        minWidth: 140,
+      },
+    ],
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    minWidth: 200,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    minWidth: 140,
+  },
+  {
+    title: 'Грейд',
+    accessor: 'grade',
+    minWidth: 80,
+  },
+  {
+    title: 'Контакты',
+    columns: [
+      {
+        title: 'Телефон',
+        accessor: 'phone',
+        minWidth: 200,
+      },
+      {
+        title: 'e-mail',
+        accessor: 'email',
+        minWidth: 200,
+      },
+    ],
+  },
+];
+
+export const TableExampleGroupColums = () => (
+  <Table rows={rows} columns={columns} />
+);
+```
+
+<TableExampleGroupColums />
+
+</MdxTabs>

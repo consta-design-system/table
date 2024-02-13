@@ -1,0 +1,32 @@
+## Установите зависимости
+
+```
+yarn add @consta/uikit  @consta/table
+```
+
+или
+
+```
+npm install @consta/uikit @consta/table
+```
+
+Так же установите `peerDependencies` из пакета [`@consta/uikit`](https://github.com/consta-design-system/table/blob/master/package.json)
+
+## Подключите тему
+
+Тему обязательно нужно подключать в корне приложения, так,
+чтобы все компоненты `@consta/uikit` были вложены в компонент [Theme](##LIBS.LIB.STAND/lib:uikit/stand:components-theme-stable).
+
+```tsx
+import React from 'react';
+import { Theme, presetGpnDefault } from '@consta/uikit/Theme';
+import { Button } from '@consta/uikit/Button';
+
+const App = () => (
+  <Theme preset={presetGpnDefault}>
+    <Button label="Кнопка" />
+  </Theme>
+);
+```
+
+## Всë!

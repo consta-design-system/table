@@ -1,0 +1,9 @@
+.ct--TableHeader {
+  display: contents;
+  &-Cell {
+    z-index: var(--table-header-z-index);
+    &_pinned {
+      z-index: calc(var(--table-header-z-index) + 1);
+    }
+  }
+}

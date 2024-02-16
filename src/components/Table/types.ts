@@ -6,10 +6,10 @@ export type TableColumn<ROW> = {
   title: string;
   width?: number;
   hidden?: boolean;
-  columns?: TableColumn<ROW>[];
-  renderHeader?: () => React.ReactElement | null;
+  renderHeaderCell?: (title: string) => React.ReactElement | null;
 } & (
-  | { renderCell: (props: ROW) => React.ReactElement | null }
+  | { columns: TableColumn<ROW>[] }
+  | { renderCell: (row: ROW) => React.ReactElement | null }
   | ValueOf<{
       [K in keyof ROW]: {
         accessor: K extends string ? K : never;
@@ -33,4 +33,15 @@ export type TableProps<ROW> = PropsWithHTMLAttributesAndRef<
 
 export type TableComponent = <ROW>(
   props: TableProps<ROW>,
+) => React.ReactElement | null;
+
+export type TableHeaderProps<ROW> = PropsWithHTMLAttributesAndRef<
+  {
+    columns: TableColumn<ROW>[];
+  },
+  HTMLDivElement
+>;
+
+export type TableHeaderComponent = <ROW>(
+  props: TableHeaderProps<ROW>,
 ) => React.ReactElement | null;

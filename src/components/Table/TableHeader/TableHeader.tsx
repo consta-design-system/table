@@ -6,7 +6,6 @@ export const TableHeaderRender = <T,>(
   props: TableHeaderProps<T>,
   ref: React.Ref<HTMLDivElement>,
 ) => {
-  console.log(props);
   return <div />;
 };
 

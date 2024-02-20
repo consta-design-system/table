@@ -7,6 +7,7 @@ export type TableColumn<ROW> = {
   width?: number;
   hidden?: boolean;
   renderHeaderCell?: (title: string) => React.ReactElement | null;
+  columns?: TableColumn<ROW>[];
 } & (
   | { columns: TableColumn<ROW>[] }
   | { renderCell: (row: ROW) => React.ReactElement | null }

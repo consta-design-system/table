@@ -10,9 +10,9 @@ export const TableRender = <T,>(
 ) => {
   const { columns } = props;
 
-  console.log(prepareColumns(columns));
+  const [columsWithWidth] = prepareColumns(columns);
 
-  return <TableHeader columns={columns} />;
+  return <TableHeader columns={columsWithWidth} />;
 };
 
 export const Table = forwardRef(TableRender) as TableComponent;

@@ -35,11 +35,59 @@ const Variants = () => {
             {
               title: 'Всего',
               accessor: 'total',
+              width: 200,
             },
           ],
         },
-        { title: 'Год', accessor: 'year' },
+        { title: 'Год', accessor: 'year', width: 200 },
         { title: 'Дата', accessor: 'date' },
+        {
+          title: 'Тест',
+          columns: [
+            {
+              title: 'Тест2',
+              columns: [
+                {
+                  title: 'Бронза',
+                  accessor: 'bronze',
+                },
+                {
+                  title: 'Серебро',
+                  accessor: 'silver',
+                },
+                {
+                  title: 'Золото',
+                  accessor: 'gold',
+                },
+                {
+                  title: 'Всего',
+                  accessor: 'total',
+                },
+              ],
+            },
+            {
+              title: 'Тест3',
+              columns: [
+                {
+                  title: 'Бронза',
+                  accessor: 'bronze',
+                },
+                {
+                  title: 'Серебро',
+                  accessor: 'silver',
+                },
+                {
+                  title: 'Золото',
+                  accessor: 'gold',
+                },
+                {
+                  title: 'Всего',
+                  accessor: 'total',
+                },
+              ],
+            },
+          ],
+        },
       ]}
     />
   );

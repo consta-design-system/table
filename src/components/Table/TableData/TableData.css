@@ -1,0 +1,6 @@
+.ct--TableData {
+  display: contents;
+  &-Row {
+    display: contents;
+  }
+}

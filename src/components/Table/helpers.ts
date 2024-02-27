@@ -1,73 +1,9 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 
 import { isNotNil, isNumber, isString } from '../../utils/type-guards';
-import { TableColumn } from './types';
+import { Header, Position, TableColumn } from './types';
 
 const columnDefaultWidth = 100;
-// export const prepareWidth = <T>(
-//   colums: TableColumn<T>[],
-//   rowColums: TableColumn<T>[],
-// ) => {
-//   let groupWidth = 0;
-//   let returnedArray: TableColumn<T>[] = [];
-
-//   for (let index = 0; index < colums.length; index++) {
-//     const element = colums[index];
-//     let width = element.columns ? 0 : element.width || columnDefaultWidth;
-//     groupWidth += width;
-//     let columns;
-//     if (element.columns) {
-//       const [lowLevelWidth, lowLevelReturnedArray] = prepareWidth(
-//         element.columns,
-//         rowColums,
-//       );
-
-//       groupWidth += lowLevelWidth;
-//       width += lowLevelWidth;
-//       columns = lowLevelReturnedArray;
-//     } else {
-//       rowColums.push({ ...element, width });
-//     }
-
-//     // rowColums.push(...columns);
-
-//     if (returnedArray.length) {
-//       returnedArray.push({
-//         ...element,
-//         width,
-//         ...(columns ? { columns } : {}),
-//       });
-//     } else {
-//       returnedArray = [{ ...element, width, ...(columns ? { columns } : {}) }];
-//     }
-//   }
-
-//   return [groupWidth, returnedArray] as const;
-// };
-
-// export const prepareColumns = <T>(colums: TableColumn<T>[]) => {
-//   const rowColums: TableColumn<T>[] = [];
-//   const columsWithWidth = prepareWidth(colums, rowColums);
-
-//   return [columsWithWidth[1], rowColums] as const;
-// };
-
-export type Header<T> = TableColumn<T> & {
-  position: Position;
-  colId?: number;
-  parentId?: number;
-};
-
-export type Position = {
-  colSpan?: number;
-  rowSpan?: number;
-  level: number;
-  gridIndex: number;
-  isFirst?: boolean;
-  topHeaderGridIndex: number;
-  smallTextSize?: boolean;
-  height?: number;
-};
 
 const getLastChildrenCount = <T>(columns: Array<TableColumn<T>>) => {
   let count = 0;
@@ -173,6 +109,7 @@ export const getMaxLevel = <T>(columns: Array<TableColumn<T>>) => {
 };
 
 const getIsFirst = <T>(columns: Header<T>[], column: Header<T>): boolean => {
+  // TODO: нужно проверить с renderCell
   const { colId, parentId, position, accessor } = column;
   if (position.level === 0) {
     return colId === 0;
@@ -192,6 +129,7 @@ export type HeaderData<T> = {
   headerRowsHeights: Array<number>;
   headerColumnsHeights: Array<number>;
   resizerTopOffsets: Array<number>;
+  columnWidths: Array<number | undefined | string>;
 };
 
 /**
@@ -275,6 +213,8 @@ export const useHeaderData = <T>(
     },
   );
 
+  const columnWidths = lowHeaders.map((column: TableColumn<T>) => column.width);
+
   console.log(headerRowsHeights);
 
   return {
@@ -285,5 +225,111 @@ export const useHeaderData = <T>(
     headerRowsHeights,
     headerColumnsHeights,
     resizerTopOffsets,
+    columnWidths,
+  };
+};
+
+export const getColumnsSize = (
+  sizes: (number | undefined | string)[],
+): string =>
+  sizes
+    .map((s) => {
+      if (isNumber(s)) {
+        return `${s}px`;
+      }
+      if (isString(s)) {
+        return s;
+      }
+      return 'auto';
+    })
+    .join(' ');
+
+/**
+ * Возвращает 2 функции, необходимые для отображения большого количества строк в таблице
+ *
+ * @param maxVisibleRows - максимальное количество отображаемых строк в один момент времени
+ * @param scrollableEl - элемент, на который вешается scroll listener
+ * @param enabled - флаг включения данной функциональность
+ *
+ * @return {
+ *   getSlicedRows: функция, обрезающая исходный массив данных
+ *   setBoundaryRef: функция, проставляющая рефы необходимым ячейкам для вычисления границ отображения строк
+ * }
+ */
+export const useLazyLoadData = (
+  maxVisibleRows: number,
+  scrollableEl: HTMLDivElement | Window | null,
+  enabled: boolean,
+) => {
+  const [visibleStartIndex, setVisibleStartIndex] = React.useState<number>(0);
+  const cellsRefStart = React.useRef<HTMLDivElement>(null);
+  const cellsRefEnd = React.useRef<HTMLDivElement>(null);
+  const additionalRowsCount = Math.floor(maxVisibleRows / 3);
+
+  console.log(scrollableEl);
+
+  React.useEffect(() => {
+    if (!enabled) return;
+    let elHeight = 0;
+    if (scrollableEl && 'offsetHeight' in scrollableEl) {
+      elHeight = scrollableEl.offsetHeight;
+    } else if (scrollableEl && 'outerHeight' in scrollableEl) {
+      elHeight = scrollableEl.outerHeight;
+    }
+    const onScrollListener = () => {
+      console.log('scroll');
+      console.log(cellsRefStart);
+      console.log(cellsRefEnd);
+      if (
+        cellsRefEnd.current &&
+        elHeight / 2 > cellsRefEnd.current.getBoundingClientRect().top
+      ) {
+        setVisibleStartIndex((prevIndex) => prevIndex + additionalRowsCount);
+      } else if (
+        cellsRefStart.current &&
+        cellsRefStart.current.getBoundingClientRect().top > elHeight / 2
+      ) {
+        setVisibleStartIndex((prevIndex) =>
+          prevIndex - additionalRowsCount < 0
+            ? 0
+            : prevIndex - additionalRowsCount,
+        );
+      }
+    };
+
+    scrollableEl?.addEventListener('scroll', onScrollListener);
+
+    return () => scrollableEl?.removeEventListener('scroll', onScrollListener);
+  }, [visibleStartIndex, scrollableEl]);
+
+  const setBoundaryRef = (columnIdx: number, rowIdx: number) => {
+    if (
+      enabled &&
+      columnIdx === 0 &&
+      rowIdx === additionalRowsCount &&
+      visibleStartIndex > 0
+    ) {
+      return cellsRefStart;
+    }
+    if (
+      enabled &&
+      columnIdx === 0 &&
+      rowIdx === maxVisibleRows - additionalRowsCount
+    ) {
+      return cellsRefEnd;
+    }
+    return undefined;
+  };
+
+  const getSlicedRows = <T extends TableRow>(rows: T[]) =>
+    !enabled || rows.length < maxVisibleRows
+      ? rows
+      : rows.slice(visibleStartIndex, visibleStartIndex + maxVisibleRows);
+
+  console.log(visibleStartIndex);
+
+  return {
+    getSlicedRows,
+    setBoundaryRef,
   };
 };

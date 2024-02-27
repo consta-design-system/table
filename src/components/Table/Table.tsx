@@ -1,24 +1,56 @@
+import { useRefs } from '@consta/uikit/useRefs';
+import { useVirtualScroll } from '@consta/uikit/useVirtualScroll';
 import React, { forwardRef } from 'react';
 
-import { getMaxLevel, transformColumns } from './helpers';
+import { getMaxLevel, transformColumns, useHeaderData } from './helpers';
 import { TableBody } from './TableBody';
+import { TableData } from './TableData';
 import { TableHeader } from './TableHeader/TableHeader';
-import { TableColumn, TableComponent, TableProps } from './types';
+import { TableComponent, TableProps } from './types';
+// import {useRefs} from '@consta/uikit/useRefs';
+// import {} from '@consta/uikit/useResizeObserved';
 
 export const TableRender = <T,>(
   props: TableProps<T>,
   ref: React.Ref<HTMLDivElement>,
 ) => {
-  const { columns } = props;
+  const { columns, rows } = props;
+  // const [headerRef] = useRefs(1);
 
   // const [columsWithWidth] = prepareColumns(columns);
   console.log(transformColumns(columns, getMaxLevel(columns)));
+  const headerData = useHeaderData(columns);
+
+  console.log(headerData);
+  // const rowRefs = useRefs(rows.length, [rows]);
+
+  const {
+    listRefs: rowsRefs,
+    scrollElementRef,
+    slice,
+    spaceTop,
+  } = useVirtualScroll({ length: rows.length, isActive: true });
+
+  console.log(slice);
 
   // traversal(columns, 'columns', console.log);
 
   return (
-    <TableBody columns={[]}>
-      <TableHeader columns={[]} />
+    <TableBody
+      columnsWidths={headerData.columnWidths}
+      style={{ height: '100%', overflow: 'auto' }}
+      ref={scrollElementRef}
+    >
+      <TableHeader headers={headerData.flattenedHeaders} />
+      <TableData
+        // ref={scrollElementRef}
+        // style={{ height: 300, overflow: 'auto' }}
+        lowHeaders={headerData.lowHeaders}
+        rows={rows}
+        rowsRefs={rowsRefs}
+        slice={slice}
+        spaceTop={spaceTop}
+      />
     </TableBody>
   );
 };

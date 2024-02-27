@@ -1,36 +1,41 @@
+import './TableHeader.css';
+
 import React, { forwardRef } from 'react';
 
 import { cn } from '##/utils/bem';
 
-import { TableColumnInner, TableHeaderComponent } from '../types';
+import { TableHeaderComponent } from '../types';
 
 export const cnTableHeader = cn('TableHeader');
 
-const columnsRender = (
-  columns?: TableColumnInner[],
-  parentIndex: number | string = 0,
-) => {
-  return columns?.map((col, index) => {
-    return (
-      <>
-        <div
-          attr-id={`id-${parentIndex}-${index}`}
-          style={{ gridRowEnd: `span ${col.columns?.length || 1}` }}
-        >
-          {col.title}
-        </div>
-        {columnsRender(col.columns, `${parentIndex}-${index}`)}
-      </>
-    );
-  });
-};
-
 export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
-  const { columns, className } = props;
-  console.log(columns);
+  const { headers, className, ...otherProps } = props;
+
+  console.log(headers);
+
   return (
-    <div className={cnTableHeader(null, [className])}>
-      {columnsRender(columns)}
+    <div {...otherProps} className={cnTableHeader(null, [className])} ref={ref}>
+      {headers.map((column) => {
+        const style: React.CSSProperties = {};
+        if (column.position!.colSpan) {
+          style.gridColumnEnd = `span ${column.position!.colSpan}`;
+        }
+        if (column.position!.rowSpan) {
+          style.gridRowEnd = `span ${column.position!.rowSpan}`;
+        }
+        style.top = 0;
+        style.position = 'sticky';
+        return (
+          <div
+            className={cnTableHeader('Cell', {
+              isFirst: column.position.isFirst,
+            })}
+            style={style}
+          >
+            {column.title}
+          </div>
+        );
+      })}
     </div>
   );
 });

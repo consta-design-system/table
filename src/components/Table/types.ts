@@ -2,23 +2,34 @@ import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/ut
 
 export type ValueOf<T> = T[keyof T];
 
-export type TableColumnInner = {
+export type TableColumn<ROW> = {
+  columns?: TableColumn<ROW>[];
   title: string;
   width?: number;
   hidden?: boolean;
   renderHeaderCell?: (title: string) => React.ReactElement | null;
-  columns?: TableColumnInner[];
+} & ValueOf<{
+  [K in keyof ROW]: {
+    accessor?: K extends string ? K : never;
+  };
+}>;
+
+export type Header<ROW> = TableColumn<ROW> & {
+  position: Position;
+  colId?: number;
+  parentId?: number;
 };
 
-export type TableColumn<ROW> = TableColumnInner &
-  (
-    | { renderCell?: (row: ROW) => React.ReactElement | null }
-    | ValueOf<{
-        [K in keyof ROW]: {
-          accessor: K extends string ? K : never;
-        };
-      }>
-  );
+export type Position = {
+  colSpan?: number;
+  rowSpan?: number;
+  level: number;
+  gridIndex: number;
+  isFirst?: boolean;
+  topHeaderGridIndex: number;
+  smallTextSize?: boolean;
+  height?: number;
+};
 
 export type TablePropGetRowId<ROW> = (row: ROW) => string | number;
 export type TableRowMouseEvent<ROW> = (row: ROW, e: React.MouseEvent) => void;
@@ -38,24 +49,46 @@ export type TableComponent = <ROW>(
   props: TableProps<ROW>,
 ) => React.ReactElement | null;
 
-export type TableHeaderProps = PropsWithHTMLAttributesAndRef<
+export type TableHeaderProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
-    columns: TableColumnInner[];
+    headers: Header<ROW>[];
   },
   HTMLDivElement
 >;
 
-export type TableHeaderComponent = (
-  props: TableHeaderProps,
+export type TableHeaderComponent = <ROW>(
+  props: TableHeaderProps<ROW>,
 ) => React.ReactElement | null;
 
 export type TableBodyProps = PropsWithHTMLAttributesAndRef<
   {
-    columns: TableColumnInner[];
+    columnsWidths: (string | number | undefined)[];
   },
   HTMLDivElement
 >;
 
 export type TableBodyComponent = (
   props: TableBodyProps,
+) => React.ReactElement | null;
+
+export type TableDataProps<ROW> = PropsWithHTMLAttributesAndRef<
+  {
+    lowHeaders: Array<Header<ROW>>;
+    rows: ROW[];
+    onRowMouseEnter?: TableRowMouseEvent<ROW>;
+    onRowMouseLeave?: TableRowMouseEvent<ROW>;
+    onRowMouseClick?: TableRowMouseEvent<ROW>;
+    // rowsRefs: React.Ref<HTMLDivElement>[];
+    // slice: [number, number];
+    // spaceTop: number;
+    setBoundaryRef: (
+      columnIdx: number,
+      rowIdx: number,
+    ) => React.RefObject<HTMLDivElement> | undefined;
+  },
+  HTMLDivElement
+>;
+
+export type TableDataComponent = <ROW>(
+  props: TableDataProps<ROW>,
 ) => React.ReactElement | null;

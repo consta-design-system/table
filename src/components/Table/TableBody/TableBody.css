@@ -1,0 +1,4 @@
+.ct--TableBody {
+  display: grid;
+  grid-template-columns: var(--table-grid-template-columns);
+}

@@ -2,21 +2,23 @@ import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/ut
 
 export type ValueOf<T> = T[keyof T];
 
-export type TableColumn<ROW> = {
+export type TableColumnInner = {
   title: string;
   width?: number;
   hidden?: boolean;
   renderHeaderCell?: (title: string) => React.ReactElement | null;
-  columns?: TableColumn<ROW>[];
-} & (
-  | { columns: TableColumn<ROW>[] }
-  | { renderCell: (row: ROW) => React.ReactElement | null }
-  | ValueOf<{
-      [K in keyof ROW]: {
-        accessor: K extends string ? K : never;
-      };
-    }>
-);
+  columns?: TableColumnInner[];
+};
+
+export type TableColumn<ROW> = TableColumnInner &
+  (
+    | { renderCell?: (row: ROW) => React.ReactElement | null }
+    | ValueOf<{
+        [K in keyof ROW]: {
+          accessor: K extends string ? K : never;
+        };
+      }>
+  );
 
 export type TablePropGetRowId<ROW> = (row: ROW) => string | number;
 export type TableRowMouseEvent<ROW> = (row: ROW, e: React.MouseEvent) => void;
@@ -36,13 +38,24 @@ export type TableComponent = <ROW>(
   props: TableProps<ROW>,
 ) => React.ReactElement | null;
 
-export type TableHeaderProps<ROW> = PropsWithHTMLAttributesAndRef<
+export type TableHeaderProps = PropsWithHTMLAttributesAndRef<
   {
-    columns: TableColumn<ROW>[];
+    columns: TableColumnInner[];
   },
   HTMLDivElement
 >;
 
-export type TableHeaderComponent = <ROW>(
-  props: TableHeaderProps<ROW>,
+export type TableHeaderComponent = (
+  props: TableHeaderProps,
+) => React.ReactElement | null;
+
+export type TableBodyProps = PropsWithHTMLAttributesAndRef<
+  {
+    columns: TableColumnInner[];
+  },
+  HTMLDivElement
+>;
+
+export type TableBodyComponent = (
+  props: TableBodyProps,
 ) => React.ReactElement | null;

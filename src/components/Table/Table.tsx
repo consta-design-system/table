@@ -36,7 +36,7 @@ export const TableRender = <T,>(
   // traversal(columns, 'columns', console.log);
 
   return (
-    <div ref={scrollElementRef} style={{ height: '100%', overflow: 'auto' }}>
+    <div ref={scrollElementRef} style={{ maxHeight: '100%', overflow: 'auto' }}>
       <TableBody
         columnsWidths={headerData.columnWidths}
         style={{ marginTop: spaceTop }}

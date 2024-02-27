@@ -229,7 +229,7 @@ export const useHeaderData = <T>(
   };
 };
 
-export const getColumnsSize = (
+export const getGridTamplate = (
   sizes: (number | undefined | string)[],
 ): string =>
   sizes

@@ -36,22 +36,23 @@ export const TableRender = <T,>(
   // traversal(columns, 'columns', console.log);
 
   return (
-    <TableBody
-      columnsWidths={headerData.columnWidths}
-      style={{ height: '100%', overflow: 'auto' }}
-      ref={scrollElementRef}
-    >
-      <TableHeader headers={headerData.flattenedHeaders} />
-      <TableData
-        // ref={scrollElementRef}
-        // style={{ height: 300, overflow: 'auto' }}
-        lowHeaders={headerData.lowHeaders}
-        rows={rows}
-        rowsRefs={rowsRefs}
-        slice={slice}
-        spaceTop={spaceTop}
-      />
-    </TableBody>
+    <div ref={scrollElementRef} style={{ height: '100%', overflow: 'auto' }}>
+      <TableBody
+        columnsWidths={headerData.columnWidths}
+        style={{ marginTop: spaceTop }}
+      >
+        <TableHeader headers={headerData.flattenedHeaders} />
+        <TableData
+          // ref={scrollElementRef}
+          // style={{ height: 300, overflow: 'auto' }}
+          lowHeaders={headerData.lowHeaders}
+          rows={rows}
+          rowsRefs={rowsRefs}
+          slice={slice}
+          spaceTop={spaceTop}
+        />
+      </TableBody>
+    </div>
   );
 };
 

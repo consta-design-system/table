@@ -44,30 +44,16 @@ const TableDataRender = <T,>(
   console.log(lowHeaders);
 
   return (
-    <div
-      {...otherProps}
-      ref={ref}
-      className={cnTableData(null, [className])}
-      // style={{ marginBottom: spaceTop }}
-    >
-      <div
-        style={{
-          height: spaceTop,
-          gridColumnEnd: `span ${lowHeaders.length}`,
-        }}
-      />
+    <div {...otherProps} ref={ref} className={cnTableData(null, [className])}>
       {rows.slice(...slice).map((row, rowIndex) => {
+        const rowkey = rowIndex + slice[0];
         return (
-          <div className={cnTableData('Row')} key={rowIndex}>
+          <div className={cnTableData('Row')} key={rowkey}>
             {lowHeaders.map((column, columnIndex) => {
               return (
                 <div
                   key={columnIndex}
-                  ref={
-                    columnIndex === 0
-                      ? rowsRefs[rowIndex + slice[0]]
-                      : undefined
-                  }
+                  ref={columnIndex === 0 ? rowsRefs[rowkey] : undefined}
                 >
                   {getCellDataByAccessor(row, column.accessor)}
                 </div>

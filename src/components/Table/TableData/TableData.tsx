@@ -52,7 +52,6 @@ const TableDataRender = <T,>(
             {lowHeaders.map((column, columnIndex) => {
               return (
                 <div
-                  style={{ height: 400 + slice[0] }}
                   key={columnIndex}
                   ref={columnIndex === 0 ? rowsRefs[rowkey] : undefined}
                 >

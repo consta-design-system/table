@@ -1,6 +1,7 @@
 import { useRefs } from '@consta/uikit/useRefs';
-import { useVirtualScroll } from '@consta/uikit/useVirtualScroll';
 import React, { forwardRef } from 'react';
+
+import { useVirtualScroll } from '##/hooks/useVirtualScroll';
 
 import { getMaxLevel, transformColumns, useHeaderData } from './helpers';
 import { TableBody } from './TableBody';

@@ -52,6 +52,10 @@ export type TableComponent = <ROW>(
 export type TableHeaderProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
     headers: Header<ROW>[];
+    headerRowsRefs: React.MutableRefObject<
+      Record<number, HTMLDivElement | null>
+    >;
+    headerRowsHeights: Array<number>;
   },
   HTMLDivElement
 >;
@@ -78,9 +82,9 @@ export type TableDataProps<ROW> = PropsWithHTMLAttributesAndRef<
     onRowMouseEnter?: TableRowMouseEvent<ROW>;
     onRowMouseLeave?: TableRowMouseEvent<ROW>;
     onRowMouseClick?: TableRowMouseEvent<ROW>;
-    // rowsRefs: React.Ref<HTMLDivElement>[];
-    // slice: [number, number];
-    // spaceTop: number;
+    rowsRefs: React.Ref<HTMLDivElement>[];
+    headerColumnsHeights: Array<number>;
+    slice: [number, number];
     setBoundaryRef: (
       columnIdx: number,
       rowIdx: number,

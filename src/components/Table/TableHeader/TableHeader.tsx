@@ -9,13 +9,21 @@ import { TableHeaderComponent } from '../types';
 export const cnTableHeader = cn('TableHeader');
 
 export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
-  const { headers, className, ...otherProps } = props;
+  const {
+    headers,
+    className,
+    headerRowsRefs,
+    headerRowsHeights,
+    ...otherProps
+  } = props;
 
   console.log(headers);
 
+  console.log(headerRowsRefs);
+
   return (
     <div {...otherProps} className={cnTableHeader(null, [className])} ref={ref}>
-      {headers.map((column) => {
+      {headers.map((column, columnIdx) => {
         const style: React.CSSProperties = {};
         if (column.position!.colSpan) {
           style.gridColumnEnd = `span ${column.position!.colSpan}`;
@@ -23,7 +31,12 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
         if (column.position!.rowSpan) {
           style.gridRowEnd = `span ${column.position!.rowSpan}`;
         }
-        style.top = 0;
+        // if (isStickyHeader) {
+        style.top = headerRowsHeights
+          .slice(0, column.position!.level)
+          .reduce((a: number, b: number) => a + b, 0);
+        // }
+        // style.top = 0;
         style.position = 'sticky';
         return (
           <div
@@ -31,6 +44,9 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
               isFirst: column.position.isFirst,
             })}
             style={style}
+            ref={(ref: HTMLDivElement | null): void => {
+              headerRowsRefs.current[columnIdx] = ref;
+            }}
           >
             {column.title}
           </div>

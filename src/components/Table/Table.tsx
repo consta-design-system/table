@@ -1,4 +1,3 @@
-import { useRefs } from '@consta/uikit/useRefs';
 import React, { forwardRef } from 'react';
 
 import { useVirtualScroll } from '##/hooks/useVirtualScroll';
@@ -32,9 +31,9 @@ export const TableRender = <T,>(
     spaceTop,
   } = useVirtualScroll({ length: rows.length, isActive: true });
 
-  console.log(slice);
+  // console.log(slice);
 
-  // traversal(columns, 'columns', console.log);
+  console.log(headerData.flattenedHeaders, 'flattenedHeaders');
 
   return (
     <div ref={scrollElementRef} style={{ maxHeight: '100%', overflow: 'auto' }}>
@@ -42,7 +41,11 @@ export const TableRender = <T,>(
         columnsWidths={headerData.columnWidths}
         style={{ marginTop: spaceTop }}
       >
-        <TableHeader headers={headerData.flattenedHeaders} />
+        <TableHeader
+          headers={headerData.flattenedHeaders}
+          headerRowsRefs={headerData.headerRowsRefs}
+          headerRowsHeights={headerData.headerRowsHeights}
+        />
         <TableData
           // ref={scrollElementRef}
           // style={{ height: 300, overflow: 'auto' }}

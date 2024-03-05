@@ -36,8 +36,8 @@ const TableDataRender = <T,>(
     lowHeaders,
     rowsRefs,
     slice,
-    spaceTop,
     setBoundaryRef,
+    headerColumnsHeights,
     ...otherProps
   } = props;
 

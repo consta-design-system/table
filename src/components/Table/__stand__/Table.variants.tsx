@@ -2,8 +2,9 @@ import { IconFunnel } from '@consta/icons/IconFunnel';
 import { IconKebab } from '@consta/icons/IconKebab';
 import { IconUnsort } from '@consta/icons/IconUnsort';
 import { useBoolean, useSelect } from '@consta/stand';
-import { Avatar } from '@consta/uikit/Avatar';
 import { Button } from '@consta/uikit/Button';
+import { Checkbox } from '@consta/uikit/Checkbox';
+import { useFlag } from '@consta/uikit/useFlag';
 import React, { useMemo } from 'react';
 
 import { DataCell } from '##/components/DataCell';
@@ -49,8 +50,16 @@ const AthleteDataCell = (props: {
     row: { athlete },
     size,
   } = props;
+
+  const [checked, setChecked] = useFlag();
+
   return (
-    <DataCell size={size} control={<Avatar size={size} name={athlete} />}>
+    <DataCell
+      size={size}
+      control={
+        <Checkbox checked={checked} onChange={setChecked.toggle} size={size} />
+      }
+    >
       {athlete}
     </DataCell>
   );

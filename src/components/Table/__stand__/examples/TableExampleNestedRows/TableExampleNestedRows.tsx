@@ -19,7 +19,7 @@ type ROW = {
   level: number;
 };
 
-const IaconArrow = withAnimateSwitcherHOC({
+const IconArrow = withAnimateSwitcherHOC({
   startIcon: IconArrowRight,
   startDirection: 0,
   endDirection: 90,
@@ -65,7 +65,7 @@ const DataCellCol1 = (props: {
             <Button
               size="s"
               view="clear"
-              iconLeft={IaconArrow}
+              iconLeft={IconArrow}
               onlyIcon
               onClick={() => toggle(idx)}
             />

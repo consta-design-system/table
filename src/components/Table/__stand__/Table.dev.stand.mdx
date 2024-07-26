@@ -3,11 +3,18 @@ import { TableExampleWidth } from './examples/TableExampleWidth/TableExampleWidt
 import { TableExampleSeporator } from './examples/TableExampleSeporator/TableExampleSeporator';
 import { TableExamplePinned } from './examples/TableExamplePinned/TableExamplePinned';
 import { TableExampleGroupColums } from './examples/TableExampleGroupColums/TableExampleGroupColums';
-import { MdxTabs } from '@consta/stand';
+import { TableExampleRenderCell } from './examples/TableExampleRenderCell/TableExampleRenderCell';
+import { TableExampleRenderHeaderCell } from './examples/TableExampleRenderHeaderCell/TableExampleRenderHeaderCell';
+import { TableExampleStickyHeader } from './examples/TableExampleStickyHeader/TableExampleStickyHeader';
+import { TableExampleVirtualScroll } from './examples/TableExampleVirtualScroll/TableExampleVirtualScroll';
+import { TableExampleZebraStriped } from './examples/TableExampleZebraStriped/TableExampleZebraStriped';
+import { TableExampleNestedRows } from './examples/TableExampleNestedRows/TableExampleNestedRows';
+import {
+  TableExampleResizableInside,
+  TableExampleResizableOutside,
+} from './examples/TableExampleResizable/TableExampleResizable';
 
-```tsx
-import { Table } from '@consta/table/Table';
-```
+import { MdxTabs } from '@consta/stand';
 
 ## Как формируется таблица
 
@@ -87,7 +94,7 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: 'left' | 'right';
   columns?: TableColumn<ROW>[];
-  renderCell?: (props: { row: T }) => React.ReactElement | null;
+  renderCell?: (props: { row: ROW }) => React.ReactElement | null;
   renderHeaderCell?: (props: { title?: string }) => React.ReactElement | null;
 } & ValueOf<{
   [K in keyof ROW]: {
@@ -315,7 +322,7 @@ const rows: Row[] = [
     profession: 'Cтроитель, который построил дом',
     status: 'недоступен',
     phone: '+7 976 543 21 00',
-    email: 'tema@company.ru',
+    email: 'anton@company.ru',
     grade: 3,
   },
   {
@@ -391,3 +398,413 @@ export const TableExampleGroupColums = () => (
 <TableExampleGroupColums />
 
 </MdxTabs>
+
+### Представление данных в ячейке
+
+По умолчанию компонент таблици пытается привести данные к строке и выводит через комонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable).
+Вы можете в колонке использовать свойство `renderCell`, и выводить данные как вам потребуется.
+
+<MdxTabs>
+
+```tsx
+import { Badge, BadgePropStatus } from '@consta/uikit/Badge';
+import { Checkbox } from '@consta/uikit/Checkbox';
+import { useFlag } from '@consta/uikit/useFlag';
+import React from 'react';
+
+import { DataCell } from '@consta/table/DataCell';
+import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
+
+type ROW = {
+  name: string;
+  profession: string;
+  status: 'not available' | 'available';
+};
+
+const rows: ROW[] = [
+  {
+    name: 'Антон Григорьев',
+    profession: 'Cтроитель, который построил дом',
+    status: 'not available',
+  },
+  {
+    name: 'Василий Пупкин',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'available',
+  },
+];
+
+const DataCellName: TableRenderCell<ROW> = (props) => {
+  const [checked, setChecked] = useFlag();
+  return (
+    <DataCell
+      control={
+        <Checkbox size="s" checked={checked} onChange={setChecked.toggle} />
+      }
+    >
+      {props.row.name}
+    </DataCell>
+  );
+};
+
+const mapBadgeProps: Record<
+  ROW['status'],
+  { status: BadgePropStatus; label: string }
+> = {
+  'available': {
+    status: 'success',
+    label: 'на связи',
+  },
+  'not available': {
+    status: 'warning',
+    label: 'недоступен',
+  },
+};
+
+const DataCellStatus: TableRenderCell<ROW> = (props) => {
+  return (
+    <DataCell>
+      <Badge {...mapBadgeProps[props.row.status]} />
+    </DataCell>
+  );
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 240,
+    renderCell: DataCellName,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+];
+
+export const TableExampleRenderCell = () => (
+  <Example col={1}>
+    <Table rows={rows} columns={columns} />
+  </Example>
+);
+```
+
+<TableExampleRenderCell />
+
+</MdxTabs>
+
+### Представление данных в ячейке в шапке
+
+По умолчанию компонент таблици пытается привести данные к строке и выводит через комонент [`HeaderDataCell`](##LIBS.LIB.STAND/lib:table/stand:components-headerdatacell-stable).
+Вы можете в колонке использовать свойство `renderHeaderCell`, и выводить данные как вам потребуется.
+
+<MdxTabs>
+
+```tsx
+import { IconFunnel } from '@consta/icons/IconFunnel';
+import { IconKebab } from '@consta/icons/IconKebab';
+import { IconUnsort } from '@consta/icons/IconUnsort';
+
+import { Button } from '@consta/uikit/Button';
+import React from 'react';
+
+import { HeaderDataCell } from '@consta/table/HeaderDataCell';
+import { Table, TableColumn, TableRenderHeaderCell } from '@consta/table/Table';
+
+type ROW = {
+  name: string;
+  profession: string;
+  status: string;
+};
+
+const rows: ROW[] = [
+  {
+    name: 'Антон Григорьев',
+    profession: 'Cтроитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    name: 'Василий Пупкин',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+const DataHeaderCell: TableRenderHeaderCell = ({ title }) => {
+  return (
+    <HeaderDataCell
+      control={[
+        <Button size="s" view="clear" iconLeft={IconUnsort} onlyIcon />,
+        <Button size="s" view="clear" iconLeft={IconFunnel} onlyIcon />,
+        <Button size="s" view="clear" iconLeft={IconKebab} onlyIcon />,
+      ]}
+    >
+      {title}
+    </HeaderDataCell>
+  );
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 240,
+    renderHeaderCell: DataHeaderCell,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+    renderHeaderCell: DataHeaderCell,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+    renderHeaderCell: DataHeaderCell,
+  },
+];
+
+export const TableExampleRenderHeaderCell = () => (
+  <Table rows={rows} columns={columns} />
+);
+```
+
+<TableExampleRenderHeaderCell />
+
+</MdxTabs>
+
+## Закрепление шапки
+
+Вы можете закрепить шапку, используйте свойство `stickyHeader` и ограничте высоту таблицы.
+
+<MdxTabs>
+
+```tsx
+<Table style={{ maxHeight: 400 }} rows={rows} columns={columns} stickyHeader />
+```
+
+<TableExampleStickyHeader />
+
+</MdxTabs>
+
+## Виртуальный скролл
+
+Если в таблице много данных включите свйство `virtualScroll` и ограничте высоту таблицы для лучшей проиводительности.
+
+<MdxTabs>
+
+```tsx
+<Table
+  style={{ maxHeight: 400 }}
+  rows={rows}
+  columns={columns}
+  stickyHeader
+  virtualScroll
+/>
+```
+
+<TableExampleVirtualScroll />
+
+</MdxTabs>
+
+## Таблица в полоску
+
+Для отоброджения таблицы в полоску используйте `zebraStriped`
+
+<MdxTabs>
+
+```tsx
+<Table
+  style={{ maxHeight: 400 }}
+  rows={rows}
+  columns={columns}
+  stickyHeader
+  virtualScroll
+  zebraStriped
+/>
+```
+
+<TableExampleZebraStriped />
+
+</MdxTabs>
+
+## Управление шириной столбцов
+
+Для управления шириной столбцов пользователем используйте свойство `resizable`.
+
+Уменьшение и увелечение будет в пределах `minWidth` `maxWidth` у колоки.
+Если есть необходимость запретить изменение ширины у определенной колонки, установите у `minWidth` и `maxWidth` равное значение.
+
+Закрепленные (`pinned`) колонки не имеют возможности изменять размер.
+
+Есть 2 режима работы: `'inside'` и `'outside'`:
+
+### `resizable = 'inside'`
+
+При `resizable = 'inside'` таблица будет стараться уместить весь контент в ширину контейнера таблицы, т.е. при увелечении ширины одного столбца будет уменьшатся ширина другого, и на оборот.
+Рекомендуется использовать этот режим когда столбцов мало и они все помещаются в таблицу.
+
+<MdxTabs>
+
+```tsx
+import { Example } from '@consta/stand';
+import React from 'react';
+
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    width: 'auto',
+    accessor: 'athlete',
+    // Запретили менять ширину у колонки
+    minWidth: 200,
+    maxWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+    minWidth: 140,
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    width: 'auto',
+    minWidth: 100,
+  },
+];
+
+export const TableExampleResizable = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    resizable="inside"
+  />
+);
+```
+
+<TableExampleResizableInside />
+
+</MdxTabs>
+
+### `resizable = 'outside'`
+
+При `resizable = 'outside'` таблица будет расширятся при увелечении колонки.
+Рекомендуется использовать этот режим когда столбцов много и они не помещаются в таблицу.
+
+<MdxTabs>
+
+```tsx
+import { Example } from '@consta/stand';
+import React from 'react';
+
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    width: 'auto',
+    accessor: 'athlete',
+    minWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+    minWidth: 140,
+    pinned: 'left',
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    width: 'auto',
+    minWidth: 100,
+  },
+  {
+    title: 'Медали',
+    columns: [
+      {
+        title: 'Бронза',
+        accessor: 'bronze',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Серебро',
+        accessor: 'silver',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Золото',
+        accessor: 'gold',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Всего',
+        accessor: 'total',
+        width: 'auto',
+        minWidth: 100,
+      },
+    ],
+  },
+  {
+    title: 'Год',
+    accessor: 'year',
+    width: 'auto',
+    minWidth: 140,
+    pinned: 'right',
+  },
+];
+
+export const TableExampleResizableOutside = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    resizable="outside"
+    zebraStriped
+  />
+);
+```
+
+<TableExampleResizableOutside />
+
+</MdxTabs>
+
+## Вложенные строки
+
+Реализовать вложенные строки возможно через `renderCell` у колонки взяв компонет [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и укозав ему свойство `level`
+
+<TableExampleNestedRows />

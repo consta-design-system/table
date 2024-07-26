@@ -1,8 +1,8 @@
 .ct--TableData {
   display: contents;
   &-Cell {
-    &_separator {
-      background: var(--color-bg-stripe);
+    &_pinned {
+      z-index: calc(var(--table-header-z-index) - 1);
     }
   }
   &-Row {

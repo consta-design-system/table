@@ -1,13 +1,219 @@
+import { DataCellExampleChildren } from './examples/DataCellExampleChildren/DataCellExampleChildren';
+import { DataCellExampleSize } from './examples/DataCellExampleSize/DataCellExampleSize';
+import { DataCellExampleIcon } from './examples/DataCellExampleIcon/DataCellExampleIcon';
+import { DataCellExampleControls } from './examples/DataCellExampleControls/DataCellExampleControls';
+import { DataCellExampleIndicator } from './examples/DataCellExampleIndicator/DataCellExampleIndicator';
+import { DataCellExampleView } from './examples/DataCellExampleView/DataCellExampleView';
+import { DataCellExampleLevel } from './examples/DataCellExampleLevel/DataCellExampleLevel';
+
+import { MdxTabs } from '@consta/stand';
+import { MdxMenu } from '@consta/stand';
+
 ```tsx
 import { DataCell } from '@consta/table/TableDataCell';
 ```
 
-Компонент для вывода информации в ячеке.
+<MdxMenu>
+
+- [Ребенок](#ребенок)
+- [Иконка](#иконка)
+- [Контролы](#контролы)
+- [Индикатор](#индикатор)
+- [Размер](#размер)
+- [Вид](#вид)
+- [Уровень вложенности](#уровень-вложенности)
+- [Свойства](#свойства)
+
+</MdxMenu>
 
 ## Ребенок
 
 Вы можете указать ребенка(`children`) как одним элементом так и передать массив. В случае с массивом компонет расставит отступы между каждым элементом.
-Если элемент будет иметь тип `string | number`, то он быдет выводится компонетом `Text` с тем размером который вы укажете.
+Если элемент будет иметь тип `string | number`, то он быдет выводится компонетом `Text` с тем размером который вы укажите.
+
+<MdxTabs>
+
+```tsx
+// Число
+<DataCell>100</DataCell>
+
+// Текст
+<DataCell>Текст</DataCell>
+
+// Текст и бейджик
+<DataCell>{['Текст', <Badge size="s" label="Бейдж" />]}</DataCell>
+```
+
+<DataCellExampleChildren />
+
+</MdxTabs>
+
+## Иконка
+
+Указать иконку вы моежете через чвойство `icon`.
+
+<MdxTabs>
+
+```tsx
+<DataCell icon={IconDinosaur}>Текст</DataCell>
+```
+
+<DataCellExampleIcon />
+
+</MdxTabs>
+
+## Контролы
+
+Вы можете указать один или несколько контролов используя свойство `controls`.
+При указании нескольких котролов отстумы между ними раставятся автоматически.
+
+<MdxTabs>
+
+```tsx
+
+// Один контрол
+<DataCell control={<Checkbox size="s" checked />}>Текст</DataCell>
+  Текст
+</DataCell>
+
+// Два контрола
+<DataCell
+  control={[
+    <Button view="clear" iconLeft={IconArrowDown} onlyIcon size="s" />,
+    <Checkbox size="s" checked />,
+  ]}
+>
+  Текст
+</DataCell>
+```
+
+<DataCellExampleControls />
+
+</MdxTabs>
+
+## Индикатор
+
+Укажите свойство `indicator`
+
+<MdxTabs>
+
+```tsx
+
+// indicator = alert
+<DataCell indicator="alert">Текст</DataCell>
+
+// indicator = warning
+<DataCell indicator="warning">Текст</DataCell>
+
+```
+
+<DataCellExampleIndicator />
+
+</MdxTabs>
+
+## Размер
+
+<MdxTabs>
+
+```tsx
+
+// size = s
+<DataCell icon={IconDinosaur} size="s">
+    Текст
+</DataCell>
+
+// size = m
+<DataCell icon={IconDinosaur} size="m">
+    Текст
+</DataCell>
+
+```
+
+<DataCellExampleSize />
+
+</MdxTabs>
+
+## Вид
+
+Вид можете поменять в свойством `view`
+
+<MdxTabs>
+
+```tsx
+
+// view = alert
+<DataCell icon={IconDinosaur} view="alert">
+  Текст
+</DataCell>
+
+// view = primary
+<DataCell icon={IconDinosaur} view="primary">
+  Текст
+</DataCell>
+
+// view = success
+<DataCell icon={IconDinosaur} view="success">
+  Текст
+</DataCell>
+
+// view = warning
+<DataCell icon={IconDinosaur} view="warning">
+  Текст
+</DataCell>
+```
+
+<DataCellExampleView />
+
+</MdxTabs>
+
+## Уровень вложенности
+
+Свойство `level` добавляет отступ слева, для визуального отбражения вложенности.
+
+<MdxTabs>
+
+```tsx
+import './DataCellExampleLevel.css';
+
+import { IconArrowUp } from '@consta/icons/IconArrowUp';
+import { Button } from '@consta/uikit/Button';
+import React from 'react';
+
+import { DataCell } from '@consta/table/DataCell';
+import { cn } from '##/utils/bem';
+
+const cnDataCellExampleLevel = cn('DataCellExampleLevel');
+
+const ButtonWithButton = () => (
+  <Button onlyIcon iconLeft={IconArrowUp} view="clear" size="s" />
+);
+
+export const DataCellExampleLevel = () => (
+  <>
+    {[0, 1, 2, 3].map((level) => (
+      <DataCell
+        className={cnDataCellExampleLevel('Cell')}
+        level={level}
+        control={<ButtonWithButton />}
+      >
+        Уровень вложенности {level}
+      </DataCell>
+    ))}
+  </>
+);
+```
+
+```css
+.ct--DataCellExampleLevel {
+  &-Cell {
+    border-top: 1px solid var(--color-bg-border);
+  }
+}
+```
+
+<DataCellExampleLevel />
+
+</MdxTabs>
 
 ## Свойства
 
@@ -16,8 +222,8 @@ import { DataCell } from '@consta/table/TableDataCell';
 | `view?`      | `'primary'` &#124; `'alert'` &#124; `'success'` &#124; `'warning'` | -            | Слот для контролов             |
 | `size?`      | `'m'` &#124; `'s'`                                                 | `'m'`        | Размер                         |
 | `control?`   | `React.ReactNode` &#124; `JSX.Element[]`                           | -            | Слот для контролов             |
-| `icon?`      | `IconComponent ` &#124; ` IconComponent[];`                        | -            | Иконка                         |
-| `children?`  | `React.ReactNode` &#124; `JSX.Element[];`                          | -            | Ребенок                        |
+| `icon?`      | `IconComponent ` &#124; ` IconComponent[]`                         | -            | Иконка                         |
+| `children?`  | `React.ReactNode` &#124; `JSX.Element[]`                           | -            | Ребенок                        |
 | `indicator?` | `'alert'` &#124; `'warning'`                                       | -            | Индикатор                      |
 | `level?`     | `number`                                                           | `0`          | Уровень вложенности            |
 | `className?` | `string`                                                           | -            | Дополнительный CSS-класс       |

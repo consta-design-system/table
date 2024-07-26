@@ -24,7 +24,7 @@ export const TableResizers = <T,>(props: Props<T>) => {
 
   return (
     <div className={cnTableResizers()}>
-      {lowHeaders.map((column, index) => (
+      {lowHeaders.map(({ maxWidth, minWidth, pinned, isSeparator }, index) => (
         <div
           className={cnTableResizers('Cell')}
           ref={resizersRefs[index]}
@@ -34,9 +34,9 @@ export const TableResizers = <T,>(props: Props<T>) => {
           }}
         >
           {resizable &&
-            (column.maxWidth === undefined ||
-              column.maxWidth !== column.minWidth) &&
-            !column.isSeparator &&
+            (maxWidth === undefined || maxWidth !== minWidth) &&
+            !isSeparator &&
+            !pinned &&
             !(resizable === 'inside' && lowHeaders.length === index + 1) && (
               <div
                 {...handlers[index]}

@@ -117,7 +117,7 @@ export type TableColumn<ROW> = {
 ## Ширина колонки
 
 Для настройки ширины колонок используйте `width`, `maxWidth`, `minWidth`.
-Где `width` это желаемая ширина колонки, если все колонки будут помещатся втаблицу без скрола она останется не изменной,
+Где `width` это желаемая ширина колонки, если все колонки будут помещатся втаблицу без скролла она останется не изменной,
 для того, чтобы таблица не уменьшала или не увеличивала колонку вне желаемых размеров ограничте ее используя `maxWidth` и `minWidth`.
 
 К примеру требуется, зафиксировать размер первой колонки на `180px`, вторая и третия должны быть одинаковыми, но треться должна быть не меньше `150px`
@@ -962,3 +962,55 @@ export const TableExampleNestedRows = () => {
 <TableExampleNestedRows />
 
 </MdxTabs>
+
+## Свойства
+
+```ts
+type TableColumn<ROW> = {
+  title?: string;
+  width?:
+    | number
+    | 'auto'
+    | '1fr'
+    | '2fr'
+    | '3fr'
+    | '4fr'
+    | '5fr'
+    | '6fr'
+    | '7fr'
+    | '8fr'
+    | '9fr'
+    | '10fr';
+  maxWidth?: number;
+  minWidth?: number;
+  renderHeaderCell?: TableRenderHeaderCell;
+  isSeparator?: boolean;
+  pinned?: TableColumnPropPinned;
+  renderCell?: TableRenderCell<ROW>;
+  columns?: TableColumn<ROW>[];
+} & ValueOf<{
+  [K in keyof ROW]: {
+    accessor?: K extends string ? K : never;
+  };
+}>;
+
+type TableRowMouseEvent<ROW> = (
+  row: ROW,
+  props: { e: React.MouseEvent },
+) => void;
+```
+
+| Свойство           | Тип                           | По умолчанию | Описание                                      |
+| ------------------ | ----------------------------- | ------------ | --------------------------------------------- |
+| `columns?`         | `TableColumn[]`               | -            | Колонки                                       |
+| `rows?`            | `ROW[]`                       | -            | Строки                                        |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -            | Собитие `onMouseEnter` на строке              |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -            | Собитие `onMouseLeave` на строке              |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -            | Собитие `onClick` на строке                   |
+| `virtualScroll?`   | `boolean`                     | -            | Включение виртуального скролла                |
+| `stickyHeader?`    | `boolean`                     | -            | Зафиксировать шапку сверху                    |
+| `resizable?`       | `'inside'` &#124; `'outside'` | -            | Включение возможности изменять ширину колонок |
+| `zebraStriped?`    | `boolean`                     | -            | Окрашивание строк через одну                  |
+| `headerZIndex?`    | `number`                      | `1`          | `zIndex` шапки                                |
+| `className?`       | `string`                      | -            | Дополнительный CSS-класс                      |
+| `ref?`             | `React.Ref<HTMLDivElement>`   | -            | Ссылка на корневой DOM-элемент                |

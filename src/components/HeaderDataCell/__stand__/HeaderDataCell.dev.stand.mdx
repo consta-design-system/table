@@ -39,14 +39,14 @@ import { HeaderDataCell } from '@consta/table/HeaderDataCell';
 
 ## Контролы
 
-Вы можете указать один или несколько контролов используя свойство `controls`.
+Вы можете указать один или несколько контролов используя свойство `controlRight` и `controlLeft`.
 При указании нескольких котролов отстумы между ними раставятся автоматически.
 
 <MdxTabs>
 
 ```tsx
 <HeaderDataCell
-  control={[
+  controlRight={[
     <Button view="clear" iconLeft={IconUnsort} onlyIcon size="s" />,
     <Button view="clear" iconLeft={IconFunnel} onlyIcon size="s" />,
     <Button view="clear" iconLeft={IconKebab} onlyIcon size="s" />,
@@ -80,10 +80,11 @@ import { HeaderDataCell } from '@consta/table/HeaderDataCell';
 
 ## Свойства
 
-| Свойство     | Тип                                      | По умолчанию | Описание                       |
-| ------------ | ---------------------------------------- | ------------ | ------------------------------ |
-| `size?`      | `'m'` &#124; `'s'`                       | `'m'`        | Размер                         |
-| `control?`   | `React.ReactNode` &#124; `JSX.Element[]` | -            | Слот для контролов             |
-| `children?`  | `React.ReactNode` &#124; `JSX.Element[]` | -            | Ребенок                        |
-| `className?` | `string`                                 | -            | Дополнительный CSS-класс       |
-| `ref?`       | `React.Ref<HTMLDivElement>`              | -            | Ссылка на корневой DOM-элемент |
+| Свойство        | Тип                                      | По умолчанию | Описание                       |
+| --------------- | ---------------------------------------- | ------------ | ------------------------------ |
+| `size?`         | `'m'` &#124; `'s'`                       | `'m'`        | Размер                         |
+| `controlLeft?`  | `React.ReactNode` &#124; `JSX.Element[]` | -            | Слот для контролов слева       |
+| `controlRight?` | `React.ReactNode` &#124; `JSX.Element[]` | -            | Слот для контролов справа      |
+| `children?`     | `React.ReactNode` &#124; `JSX.Element[]` | -            | Ребенок                        |
+| `className?`    | `string`                                 | -            | Дополнительный CSS-класс       |
+| `ref?`          | `React.Ref<HTMLDivElement>`              | -            | Ссылка на корневой DOM-элемент |

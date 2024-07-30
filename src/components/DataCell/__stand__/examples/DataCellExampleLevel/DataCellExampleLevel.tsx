@@ -19,6 +19,7 @@ export const DataCellExampleLevel = () => (
     <div>
       {[0, 1, 2, 3].map((level) => (
         <DataCell
+          size="m"
           className={cnDataCellExampleLevel('Cell')}
           level={level}
           control={<ButtonWithButton />}

@@ -4,10 +4,10 @@ import { IconComponent } from '@consta/icons/Icon';
 import { cnMixFlex } from '@consta/uikit/MixFlex';
 import { cnMixSpace, Space } from '@consta/uikit/MixSpace';
 import { Text } from '@consta/uikit/Text';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
-import { isNotNil, isNumber, isString } from '##/utils/type-guards';
+import { isNumber, isString } from '##/utils/type-guards';
 
 const cnDataCell = cn('DataCell');
 
@@ -21,31 +21,41 @@ export type DataCellProps = {
   indicator?: 'alert' | 'warning';
 } & JSX.IntrinsicElements['div'];
 
-const renderIcon = (Icon: IconComponent, view: DataCellProps['view']) => (
-  <Icon view={view} size="s" />
+const renderContentSlot = (children: DataCellProps['children']) => (
+  <div
+    className={cnDataCell('ContentSlot', [
+      cnMixFlex({
+        flex: 'flex',
+        align: 'center',
+      }),
+    ])}
+  >
+    {children}
+  </div>
 );
+
+const renderIcon = (Icon: IconComponent, view: DataCellProps['view']) =>
+  renderContentSlot(<Icon view={view} size="s" />);
 
 const renderChildren = (
   children: DataCellProps['children'],
   view: DataCellProps['view'],
-  size: DataCellProps['size'],
+  size: 'm' | 's',
 ) => {
   if (isString(children) || isNumber(children)) {
-    return (
-      <Text view={view} size={size}>
+    return renderContentSlot(
+      <Text
+        className={cnMixSpace({
+          pV: contentVerticalSpaseMap[size],
+        })}
+        view={view}
+        size={size}
+      >
         {children}
-      </Text>
+      </Text>,
     );
   }
-  return children;
-};
-
-const contentHorisontalSpaseMap: Record<
-  Exclude<DataCellProps['size'], undefined>,
-  Space
-> = {
-  m: 'm',
-  s: 'xs',
+  return renderContentSlot(children);
 };
 
 const contentVerticalSpaseMap: Record<
@@ -94,10 +104,14 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
 
     return (
       <div
-        className={cnDataCell({ size, indicator: Boolean(indicator) }, [
-          cnMixFlex({ flex: 'flex' }),
-          className,
-        ])}
+        className={cnDataCell(
+          {
+            size,
+            indicator: Boolean(indicator),
+            alignmentIndent: level >= 1 && controlsSlots.length === 0,
+          },
+          [cnMixFlex({ flex: 'flex' }), className],
+        )}
         style={{
           ['--table-data-cell-level' as string]: level || undefined,
           ['--table-data-cell-indicator-color' as string]: indicator
@@ -108,56 +122,30 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
       >
         {controlsSlots.length ? (
           <div
-            className={cnDataCell('Controls', [
-              cnMixFlex({ flex: 'flex', align: 'center' }),
-            ])}
+            className={cnMixFlex({ flex: 'flex', align: 'center', gap: '2xs' })}
           >
             {controlsSlots.map((item, index) => {
-              if (isNotNil(item)) {
-                return (
-                  <div
-                    className={cnDataCell('ControlSlot', [
-                      cnMixFlex({
-                        flex: 'flex',
-                        align: 'center',
-                        justify: 'center',
-                      }),
-                    ])}
-                    key={index}
-                  >
-                    {item}
-                  </div>
-                );
-              }
+              return (
+                <div
+                  className={cnDataCell('ControlSlot', [
+                    cnMixFlex({
+                      flex: 'flex',
+                      align: 'center',
+                      justify: 'center',
+                    }),
+                  ])}
+                  key={index}
+                >
+                  {item}
+                </div>
+              );
             })}
           </div>
         ) : undefined}
         {contentSlots.length ? (
-          <div
-            className={cnDataCell('Content', [
-              cnMixFlex({ flex: 'flex', gap: '2xs' }),
-              cnMixSpace({
-                pH: contentHorisontalSpaseMap[size],
-                pV: contentVerticalSpaseMap[size],
-              }),
-            ])}
-          >
+          <div className={cnMixFlex({ flex: 'flex', gap: '2xs' })}>
             {contentSlots.map((item, index) => {
-              if (isNotNil(item)) {
-                return (
-                  <div
-                    className={cnDataCell('ContentSlot', [
-                      cnMixFlex({
-                        flex: 'flex',
-                        align: 'center',
-                      }),
-                    ])}
-                    key={index}
-                  >
-                    {item}
-                  </div>
-                );
-              }
+              return <Fragment key={index}>{item}</Fragment>;
             })}
           </div>
         ) : undefined}

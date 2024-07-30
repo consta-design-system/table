@@ -1,22 +1,25 @@
-/* --table-data-cell-level - задается в компоненте */
+/* --table-header-data-cell-level - задается в компоненте */
 .ct--HeaderDataCell {
   width: 100%;
+
   &_size {
     &_m {
-      --table-data-cell-slot-size: var(--space-2xl);
+      --table-header-data-cell-slot-width: var(--space-2xl);
+      --table-header-data-cell-slot-height: var(--space-4xl);
     }
 
     &_s {
-      --table-data-cell-slot-size: var(--space-xl);
+      --table-header-data-cell-slot-width: var(--space-xl);
+      --table-header-data-cell-slot-height: var(--space-3xl);
     }
   }
 
   &-ControlSlot {
-    min-height: var(--table-data-cell-slot-size);
-    min-width: var(--table-data-cell-slot-size);
+    min-width: var(--table-header-data-cell-slot-width);
+    min-height: var(--table-header-data-cell-slot-height);
   }
 
   &-ContentSlot {
-    min-height: var(--table-data-cell-slot-size);
+    min-height: var(--table-header-data-cell-slot-height);
   }
 }

@@ -10,7 +10,7 @@ import { HeaderDataCell } from '##/components/HeaderDataCell';
 export const HeaderDataCellExampleControls = () => (
   <Example>
     <HeaderDataCell
-      control={[
+      controlRight={[
         <Button view="clear" iconLeft={IconUnsort} onlyIcon size="s" />,
         <Button view="clear" iconLeft={IconFunnel} onlyIcon size="s" />,
         <Button view="clear" iconLeft={IconKebab} onlyIcon size="s" />,

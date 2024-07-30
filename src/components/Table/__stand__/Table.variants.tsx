@@ -16,12 +16,17 @@ import data from '../__mocks__/olympic-winners.json';
 const AthleteHeaderCell = (props: { title?: string; size: 'm' | 's' }) => {
   const { title, size } = props;
 
+  const [checked, setChecked] = useFlag();
+
   const bottonSize = size === 'm' ? 's' : 'xs';
 
   return (
     <HeaderDataCell
       size={size}
-      control={[
+      controlLeft={
+        <Checkbox checked={checked} onChange={setChecked.toggle} size={size} />
+      }
+      controlRight={[
         <Button
           size={bottonSize}
           view="clear"

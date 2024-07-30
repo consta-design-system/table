@@ -30,7 +30,7 @@ const rows: ROW[] = [
 const DataHeaderCell: TableRenderHeaderCell = ({ title }) => {
   return (
     <HeaderDataCell
-      control={[
+      controlRight={[
         <Button size="s" view="clear" iconLeft={IconUnsort} onlyIcon />,
         <Button size="s" view="clear" iconLeft={IconFunnel} onlyIcon />,
         <Button size="s" view="clear" iconLeft={IconKebab} onlyIcon />,

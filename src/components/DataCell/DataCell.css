@@ -6,7 +6,7 @@
     calc(
       var(--space-s) + (var(--table-data-cell-slot-width) + var(--space-2xs)) *
       var(--table-data-cell-level, 0) +
-      var(--table-data-cell-additional-space, 0)
+      var(--table-data-cell-additional-space, calc(0 * 1px))
     );
 
   &_alignmentIndent {

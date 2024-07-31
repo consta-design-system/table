@@ -2,10 +2,9 @@
   "name": "@consta/table",
   "version": "0.0.1",
   "keywords": [
-    "ui-kit",
-    "design-system",
-    "consta",
-    "gazprom-neft-design-system"
+    "table",
+    "react-table",
+    "consta"
   ],
   "licenses": [
     {
@@ -204,5 +203,5 @@
     "react-textarea-autosize": "^8.5.3",
     "react-transition-group": "^4.4.5"
   },
-  "homepage": "http://consta.design"
+  "homepage": "http://consta.design/libs/table"
 }

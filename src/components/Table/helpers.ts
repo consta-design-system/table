@@ -310,7 +310,7 @@ export type HeaderData<T> = {
   headerCellsRefs: React.RefObject<HTMLDivElement>[];
   stickyLeftOffsets: number[];
   stickyRightOffsets: number[];
-  bordersFlattenedHeaders: [boolean, boolean][];
+  bordersFlattenedHeaders: [boolean, boolean, boolean][];
 };
 
 const getlowHeaders = <T>(columns: TableColumnWidthKey<T>[]) => {
@@ -468,7 +468,7 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
     ];
   }, [flattenedHeaders, lowHeaders]);
 
-  const bordersFlattenedHeaders: [boolean, boolean][] = useMemo(() => {
+  const bordersFlattenedHeaders: [boolean, boolean, boolean][] = useMemo(() => {
     return flattenedHeaders.map((flattenedHeadersCollum, index) => {
       let prevLowKey = '';
       const stopRef = { current: false };
@@ -493,6 +493,7 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
           ),
         flattenedHeadersCollum.pinned === 'left' &&
           flattenedHeaders[index + 1]?.pinned !== 'left',
+        flattenedHeadersCollum.position.level !== 0,
       ];
     });
   }, [flattenedHeaders, lowHeaders]);

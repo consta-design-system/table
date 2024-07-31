@@ -92,7 +92,7 @@ export type TableHeaderProps<ROW = TableDefaultRow> =
       stickyLeftOffsets: number[];
       stickyRightOffsets: number[];
       headerCellsRefs: React.RefObject<HTMLDivElement>[];
-      borders: [boolean, boolean][];
+      borders: [boolean, boolean, boolean][];
     },
     HTMLDivElement
   >;

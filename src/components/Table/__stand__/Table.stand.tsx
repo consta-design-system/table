@@ -18,4 +18,6 @@ export default createStand({
     'столбцы',
   ],
   order: 10,
+  figma:
+    'https://www.figma.com/community/file/1400418955050098928/consta-table',
 });

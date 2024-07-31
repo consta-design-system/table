@@ -9,4 +9,6 @@ export default createStand({
   status: 'stable',
   alias: ['ячейка', 'данные'],
   order: 10,
+  figma:
+    'https://www.figma.com/design/1Kmlk8FOUw2lBfhMIKnfLf/%F0%9F%9A%A7-Consta-Table?node-id=989-4961',
 });

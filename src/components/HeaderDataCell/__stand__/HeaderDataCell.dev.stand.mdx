@@ -1,0 +1,89 @@
+import { HeaderDataCellExampleSize } from './examples/HeaderDataCellExampleSize/HeaderDataCellExampleSize';
+import { HeaderDataCellExampleChildren } from './examples/HeaderDataCellExampleChildren/HeaderDataCellExampleChildren';
+import { HeaderDataCellExampleControls } from './examples/HeaderDataCellExampleControls/HeaderDataCellExampleControls';
+
+import { MdxTabs, MdxMenu } from '@consta/stand';
+
+```tsx
+import { HeaderDataCell } from '@consta/table/HeaderDataCell';
+```
+
+<MdxMenu>
+
+- [Ребенок](#ребенок)
+- [Контролы](#контролы)
+- [Размер](#размер)
+- [Свойства](#свойства)
+
+</MdxMenu>
+
+## Ребенок
+
+Вы можете указать ребенка(`children`) как одним элементом, так и передать массив. В случае с массивом компонент расставит отступы между каждым элементом.
+Если элемент будет иметь тип `string | number`, то он будет выводится компонетом `Text` с тем размером, который вы укажите.
+
+<MdxTabs>
+
+```tsx
+
+// Текст
+<HeaderDataCell>Текст</HeaderDataCell>
+
+// Текст и кнопка
+<HeaderDataCell>{['Текст', <Button view="clear" iconLeft={IconArrowLeft} onlyIcon size="s" />]}</HeaderDataCell>
+```
+
+<HeaderDataCellExampleChildren />
+
+</MdxTabs>
+
+## Контролы
+
+Вы можете указать один или несколько контролов, используя свойство `controlRight` и `controlLeft`. При указании нескольких котролов отступы между ними расставятся автоматически.
+
+<MdxTabs>
+
+```tsx
+<HeaderDataCell
+  controlRight={[
+    <Button view="clear" iconLeft={IconUnsort} onlyIcon size="s" />,
+    <Button view="clear" iconLeft={IconFunnel} onlyIcon size="s" />,
+    <Button view="clear" iconLeft={IconKebab} onlyIcon size="s" />,
+  ]}
+>
+  Текст
+</HeaderDataCell>
+```
+
+<HeaderDataCellExampleControls />
+
+</MdxTabs>
+
+## Размер
+
+Чтобу поменять размер, используйте свойство `size`.
+
+<MdxTabs>
+
+```tsx
+// size = m
+<HeaderDataCell size="m">Текст</HeaderDataCell>
+
+// size = s
+<HeaderDataCell size="s">Текст</HeaderDataCell>
+```
+
+<HeaderDataCellExampleSize />
+
+</MdxTabs>
+
+## Свойства
+
+| Свойство        | Тип                                      | По умолчанию | Описание                       |
+| --------------- | ---------------------------------------- | ------------ | ------------------------------ |
+| `size?`         | `'m'` &#124; `'s'`                       | `'m'`        | Размер                         |
+| `controlLeft?`  | `React.ReactNode` &#124; `JSX.Element[]` | -            | Слот для контролов слева       |
+| `controlRight?` | `React.ReactNode` &#124; `JSX.Element[]` | -            | Слот для контролов справа      |
+| `children?`     | `React.ReactNode` &#124; `JSX.Element[]` | -            | Ребенок                        |
+| `className?`    | `string`                                 | -            | Дополнительный CSS-класс       |
+| `ref?`          | `React.Ref<HTMLDivElement>`              | -            | Ссылка на корневой DOM-элемент |

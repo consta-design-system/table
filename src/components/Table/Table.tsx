@@ -23,7 +23,7 @@ export const TableRender = (
     className,
     resizable,
     zebraStriped,
-    headerZIndex = 10,
+    headerZIndex = 1,
     onRowMouseEnter,
     onRowMouseLeave,
     onRowClick,

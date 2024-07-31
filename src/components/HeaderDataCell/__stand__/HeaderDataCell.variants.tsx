@@ -7,6 +7,7 @@ import { IconUnsort } from '@consta/icons/IconUnsort';
 import { withAnimateSwitcherHOC } from '@consta/icons/withAnimateSwitcherHOC';
 import { useBoolean, useSelect, useText } from '@consta/stand';
 import { Button } from '@consta/uikit/Button';
+import { Checkbox } from '@consta/uikit/Checkbox';
 import { useFlag } from '@consta/uikit/useFlag';
 import React from 'react';
 
@@ -23,16 +24,28 @@ const Variants = () => {
   const text = useText('text', 'Заголовок колонки');
   const size = useSelect('size', ['m', 's'], 'm');
 
-  const control = useSelect(
-    'controls',
+  const controlRight = useSelect(
+    'controlRight',
     ['without control', 'with one control', 'with multiple controls'],
+    'without control',
+  );
+
+  const controlLeft = useSelect(
+    'controlLeft',
+    ['without control', 'with one control'],
     'without control',
   );
   const multipleChildren = useBoolean('multipleChildren');
 
   const buttonSizeMap = { m: 's', s: 'xs' } as const;
+  // const checkboxSizeMap = { m: 'm', s: 's' } as const;
 
-  const controlMap = {
+  const controlLeftMap = {
+    'without control': undefined,
+    'with one control': <Checkbox checked={false} size={size} />,
+  } as const;
+
+  const controlRightMap = {
     'without control': undefined,
     'with one control': (
       <Button
@@ -81,7 +94,8 @@ const Variants = () => {
     <AnimateIconSwitcherProvider active={open}>
       <HeaderDataCell
         size={size}
-        control={controlMap[control || 'without control']}
+        controlRight={controlRightMap[controlRight || 'without control']}
+        controlLeft={controlLeftMap[controlLeft || 'without control']}
       >
         {children}
       </HeaderDataCell>

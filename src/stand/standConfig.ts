@@ -22,8 +22,9 @@ export const { createStand } = createConfig({
   description: 'Таблица — компонент для отображения данных',
   standPageDecoration,
   repositoryUrl: 'https://github.com/consta-design-system/table',
-  figmaUrl: 'https://www.figma.com/community/file/853774806786762374',
-  order: 2,
+  figmaUrl:
+    'https://www.figma.com/community/file/1400418955050098928/consta-table',
+  order: 3,
   standTabs: [
     // табы по умолчанию
     { id: '', label: 'Обзор' },

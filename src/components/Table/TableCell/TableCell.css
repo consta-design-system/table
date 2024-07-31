@@ -1,40 +1,50 @@
 .ct--TableCell {
-  --table-cell-border-top: 0px;
-  --table-cell-border-bottom: 0px;
-  --table-cell-border-left: 0px;
-  --table-cell-border-right: 0px;
+  --table-cell-border-top: 0;
+  --table-cell-border-bottom: 0;
+  --table-cell-border-left: 0;
+  --table-cell-border-right: 0;
+  overflow: hidden;
+  box-sizing: border-box;
   background: var(--color-bg-default);
   border-top: var(--table-cell-border-top) solid var(--color-bg-border);
-  border-bottom: var(--table-cell-border-bottom) solid var(--color-bg-border);
   border-left: var(--table-cell-border-left) solid var(--color-bg-border);
   border-right: var(--table-cell-border-right) solid var(--color-bg-border);
-  box-sizing: border-box;
-  overflow: hidden;
+  border-bottom: var(--table-cell-border-bottom) solid var(--color-bg-border);
 
   &_zebraStriped:not(&_separator) {
-    background: var(--color-bg-stripe);
+    --color-d: color(from var(--color-bg-stripe) alpha);
+    --color:
+      color-mix(
+        in srgb,
+        rgb(from var(--color-bg-stripe) r g b / 1) 5%,
+        var(--color-bg-default)
+      );
+    background: var(--color);
   }
 
   &_borderTop {
     --table-cell-border-top: 1px;
   }
+
   &_borderBottom {
     --table-cell-border-bottom: 1px;
   }
+
   &_borderLeft {
     --table-cell-border-left: 1px;
   }
+
   &_borderRight {
     --table-cell-border-right: 1px;
   }
 
   &_separator {
     &::before {
+      content: '';
+      display: block;
       width: 100%;
       height: 100%;
       background: var(--color-bg-stripe);
-      display: block;
-      content: '';
     }
   }
 

@@ -1,9 +1,9 @@
 import './HeaderDataCell.css';
 
 import { cnMixFlex } from '@consta/uikit/MixFlex';
-import { cnMixSpace } from '@consta/uikit/MixSpace';
+import { cnMixSpace, Space } from '@consta/uikit/MixSpace';
 import { Text } from '@consta/uikit/Text';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
 import { isNumber, isString } from '##/utils/type-guards';
@@ -11,24 +11,61 @@ import { isNumber, isString } from '##/utils/type-guards';
 const cnHeaderDataCell = cn('HeaderDataCell');
 
 export type HeaderDataCellProps = {
-  control?: React.ReactNode | JSX.Element[];
+  controlRight?: React.ReactNode | JSX.Element[];
+  controlLeft?: React.ReactNode | JSX.Element[];
   children?: React.ReactNode | JSX.Element[];
   size?: 'm' | 's';
 } & JSX.IntrinsicElements['div'];
 
+const contentVerticalSpaseMap: Record<
+  Exclude<HeaderDataCellProps['size'], undefined>,
+  Space
+> = {
+  m: 's',
+  s: 'xs',
+};
+
+const renderContentSlot = (children: HeaderDataCellProps['children']) => (
+  <div
+    className={cnHeaderDataCell('ContentSlot', [
+      cnMixFlex({
+        flex: 'flex',
+        align: 'center',
+      }),
+    ])}
+  >
+    {children}
+  </div>
+);
+
 const renderChildren = (
   children: HeaderDataCellProps['children'],
-  size: HeaderDataCellProps['size'],
+  size: 'm' | 's',
 ) => {
   if (isString(children) || isNumber(children)) {
-    return <Text size={size}>{children}</Text>;
+    return renderContentSlot(
+      <Text
+        className={cnMixSpace({
+          pV: contentVerticalSpaseMap[size],
+        })}
+        size={size}
+      >
+        {children}
+      </Text>,
+    );
   }
-  return children;
+  return renderContentSlot(children);
 };
 
 export const HeaderDataCell = forwardRef<HTMLDivElement, HeaderDataCellProps>(
   (props, ref) => {
-    const { className, size = 'm', control, children } = props;
+    const {
+      className,
+      size = 'm',
+      controlRight,
+      children,
+      controlLeft,
+    } = props;
 
     const childrenSlots = children
       ? [
@@ -38,48 +75,64 @@ export const HeaderDataCell = forwardRef<HTMLDivElement, HeaderDataCellProps>(
         ]
       : [];
 
-    const controlsSlots = control
-      ? [...(Array.isArray(control) ? control : [control])]
+    const controlRightSlots = controlRight
+      ? [...(Array.isArray(controlRight) ? controlRight : [controlRight])]
+      : [];
+
+    const controlLeftSlots = controlLeft
+      ? [...(Array.isArray(controlLeft) ? controlLeft : [controlLeft])]
       : [];
 
     return (
       <div
         className={cnHeaderDataCell({ size }, [
           cnMixFlex({ flex: 'flex', gap: 'xs', justify: 'space-between' }),
-          cnMixSpace({ pL: 'm', pR: 's', pV: 'xs' }),
+          cnMixSpace({ pH: 's' }),
           className,
         ])}
         ref={ref}
       >
-        {childrenSlots.length ? (
+        <div className={cnMixFlex({ flex: 'flex', gap: 'xs' })}>
+          {controlLeftSlots.length ? (
+            <div
+              className={cnMixFlex({
+                flex: 'flex',
+                gap: '2xs',
+              })}
+            >
+              {controlLeftSlots.map((item, index) => (
+                <div
+                  className={cnHeaderDataCell('ControlSlot', [
+                    cnMixFlex({
+                      flex: 'flex',
+                      align: 'center',
+                      justify: 'center',
+                    }),
+                  ])}
+                  key={index}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          ) : undefined}
+          {childrenSlots.length ? (
+            <div className={cnMixFlex({ flex: 'flex', gap: '2xs' })}>
+              {childrenSlots.map((item, index) => (
+                <Fragment key={index}>{item}</Fragment>
+              ))}
+            </div>
+          ) : undefined}
+        </div>
+        {controlRightSlots.length ? (
           <div
             className={cnMixFlex({
               flex: 'flex',
+              align: 'center',
               gap: '2xs',
             })}
           >
-            {childrenSlots.map((item, index) => (
-              <div
-                className={cnHeaderDataCell('ContentSlot', [
-                  cnMixFlex({
-                    flex: 'flex',
-                    align: 'center',
-                  }),
-                ])}
-                key={index}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        ) : undefined}
-        {controlsSlots.length ? (
-          <div
-            className={cnMixFlex({
-              flex: 'flex',
-            })}
-          >
-            {controlsSlots.map((item, index) => (
+            {controlRightSlots.map((item, index) => (
               <div
                 className={cnHeaderDataCell('ControlSlot', [
                   cnMixFlex({

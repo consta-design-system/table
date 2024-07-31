@@ -87,21 +87,23 @@ const TableDataRender = (
                   <div
                     key={`${columnIndex}-${rowkey}`}
                     ref={columnIndex === 0 ? rowsRefs[rowkey] : undefined}
-                    className={cnTableCell({
-                      separator: isSeparator,
-                      borderLeft:
-                        columnIndex !== 0 &&
-                        !(
-                          pinned !== 'left' &&
-                          lowHeaders[columnIndex - 1]?.pinned === 'left'
-                        ),
-                      borderRight:
-                        pinned === 'left' &&
-                        lowHeaders[columnIndex + 1]?.pinned !== 'left',
-                      borderTop: !isSeparator && rowIndex !== 0,
-                      sticky: !!pinned,
-                      zebraStriped: rowZebraStriped,
-                    })}
+                    className={cnTableData('Cell', { pinned: !!pinned }, [
+                      cnTableCell({
+                        separator: isSeparator,
+                        borderLeft:
+                          columnIndex !== 0 &&
+                          !(
+                            pinned !== 'left' &&
+                            lowHeaders[columnIndex - 1]?.pinned === 'left'
+                          ),
+                        borderRight:
+                          pinned === 'left' &&
+                          lowHeaders[columnIndex + 1]?.pinned !== 'left',
+                        borderTop: !isSeparator && rowIndex !== 0,
+                        sticky: !!pinned,
+                        zebraStriped: rowZebraStriped,
+                      }),
+                    ])}
                     style={{
                       left:
                         pinned === 'left'

@@ -1,25 +1,32 @@
 /* --table-data-cell-level - задается в компоненте */
 .ct--DataCell {
   width: 100%;
-  padding-right: var(--table-data-cell-horisontal-spase);
-  padding-left: calc(
-    var(--table-data-cell-horisontal-spase) +
-      var(--table-data-cell-control-size) * var(--table-data-cell-level, 0)
-  );
+  padding-right: var(--space-s);
+  padding-left:
+    calc(
+      var(--space-s) + (var(--table-data-cell-slot-width) + var(--space-2xs)) *
+      var(--table-data-cell-level, 0) +
+      var(--table-data-cell-additional-space, calc(0 * 1px))
+    );
+
+  &_alignmentIndent {
+    --table-data-cell-additional-space:
+      calc(
+        var(--table-data-cell-gap) - var(--space-2xs)
+      );
+  }
 
   &_size {
     &_m {
-      --table-data-cell-control-size: var(--space-2xl);
-      --table-data-cell-controls-height: var(--space-4xl);
-      --table-data-cell-content-height: var(--space-xl);
-      --table-data-cell-horisontal-spase: var(--space-s);
+      --table-data-cell-slot-width: var(--space-2xl);
+      --table-data-cell-slot-height: var(--space-4xl);
+      --table-data-cell-gap: var(--space-s);
     }
 
     &_s {
-      --table-data-cell-control-size: var(--space-xl);
-      --table-data-cell-controls-height: var(--space-3xl);
-      --table-data-cell-content-height: var(--space-xl);
-      --table-data-cell-horisontal-spase: var(--space-xs);
+      --table-data-cell-slot-width: var(--space-xl);
+      --table-data-cell-slot-height: var(--space-3xl);
+      --table-data-cell-gap: var(--space-xs);
     }
   }
 
@@ -33,21 +40,22 @@
       right: 0;
       border: var(--space-2xs) solid transparent;
       border-top: var(--space-2xs) solid var(--table-data-cell-indicator-color);
-      border-right: var(--space-2xs) solid
+      border-right:
+        var(--space-2xs) solid
         var(--table-data-cell-indicator-color);
     }
   }
 
-  &-Controls {
-    min-height: var(--table-data-cell-controls-height);
-  }
-
   &-ControlSlot {
-    min-height: var(--table-data-cell-control-size);
-    min-width: var(--table-data-cell-control-size);
+    min-width: var(--table-data-cell-slot-width);
+    min-height: var(--table-data-cell-slot-height);
   }
 
   &-ContentSlot {
-    min-height: var(--table-data-cell-content-height);
+    min-height: var(--table-data-cell-slot-height);
   }
+}
+
+.MixFlex.ct--DataCell {
+  --flex-gap: var(--table-data-cell-gap);
 }

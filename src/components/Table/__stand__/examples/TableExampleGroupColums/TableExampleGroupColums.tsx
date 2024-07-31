@@ -22,7 +22,7 @@ const rows: Row[] = [
     profession: 'Cтроитель, который построил дом',
     status: 'недоступен',
     phone: '+7 976 543 21 00',
-    email: 'tema@company.ru',
+    email: 'anton@company.ru',
     grade: 3,
   },
   {

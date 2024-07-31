@@ -3,26 +3,26 @@
 
   &-Cell {
     position: sticky;
-    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
     z-index: calc(var(--table-header-z-index) + 1);
+    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
   }
 
   &-Resizer {
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-    --resizer-top: calc(
-      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
-    );
+    --resizer-top:
+      calc(
+        (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
+      );
     position: absolute;
     top: var(--resizer-top);
     right: 0;
     width: var(--resizer-width);
+    height: calc(var(--table-body-height) - var(--table-resizer-top-offset));
     background-color: var(--color-bg-ghost);
     opacity: 0;
-    height: calc(var(--table-body-height) - var(--table-resizer-top-offset));
     cursor: col-resize;
-
     user-select: none;
     transition: opacity var(--fast-transition);
 

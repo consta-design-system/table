@@ -46,9 +46,9 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
             className={cnTableHeader('Cell', { pinned: !!column.pinned }, [
               cnTableCell({
                 separator: column.isSeparator,
-                borderTop: true,
                 borderLeft: borders[index][0],
                 borderRight: borders[index][1],
+                borderTop: borders[index][2],
                 sticky: !!column.pinned || stickyHeader,
                 up: !!column.pinned,
               }),

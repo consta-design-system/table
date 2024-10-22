@@ -4,7 +4,7 @@ import React, { forwardRef } from 'react';
 
 import { DataCell } from '##/components/DataCell';
 import { cn } from '##/utils/bem';
-import { isNumber, isString } from '##/utils/type-guards';
+import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
 import { cnTableCell } from '../TableCell';
 import {
@@ -46,6 +46,21 @@ const getRowMouseEvent = (
     ? (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => fn(row, { e })
     : undefined;
 
+const getKey = (
+  row: TableDefaultRow,
+  getRowKey: ((row: TableDefaultRow) => string | number) | undefined,
+  rowIndex: number,
+) => {
+  const key = getRowKey?.(row);
+  if (isNotNil(key)) {
+    return key;
+  }
+  if (typeof row.id === 'string' || typeof row.id === 'number') {
+    return row.id;
+  }
+  return rowIndex;
+};
+
 const TableDataRender = (
   props: TableDataProps,
   ref: React.Ref<HTMLDivElement>,
@@ -60,19 +75,21 @@ const TableDataRender = (
     onRowMouseEnter,
     onRowMouseLeave,
     onRowClick,
+    getRowKey,
     ...otherProps
   } = props;
 
   return (
     <div {...otherProps} ref={ref} className={cnTableData(null, [className])}>
-      {rows.slice(...slice).map((row, rowIndex) => {
-        const rowkey = rowIndex + slice[0];
-        const rowZebraStriped = zebraStriped && rowkey % 2 !== 0;
+      {rows.slice(...slice).map((row, index) => {
+        const rowIndex = index + slice[0];
+        const rowKey = getKey(row, getRowKey, rowIndex);
+        const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
 
         return (
           <div
             className={cnTableData('Row')}
-            key={rowkey}
+            key={rowKey}
             onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
             onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
             onClick={getRowMouseEvent(row, onRowClick)}
@@ -85,8 +102,8 @@ const TableDataRender = (
               ) => {
                 return (
                   <div
-                    key={`${columnIndex}-${rowkey}`}
-                    ref={columnIndex === 0 ? rowsRefs[rowkey] : undefined}
+                    key={`${rowKey}-${accessor || columnIndex}`}
+                    ref={columnIndex === 0 ? rowsRefs[rowIndex] : undefined}
                     className={cnTableData('Cell', { pinned: !!pinned }, [
                       cnTableCell({
                         separator: isSeparator,

@@ -33,6 +33,7 @@ import { MdxTabs, MdxMenu } from '@consta/stand';
   - [resizable = 'inside'](#resizable----inside-)
   - [resizable = 'outside'](#resizable----outside-)
 - [Вложенные строки](#вложенные-строки)
+- [Ключ строки](#ключ-строки)
 - [Свойства](#свойства)
 
 </MdxMenu>
@@ -124,7 +125,7 @@ export type TableColumn<ROW> = {
 }>;
 ```
 
-- `accessor`, содержимое колонки
+- `accessor`, указатель содержимого (должен быть уникальным для каждой колонки)
 - `title`, заголовок колнки.
 - `width`, ширина колонки, можно указать число, а также `'auto'` и значение в `'*fr'`.
 - `maxWidth`, максимальная ширина колонки.
@@ -981,6 +982,14 @@ export const TableExampleNestedRows = () => {
 
 </MdxTabs>
 
+## Ключ строки
+
+Для лучшей опитимизации рендера укажите уникальный ключ строки в `getRowKey`, если не указывать компонент попытается взять `row.id`, если же и там ни чего нет то будет использовать index. При этом ключи ячеек будут брать ключ строки и добавлять к нему `accessor`.
+
+```tsx
+<Table columns={columns} rows={rows} getRowKey={(row) => row.uniqueKey} />
+```
+
 ## Свойства
 
 ```ts
@@ -1016,19 +1025,22 @@ type TableRowMouseEvent<ROW> = (
   row: ROW,
   props: { e: React.MouseEvent },
 ) => void;
+
+type GetRowKey<ROW> = (row: ROW) => string | number;
 ```
 
-| Свойство           | Тип                           | По умолчанию | Описание                                      |
-| ------------------ | ----------------------------- | ------------ | --------------------------------------------- |
-| `columns?`         | `TableColumn[]`               | -            | Колонки                                       |
-| `rows?`            | `ROW[]`                       | -            | Строки                                        |
-| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -            | Событие `onMouseEnter` на строке              |
-| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -            | Событие `onMouseLeave` на строке              |
-| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -            | Событие `onClick` на строке                   |
-| `virtualScroll?`   | `boolean`                     | -            | Включение виртуального скролла                |
-| `stickyHeader?`    | `boolean`                     | -            | Зафиксировать шапку сверху                    |
-| `resizable?`       | `'inside'` &#124; `'outside'` | -            | Включение возможности изменять ширину колонок |
-| `zebraStriped?`    | `boolean`                     | -            | Окрашивание строк через одну                  |
-| `headerZIndex?`    | `number`                      | `1`          | `zIndex` шапки                                |
-| `className?`       | `string`                      | -            | Дополнительный CSS-класс                      |
-| `ref?`             | `React.Ref<HTMLDivElement>`   | -            | Ссылка на корневой DOM-элемент                |
+| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
+| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
+| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуального скролла                               |
+| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
+| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
+| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |

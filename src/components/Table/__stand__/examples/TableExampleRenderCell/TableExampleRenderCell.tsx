@@ -56,7 +56,9 @@ const mapBadgeProps: Record<
 const DataCellStatus: TableRenderCell<ROW> = (props) => {
   return (
     <DataCell>
-      <Badge {...mapBadgeProps[props.row.status]} />
+      {/* <Badge {...mapBadgeProps[props.row.status]} /> */}
+      {/* {props.row.status} */}
+      fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     </DataCell>
   );
 };
@@ -65,19 +67,89 @@ const columns: TableColumn<ROW>[] = [
   {
     title: 'Имя',
     accessor: 'name',
-    width: 240,
+    width: 'auto',
     renderCell: DataCellName,
   },
   {
     title: 'Профессия',
     accessor: 'profession',
-    width: '1fr',
+    width: 'auto',
   },
   {
     title: 'Статус',
     accessor: 'status',
-    width: '1fr',
-    minWidth: 150,
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'СтатусСтатусСтатус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
+    renderCell: DataCellStatus,
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: 'auto',
+    // minWidth: 150,
     renderCell: DataCellStatus,
   },
 ];

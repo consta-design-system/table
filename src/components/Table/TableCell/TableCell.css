@@ -3,7 +3,6 @@
   --table-cell-border-bottom: 0;
   --table-cell-border-left: 0;
   --table-cell-border-right: 0;
-  overflow: hidden;
   box-sizing: border-box;
   background: var(--color-bg-default);
   border-top: var(--table-cell-border-top) solid var(--color-bg-border);
@@ -13,12 +12,11 @@
 
   &_zebraStriped:not(&_separator) {
     --color-d: color(from var(--color-bg-stripe) alpha);
-    --color:
-      color-mix(
-        in srgb,
-        rgb(from var(--color-bg-stripe) r g b / 1) 5%,
-        var(--color-bg-default)
-      );
+    --color: color-mix(
+      in srgb,
+      rgb(from var(--color-bg-stripe) r g b / 1) 5%,
+      var(--color-bg-default)
+    );
     background: var(--color);
   }
 

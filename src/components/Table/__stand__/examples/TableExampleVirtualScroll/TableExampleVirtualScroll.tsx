@@ -20,18 +20,19 @@ type ROW = {
 const columns: TableColumn<ROW>[] = [
   {
     title: 'Имя',
-    width: 'auto',
+    // width: 'auto',
     accessor: 'athlete',
   },
   {
     title: 'Страна',
     accessor: 'country',
-    width: 'auto',
+    // width: 'auto',
   },
   {
     title: 'Возраст',
     accessor: 'age',
-    minWidth: 100,
+    // width: 'auto',
+    // minWidth: 100,
   },
 ];
 

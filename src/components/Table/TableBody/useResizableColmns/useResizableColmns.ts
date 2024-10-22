@@ -1,3 +1,4 @@
+import { useDebounce } from '@consta/uikit/useDebounce';
 import { useMutableRef } from '@consta/uikit/useMutableRef';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -85,10 +86,14 @@ export const useResizableColmns: UseResizableColmnsHook = (props) => {
     [blocks, container, resizable],
   );
 
+  console.log(sizes);
+
   useResizeContainer(container, refs, setSizesWithCompare);
 
+  const dd = useDebounce(() => setSizesWithCompare(getRefsSizes(blocks)), 40);
+
   useEffect(() => {
-    setSizesWithCompare(getRefsSizes(blocks));
+    dd();
   }, [blocks, resizable]);
 
   useEffect(() => {

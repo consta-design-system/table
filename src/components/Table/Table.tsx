@@ -27,6 +27,7 @@ export const TableRender = (
     onRowMouseEnter,
     onRowMouseLeave,
     onRowClick,
+    getRowKey,
   } = props;
 
   const headerData = useHeaderData(columns);
@@ -75,6 +76,7 @@ export const TableRender = (
           onRowMouseEnter={onRowMouseEnter}
           onRowMouseLeave={onRowMouseLeave}
           onRowClick={onRowClick}
+          getRowKey={getRowKey}
         />
       }
     />

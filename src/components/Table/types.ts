@@ -74,6 +74,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     resizable?: 'inside' | 'outside';
     columns: TableColumn<ROW>[];
     rows: ROW[];
+    getRowKey?: (row: ROW) => string | number;
     zebraStriped?: boolean;
     headerZIndex?: number;
   },
@@ -131,6 +132,7 @@ export type TableDataProps<ROW = TableDefaultRow> =
       onRowMouseEnter?: TableRowMouseEvent<ROW>;
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
+      getRowKey?: (row: ROW) => string | number;
     },
     HTMLDivElement
   > & {

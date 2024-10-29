@@ -13,12 +13,11 @@
 
   &_zebraStriped:not(&_separator) {
     --color-d: color(from var(--color-bg-stripe) alpha);
-    --color:
-      color-mix(
-        in srgb,
-        rgb(from var(--color-bg-stripe) r g b / 1) 5%,
-        var(--color-bg-default)
-      );
+    --color: color-mix(
+      in srgb,
+      rgb(from var(--color-bg-stripe) r g b / 1) 5%,
+      var(--color-bg-default)
+    );
     background: var(--color);
   }
 

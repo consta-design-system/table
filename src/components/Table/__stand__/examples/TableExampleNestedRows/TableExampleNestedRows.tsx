@@ -15,7 +15,7 @@ type ROW = {
   col1: string;
   col2: string;
   col3: string;
-  parrent: number | undefined;
+  parent: number | undefined;
   level: number;
 };
 
@@ -26,15 +26,15 @@ const IconArrow = withAnimateSwitcherHOC({
 });
 
 const getDataCell = (idx: number): ROW => {
-  const parrent = Math.floor(idx / 10) * 10;
+  const parent = Math.floor(idx / 10) * 10;
 
   return {
     idx,
     col1: `Данные 1 - ${idx}`,
     col2: `Данные 2 - ${idx}`,
     col3: `Данные 3 - ${idx}`,
-    parrent: parrent === idx ? undefined : parrent,
-    level: parrent === idx ? 0 : 1,
+    parent: parent === idx ? undefined : parent,
+    level: parent === idx ? 0 : 1,
   };
 };
 
@@ -43,7 +43,7 @@ const data = range(100000).map(getDataCell);
 const DataCellCol1 = (props: {
   row: {
     col1: string;
-    parrent: number | undefined;
+    parent: number | undefined;
     idx: number;
     level: number;
   };
@@ -51,7 +51,7 @@ const DataCellCol1 = (props: {
   toggle: (idx: number) => void;
 }) => {
   const {
-    row: { col1, parrent, idx, level },
+    row: { col1, parent, idx, level },
     opened,
     toggle,
   } = props;
@@ -61,7 +61,7 @@ const DataCellCol1 = (props: {
       <DataCell
         level={level}
         control={
-          typeof parrent === 'undefined' ? (
+          typeof parent === 'undefined' ? (
             <Button
               size="s"
               view="clear"
@@ -86,9 +86,9 @@ export const TableExampleNestedRows = () => {
   const rows = useMemo(() => {
     return data.filter(
       (dataItem) =>
-        dataItem.parrent === undefined ||
+        dataItem.parent === undefined ||
         openedList.findIndex(
-          (openedListItem) => openedListItem === dataItem.parrent,
+          (openedListItem) => openedListItem === dataItem.parent,
         ) !== -1,
     );
   }, [openedList]);

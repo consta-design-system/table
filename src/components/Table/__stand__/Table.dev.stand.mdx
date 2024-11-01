@@ -1,8 +1,8 @@
 import { TableExampleSimple } from './examples/TableExampleSimple/TableExampleSimple';
 import { TableExampleWidth } from './examples/TableExampleWidth/TableExampleWidth';
-import { TableExampleSeporator } from './examples/TableExampleSeporator/TableExampleSeporator';
+import { TableExampleSeparator } from './examples/TableExampleSeparator/TableExampleSeparator';
 import { TableExamplePinned } from './examples/TableExamplePinned/TableExamplePinned';
-import { TableExampleGroupColums } from './examples/TableExampleGroupColums/TableExampleGroupColums';
+import { TableExampleGroupColumns } from './examples/TableExampleGroupColumns/TableExampleGroupColumns';
 import { TableExampleRenderCell } from './examples/TableExampleRenderCell/TableExampleRenderCell';
 import { TableExampleRenderHeaderCell } from './examples/TableExampleRenderHeaderCell/TableExampleRenderHeaderCell';
 import { TableExampleStickyHeader } from './examples/TableExampleStickyHeader/TableExampleStickyHeader';
@@ -43,10 +43,10 @@ import { MdxTabs, MdxMenu } from '@consta/stand';
 
 ## Как формируется таблица
 
-Для вывода самой простой таблици вам необходимо использовать 2 свойства:
+Для вывода самой простой таблицы вам необходимо использовать 2 свойства:
 
-- `rows` - строки, тип строки может быть любым массивом обьекта `Record<string, unknown>`.
-- `colmuns`- колонки, представляют массив обьектов, укоторого `accessor` это свойство обьекта ваших данных.
+- `rows` - строки, тип строки может быть любым массивом объекта `Record<string, unknown>`.
+- `columns`- колонки, представляют массив объектов, у которого `accessor` это свойство объекта ваших данных.
 
 К примеру:
 
@@ -60,7 +60,7 @@ type Row = { name: string; profession: string; status: string };
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {
@@ -130,22 +130,22 @@ export type TableColumn<ROW> = {
 ```
 
 - `accessor`, уникальный указатель содержимого для каждой колонки,
-- `title`, заголовок колнки,
+- `title`, заголовок колонки,
 - `width`, ширина колонки, можно указать число, а также `'auto'` и значение в `'*fr'`,
 - `maxWidth`, максимальная ширина колонки,
 - `minWidth`, минимальная ширина колонки,
-- `isSeparator`, при включении колонка стоновится разделителем,
+- `isSeparator`, при включении колонка становится разделителем,
 - `pinned`, закрепление колонки слева или справа,
 - `columns`, вложенные колонки,
-- `renderCell`, функция(компонент) для вывода данных ячеки,
-- `renderHeaderCell`, функция(компонент) для вывода данных ячеки в шапке.
+- `renderCell`, функция(компонент) для вывода данных ячеики,
+- `renderHeaderCell`, функция(компонент) для вывода данных ячейки в шапке.
 - [`colSpan`](#объединение-ячеек), функция для вывода количества занятых колонок ячейкой.
 
 ## Ширина колонки
 
 Для настройки ширины колонок используйте `width`, `maxWidth`, `minWidth`, где `width` — это желаемая ширина колонки. Если все колонки будут помещаться в таблицу без скролла, она останется неизменной. Чтобы таблица не уменьшала или не увеличивала колонку вне желаемых размеров, ограничьте ее, используя `maxWidth` и `minWidth`.
 
-К примеру, если требуется зафиксировать размер первой колонки на `180px`, вторая и третия должны быть одинаковыми, но третья должна быть не меньше `150px`.
+К примеру, если требуется зафиксировать размер первой колонки на `180px`, вторая и третья должны быть одинаковыми, но третья должна быть не меньше `150px`.
 
 <MdxTabs>
 
@@ -157,7 +157,7 @@ type Row = { name: string; profession: string; status: string };
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {
@@ -195,7 +195,7 @@ export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 
 ### Разделитель колонок
 
-Чтобы поставить разделитель колоки, вам необходимо указать еще одну колонку с указанием `{isSeparator: true}` и при необходимости указать `title`.
+Чтобы поставить разделитель колонки, вам необходимо указать еще одну колонку с указанием `{isSeparator: true}` и при необходимости указать `title`.
 
 Пример:
 
@@ -209,7 +209,7 @@ type Row = { name: string; profession: string; status: string };
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {
@@ -244,7 +244,7 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleSeporator />
+<TableExampleSeparator />
 
 </MdxTabs>
 
@@ -268,7 +268,7 @@ type Row = {
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
     phone: '+7 976 543 21 00',
     grade: 3,
@@ -344,7 +344,7 @@ const rows: Row[] = [
     firstName: 'Антон',
     lastName: 'Григорьев',
     secondName: 'Петров',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
     phone: '+7 976 543 21 00',
     email: 'anton@company.ru',
@@ -415,12 +415,12 @@ const columns: TableColumn<Row>[] = [
   },
 ];
 
-export const TableExampleGroupColums = () => (
+export const TableExampleGroupColumns = () => (
   <Table rows={rows} columns={columns} />
 );
 ```
 
-<TableExampleGroupColums />
+<TableExampleGroupColumns />
 
 </MdxTabs>
 
@@ -448,7 +448,7 @@ type ROW = {
 const rows: ROW[] = [
   {
     name: 'Антон Григорьев',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'not available',
   },
   {
@@ -527,7 +527,7 @@ export const TableExampleRenderCell = () => (
 
 ### Представление данных в ячейке в шапке
 
-По умолчанию компонент таблицы пытается привести данные к строке и выводит их через комонент [`HeaderDataCell`](##LIBS.LIB.STAND/lib:table/stand:components-headerdatacell-stable).
+По умолчанию компонент таблицы пытается привести данные к строке и выводит их через компонент [`HeaderDataCell`](##LIBS.LIB.STAND/lib:table/stand:components-headerdatacell-stable).
 Вы можете в колонке использовать свойство `renderHeaderCell` и выводить данные, как вам потребуется.
 
 <MdxTabs>
@@ -552,7 +552,7 @@ type ROW = {
 const rows: ROW[] = [
   {
     name: 'Антон Григорьев',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {
@@ -609,7 +609,7 @@ export const TableExampleRenderHeaderCell = () => (
 
 ## Закрепление шапки
 
-Вы можете закрепить шапку, используйте свойство `stickyHeader` и ограничте высоту таблицы.
+Вы можете закрепить шапку, используйте свойство `stickyHeader` и ограничьте высоту таблицы.
 
 <MdxTabs>
 
@@ -623,7 +623,7 @@ export const TableExampleRenderHeaderCell = () => (
 
 ## Виртуальный скролл
 
-Если в таблице много данных, включите свйство `virtualScroll` и ограничьте высоту таблицы для лучшей производительности.
+Если в таблице много данных, включите свойство `virtualScroll` и ограничьте высоту таблицы для лучшей производительности.
 
 <MdxTabs>
 
@@ -666,7 +666,7 @@ export const TableExampleRenderHeaderCell = () => (
 
 Чтобы дать пользователю возможность управлять шириной столбцов, используйте свойство `resizable`.
 
-Уменьшение и увелечение будет в пределах `minWidth` `maxWidth` у колонки.
+Уменьшение и увеличение будет в пределах `minWidth` `maxWidth` у колонки.
 Если есть необходимость запретить изменение ширины у определенной колонки, установите у `minWidth` и `maxWidth` равное значение.
 
 Закрепленные (`pinned`) колонки не имеют возможности изменять размер.
@@ -829,7 +829,7 @@ export const TableExampleResizableOutside = () => (
 
 ## Вложенные строки
 
-Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонет [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
+Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
 
 <MdxTabs>
 
@@ -850,7 +850,7 @@ type ROW = {
   col1: string;
   col2: string;
   col3: string;
-  parrent: number | undefined;
+  parent: number | undefined;
   level: number;
 };
 
@@ -861,15 +861,15 @@ const IconArrow = withAnimateSwitcherHOC({
 });
 
 const getDataCell = (idx: number): ROW => {
-  const parrent = Math.floor(idx / 10) * 10;
+  const parent = Math.floor(idx / 10) * 10;
 
   return {
     idx,
     col1: `Данные 1 - ${idx}`,
     col2: `Данные 2 - ${idx}`,
     col3: `Данные 3 - ${idx}`,
-    parrent: parrent === idx ? undefined : parrent,
-    level: parrent === idx ? 0 : 1,
+    parent: parent === idx ? undefined : parent,
+    level: parent === idx ? 0 : 1,
   };
 };
 
@@ -878,7 +878,7 @@ const data = range(100000).map(getDataCell);
 const DataCellCol1 = (props: {
   row: {
     col1: string;
-    parrent: number | undefined;
+    parent: number | undefined;
     idx: number;
     level: number;
   };
@@ -886,7 +886,7 @@ const DataCellCol1 = (props: {
   toggle: (idx: number) => void;
 }) => {
   const {
-    row: { col1, parrent, idx, level },
+    row: { col1, parent, idx, level },
     opened,
     toggle,
   } = props;
@@ -896,7 +896,7 @@ const DataCellCol1 = (props: {
       <DataCell
         level={level}
         control={
-          typeof parrent === 'undefined' ? (
+          typeof parent === 'undefined' ? (
             <Button
               size="s"
               view="clear"
@@ -921,9 +921,9 @@ export const TableExampleNestedRows = () => {
   const rows = useMemo(() => {
     return data.filter(
       (dataItem) =>
-        dataItem.parrent === undefined ||
+        dataItem.parent === undefined ||
         openedList.findIndex(
-          (openedListItem) => openedListItem === dataItem.parrent,
+          (openedListItem) => openedListItem === dataItem.parent,
         ) !== -1,
     );
   }, [openedList]);
@@ -989,13 +989,13 @@ export const TableExampleNestedRows = () => {
 
 ## Объединение ячеек
 
-Для обединения ячеек используйте свойство `colmuns.colSpan`. Результат функции должен вернуть `number` | `'end'` | `undefined`.
+Для объединения ячеек используйте свойство `columns.colSpan`. Результат функции должен вернуть `number` | `'end'` | `undefined`.
 
 - `number` - количество колонок занимаемое ячейкой.
-- `'end'` - ячейка займет все соледующие столбцы до конца строки.
-- `undefined` - ячейка замймет одну колонку(эквивалентно `1`)
+- `'end'` - ячейка займет все следующие столбцы до конца строки.
+- `undefined` - ячейка займет одну колонку(эквивалентно `1`)
 
-> Если используете [закрепление колонок](#закрепление-колонок), cледите за тем чтобы объедененные ячеки были либо не закрепленные либо все закрепленные с одной стороны.
+> Если используете [закрепление колонок](#закрепление-колонок), следите за тем чтобы объединенные ячейки были либо не закрепленные либо все закрепленные с одной стороны.
 
 <MdxTabs>
 
@@ -1274,8 +1274,8 @@ const data: Row[] = [
       {
         label: 'Порты',
         value: [
-          { label: 'Входяший', value: 'A2-папа' },
-          { label: 'Исходяший', value: 'A2-папа' },
+          { label: 'Входящий', value: 'A2-папа' },
+          { label: 'Исходящий', value: 'A2-папа' },
         ],
       },
       {

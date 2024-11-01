@@ -3,7 +3,7 @@ import { useDebounce } from '@consta/uikit/useDebounce';
 import { useResizeObserved } from '@consta/uikit/useResizeObserved';
 import React, { useMemo } from 'react';
 
-import { UseResizableColmnsBlock, UseResizableColmnsSize } from './types';
+import { UseResizableColumnsBlock, UseResizableColumnsSize } from './types';
 
 const minMax = (min?: number, max?: number, value?: number) => {
   if (typeof value === 'number') {
@@ -30,7 +30,7 @@ export const sizesEq = (
 ) => newSizes.join('-') === sizes.join('-');
 
 export const getRefsSizes = (
-  blocks: UseResizableColmnsBlock[],
+  blocks: UseResizableColumnsBlock[],
 ): (number | string | undefined)[] => {
   let gap = 0;
 
@@ -51,7 +51,7 @@ export const getRefsSizes = (
 };
 
 const getTargetBlockPosition = (
-  sizes: UseResizableColmnsSize[],
+  sizes: UseResizableColumnsSize[],
   index: number,
 ) =>
   sizes
@@ -59,13 +59,13 @@ const getTargetBlockPosition = (
     .map((el) => (typeof el === 'number' ? el : 0))
     .reduce((val, a) => (val ?? 0) + (a ?? 0), 0);
 
-const getBlockMaxSizes = (block: UseResizableColmnsBlock | undefined) => {
+const getBlockMaxSizes = (block: UseResizableColumnsBlock | undefined) => {
   return [block?.minWidth || 0, block?.maxWidth] as const;
 };
 
 type GetValidValuesResult = [number, number][];
 
-export const addResult = <T extends UseResizableColmnsSize>(
+export const addResult = <T extends UseResizableColumnsSize>(
   result: [number, T][],
   sizes: T[],
 ): T[] => {
@@ -93,9 +93,9 @@ export const getSizesSum = (sizes: number[]) =>
 const getValidValues = (
   value: number,
   index: number,
-  blocks: UseResizableColmnsBlock[],
+  blocks: UseResizableColumnsBlock[],
   containerWidth: number,
-  sizes: UseResizableColmnsSize[],
+  sizes: UseResizableColumnsSize[],
   resizable: 'inside' | 'outside',
 ): GetValidValuesResult => {
   const currentMinMax = getBlockMaxSizes(blocks[index]);
@@ -149,14 +149,14 @@ const getValidValues = (
   return results;
 };
 
-export const getCalcaulatedSizes = (
+export const getCalculatedSizes = (
   event: MouseEvent | TouchEvent | Event,
   index: number,
-  blocks: UseResizableColmnsBlock[],
+  blocks: UseResizableColumnsBlock[],
   container: React.RefObject<HTMLElement>,
-  sizes: UseResizableColmnsSize[],
+  sizes: UseResizableColumnsSize[],
   resizable: 'inside' | 'outside',
-): [number, UseResizableColmnsSize][] => {
+): [number, UseResizableColumnsSize][] => {
   const position = trackPosition(event as MouseEvent | TouchEvent)?.x;
 
   if (position) {
@@ -187,7 +187,7 @@ export const useResizeContainer = (
   refs: React.MutableRefObject<
     readonly [
       React.RefObject<HTMLElement>,
-      UseResizableColmnsBlock[],
+      UseResizableColumnsBlock[],
       'inside' | 'outside' | undefined,
       number | null,
       (string | number | undefined)[],

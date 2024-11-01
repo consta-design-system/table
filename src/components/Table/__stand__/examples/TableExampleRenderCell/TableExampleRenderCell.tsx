@@ -16,7 +16,7 @@ type ROW = {
 const rows: ROW[] = [
   {
     name: 'Антон Григорьев',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'not available',
   },
   {

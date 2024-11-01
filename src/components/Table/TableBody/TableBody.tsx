@@ -81,7 +81,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     [lowHeaders],
   );
 
-  const { handlers, sizes, activeIndex } = useResizableColmns({
+  const { handlers, sizes, activeIndex, resizing } = useResizableColmns({
     resizable,
     container: bodyRef,
     blocks,
@@ -128,9 +128,13 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
         ),
         ['--table-row-grid-column' as string]: `span ${lowHeaders.length}`,
         ['--table-header-z-index' as string]: headerZIndex,
+        ['--table-over-scroll-display' as string]: resizing
+          ? 'block'
+          : undefined,
       }}
       ref={useForkRef([ref, bodyRef])}
     >
+      <div className={cnTableBody('OverScroll')} />
       {header}
       <div
         className={cnTableBody('Seporator', { sticky: stickyHeader }, [

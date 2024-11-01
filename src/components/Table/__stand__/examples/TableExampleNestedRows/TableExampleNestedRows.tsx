@@ -145,6 +145,7 @@ export const TableExampleNestedRows = () => {
           columns={columns}
           stickyHeader
           virtualScroll
+          getRowKey={(row) => row.idx}
         />
       </div>
     </Example>

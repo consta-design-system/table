@@ -59,16 +59,16 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     () =>
       lowHeaders.map(
         ({ isSeparator, width, minWidth, maxWidth, title }, index) => {
-          const currentseparatorWidth = title
+          const currentSeparatorWidth = title
             ? separatorLargeWidth
             : separatorWidth;
 
           return isSeparator
             ? {
                 ref: resizersRefs[index],
-                maxWidth: currentseparatorWidth,
-                minWidth: currentseparatorWidth,
-                width: currentseparatorWidth,
+                maxWidth: currentSeparatorWidth,
+                minWidth: currentSeparatorWidth,
+                width: currentSeparatorWidth,
               }
             : {
                 ref: resizersRefs[index],

@@ -1,4 +1,4 @@
-import './TableSeporatorTitles.css';
+import './TableSeparatorTitles.css';
 
 import { Text } from '@consta/uikit/Text';
 import React from 'react';
@@ -11,9 +11,9 @@ type Props<T> = {
   lowHeaders: TableColumn<T>[];
 };
 
-const cnTableSeporatorTitles = cn('TableSeporatorTitles');
+const cnTableSeparatorTitles = cn('TableSeparatorTitles');
 
-export const TableSeporatorTitles = <T,>({ lowHeaders }: Props<T>) => {
+export const TableSeparatorTitles = <T,>({ lowHeaders }: Props<T>) => {
   if (
     lowHeaders.findIndex((column) => column.title && column.isSeparator) === -1
   ) {
@@ -21,14 +21,14 @@ export const TableSeporatorTitles = <T,>({ lowHeaders }: Props<T>) => {
   }
 
   return (
-    <div className={cnTableSeporatorTitles()}>
+    <div className={cnTableSeparatorTitles()}>
       {lowHeaders.map(({ title, isSeparator }, index) => (
-        <div className={cnTableSeporatorTitles('Cell')} key={index}>
+        <div className={cnTableSeparatorTitles('Cell')} key={index}>
           {isSeparator && title && (
             <Text
               view="secondary"
               size="xs"
-              className={cnTableSeporatorTitles('Title')}
+              className={cnTableSeparatorTitles('Title')}
             >
               {title}
             </Text>

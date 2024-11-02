@@ -1,26 +1,26 @@
 import React from 'react';
 
-export type UseResizableColmnsBlock = {
+export type UseResizableColumnsBlock = {
   ref: React.RefObject<HTMLElement>;
   maxWidth?: number;
   minWidth?: number;
   width?: number | string;
 };
 
-export type UseResizableColmnsProps = {
-  blocks: Array<UseResizableColmnsBlock>;
+export type UseResizableColumnsProps = {
+  blocks: Array<UseResizableColumnsBlock>;
   container: React.RefObject<HTMLElement>;
   resizable?: 'inside' | 'outside';
 };
 
-export type UseResizableColmnsSize = number | string | undefined;
+export type UseResizableColumnsSize = number | string | undefined;
 
-export type UseResizableColmnsHook = (props: UseResizableColmnsProps) => {
+export type UseResizableColumnsHook = (props: UseResizableColumnsProps) => {
   handlers: Array<{
     onMouseDown: React.MouseEventHandler;
     onTouchStart: React.TouchEventHandler;
   }>;
-  sizes: UseResizableColmnsSize[];
+  sizes: UseResizableColumnsSize[];
   activeIndex: number | null;
   resizing: boolean;
 };

@@ -8,7 +8,7 @@ type Row = { name: string; profession: string; status: string };
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {

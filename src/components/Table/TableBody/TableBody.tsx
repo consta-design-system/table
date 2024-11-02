@@ -10,22 +10,22 @@ import { cn } from '##/utils/bem';
 
 import {
   columnDefaultMinWidth,
-  seporatorLargeWidth,
-  seporatorWidth,
+  separatorLargeWidth,
+  separatorWidth,
 } from '../helpers';
 import { cnTableCell } from '../TableCell';
 import { TableResizers } from '../TableResizers';
-import { TableSeporatorTitles } from '../TableSeporatorTitles';
+import { TableSeparatorTitles } from '../TableSeparatorTitles';
 import { TableVirtualScrollSpaceTop } from '../TableVirtualScrollSpaceTop';
 import { TableBodyComponent } from '../types';
 import {
-  getGridTamplate,
+  getGridTemplate,
   getStyleByArray,
-  getStyleLeftOffestsForStickyColumns,
-  getStyleRightOffestsForStickyColumns,
+  getStyleLeftOffsetsForStickyColumns,
+  getStyleRightOffsetsForStickyColumns,
   printSize,
 } from './helpers';
-import { useResizableColmns } from './useResizableColmns';
+import { useResizableColumns } from './useResizableColumns';
 
 export const cnTableBody = cn('TableBody');
 
@@ -59,16 +59,16 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     () =>
       lowHeaders.map(
         ({ isSeparator, width, minWidth, maxWidth, title }, index) => {
-          const currentSeporatorWidth = title
-            ? seporatorLargeWidth
-            : seporatorWidth;
+          const currentSeparatorWidth = title
+            ? separatorLargeWidth
+            : separatorWidth;
 
           return isSeparator
             ? {
                 ref: resizersRefs[index],
-                maxWidth: currentSeporatorWidth,
-                minWidth: currentSeporatorWidth,
-                width: currentSeporatorWidth,
+                maxWidth: currentSeparatorWidth,
+                minWidth: currentSeparatorWidth,
+                width: currentSeparatorWidth,
               }
             : {
                 ref: resizersRefs[index],
@@ -81,7 +81,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     [lowHeaders],
   );
 
-  const { handlers, sizes, activeIndex, resizing } = useResizableColmns({
+  const { handlers, sizes, activeIndex, resizing } = useResizableColumns({
     resizable,
     container: bodyRef,
     blocks,
@@ -97,9 +97,9 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
         ['--table-body-width' as string]: `${bodySize.width}px`,
         ['--table-header-height' as string]: `${headerHeight}px`,
         ['--table-body-space-top' as string]: `${spaceTop}px`,
-        ['--table-grid-columns-lenght' as string]: `${sizes.length}`,
+        ['--table-grid-columns-length' as string]: `${sizes.length}`,
         ['--table-grid-template-columns' as string]: useMemo(
-          () => getGridTamplate(sizes),
+          () => getGridTemplate(sizes),
           [sizes.length],
         ),
         ...useMemo(
@@ -107,11 +107,11 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
           [sizes],
         ),
         ...useMemo(
-          () => getStyleLeftOffestsForStickyColumns(sizes),
+          () => getStyleLeftOffsetsForStickyColumns(sizes),
           [sizes.length],
         ),
         ...useMemo(
-          () => getStyleRightOffestsForStickyColumns(sizes),
+          () => getStyleRightOffsetsForStickyColumns(sizes),
           [sizes.length],
         ),
         ...useMemo(
@@ -141,7 +141,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
           cnTableCell(),
         ])}
       />
-      <TableSeporatorTitles lowHeaders={lowHeaders} />
+      <TableSeparatorTitles lowHeaders={lowHeaders} />
       <TableResizers
         lowHeaders={lowHeaders}
         resizersRefs={resizersRefs}

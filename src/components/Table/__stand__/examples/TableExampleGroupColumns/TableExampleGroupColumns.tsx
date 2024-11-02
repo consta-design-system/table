@@ -19,7 +19,7 @@ const rows: Row[] = [
     firstName: 'Антон',
     lastName: 'Григорьев',
     secondName: 'Петров',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
     phone: '+7 976 543 21 00',
     email: 'anton@company.ru',
@@ -90,7 +90,7 @@ const columns: TableColumn<Row>[] = [
   },
 ];
 
-export const TableExampleGroupColums = () => (
+export const TableExampleGroupColumns = () => (
   <Example col={1}>
     <Table rows={rows} columns={columns} />
   </Example>

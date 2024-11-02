@@ -1,4 +1,4 @@
 .ct--TableVirtualScrollSpaceTop {
   height: var(--table-body-space-top);
-  grid-column-end: span var(--table-grid-columns-lenght);
+  grid-column-end: span var(--table-grid-columns-length);
 }

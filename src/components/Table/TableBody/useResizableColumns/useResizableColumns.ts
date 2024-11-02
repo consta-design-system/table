@@ -1,5 +1,5 @@
 import { useMutableRef } from '@consta/uikit/useMutableRef';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   addResult,
@@ -99,5 +99,6 @@ export const useResizableColumns: UseResizableColumnsHook = (props) => {
     handlers,
     sizes,
     activeIndex,
+    resizing: typeof activeIndex === 'number',
   };
 };

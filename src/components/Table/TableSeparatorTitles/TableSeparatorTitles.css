@@ -3,7 +3,7 @@
 
   &-Cell {
     position: sticky;
-    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
+    top: calc(var(--table-header-height) + var(--table-body-separator-height));
   }
 
   &-Title {

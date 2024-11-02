@@ -22,4 +22,5 @@ export type UseResizableColumnsHook = (props: UseResizableColumnsProps) => {
   }>;
   sizes: UseResizableColumnsSize[];
   activeIndex: number | null;
+  resizing: boolean;
 };

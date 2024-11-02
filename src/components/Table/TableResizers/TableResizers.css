@@ -3,18 +3,17 @@
 
   &-Cell {
     position: sticky;
-    z-index: calc(var(--table-header-z-index) + 1);
-    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
+    z-index: calc(var(--table-header-z-index) + 10);
+    top: calc(var(--table-header-height) + var(--table-body-separator-height));
   }
 
   &-Resizer {
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-    --resizer-top:
-      calc(
-        (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
-      );
+    --resizer-top: calc(
+      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
+    );
     position: absolute;
     top: var(--resizer-top);
     right: 0;

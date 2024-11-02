@@ -81,7 +81,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     [lowHeaders],
   );
 
-  const { handlers, sizes, activeIndex } = useResizableColumns({
+  const { handlers, sizes, activeIndex, resizing } = useResizableColumns({
     resizable,
     container: bodyRef,
     blocks,
@@ -97,7 +97,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
         ['--table-body-width' as string]: `${bodySize.width}px`,
         ['--table-header-height' as string]: `${headerHeight}px`,
         ['--table-body-space-top' as string]: `${spaceTop}px`,
-        ['--table-grid-columns-lenght' as string]: `${sizes.length}`,
+        ['--table-grid-columns-length' as string]: `${sizes.length}`,
         ['--table-grid-template-columns' as string]: useMemo(
           () => getGridTemplate(sizes),
           [sizes.length],
@@ -128,12 +128,16 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
         ),
         ['--table-row-grid-column' as string]: `span ${lowHeaders.length}`,
         ['--table-header-z-index' as string]: headerZIndex,
+        ['--table-over-scroll-display' as string]: resizing
+          ? 'block'
+          : undefined,
       }}
       ref={useForkRef([ref, bodyRef])}
     >
+      <div className={cnTableBody('OverScroll')} />
       {header}
       <div
-        className={cnTableBody('Seporator', { sticky: stickyHeader }, [
+        className={cnTableBody('Separator', { sticky: stickyHeader }, [
           cnTableCell(),
         ])}
       />

@@ -4,7 +4,7 @@ export default createStand({
   title: 'HeaderDataCell',
   id: 'HeaderDataCell',
   group: 'components',
-  description: 'Компонет вывода данных в ячейке шапки.',
+  description: 'Компонент вывода данных в ячейке шапки.',
   version: '0.0.1',
   status: 'stable',
   alias: ['ячейка', 'данные'],

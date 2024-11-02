@@ -176,7 +176,11 @@ const TableDataRender = (
                     }}
                   >
                     {typeof RenderCell === 'function' ? (
-                      <RenderCell row={row} />
+                      <RenderCell
+                        row={row}
+                        rowIndex={rowIndex}
+                        columnIndex={columnIndex}
+                      />
                     ) : (
                       getCellDataByAccessor(row, accessor, isSeparator)
                     )}

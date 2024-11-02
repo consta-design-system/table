@@ -1484,6 +1484,17 @@ export const TableExampleRenderRow = () => {
 ## Свойства
 
 ```ts
+export type TableRenderHeaderCell = (props: {
+  title?: string;
+  index: number;
+}) => React.ReactElement | null;
+
+export type TableRenderCell<T> = (props: {
+  row: T;
+  rowIndex: number;
+  columnIndex: number;
+}) => React.ReactElement | null;
+
 type TableColumn<ROW> = {
   title?: string;
   width?:

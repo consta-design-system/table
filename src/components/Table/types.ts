@@ -6,10 +6,13 @@ export type TableColumnPropPinned = 'left' | 'right';
 
 export type TableRenderHeaderCell = (props: {
   title?: string;
+  index: number;
 }) => React.ReactElement | null;
 
 export type TableRenderCell<T> = (props: {
   row: T;
+  rowIndex: number;
+  columnIndex: number;
 }) => React.ReactElement | null;
 
 type TabletColSpan<ROW> = (props: { row: ROW }) => number | 'end' | undefined;

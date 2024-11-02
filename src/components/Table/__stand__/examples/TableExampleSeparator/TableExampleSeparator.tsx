@@ -8,7 +8,7 @@ type Row = { name: string; profession: string; status: string };
 const rows: Row[] = [
   {
     name: 'Антон',
-    profession: 'Cтроитель, который построил дом',
+    profession: 'Строитель, который построил дом',
     status: 'недоступен',
   },
   {
@@ -43,7 +43,7 @@ const columns: TableColumn<Row>[] = [
   },
 ];
 
-export const TableExampleSeporator = () => (
+export const TableExampleSeparator = () => (
   <Example col={1}>
     <Table rows={rows} columns={columns} />
   </Example>

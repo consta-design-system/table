@@ -3,14 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   addResult,
-  getCalcaulatedSizes,
+  getCalculatedSizes,
   getRefsSizes,
   sizesEq,
   useResizeContainer,
 } from './helpers';
-import { UseResizableColmnsHook } from './types';
+import { UseResizableColumnsHook } from './types';
 
-export const useResizableColmns: UseResizableColmnsHook = (props) => {
+export const useResizableColumns: UseResizableColumnsHook = (props) => {
   const { blocks, container, resizable } = props;
 
   const [sizes, setSizes] = useState(getRefsSizes(blocks));
@@ -41,7 +41,7 @@ export const useResizableColmns: UseResizableColmnsHook = (props) => {
       const [container, blocks, resizable, activeIndex] = refs.current;
       if (typeof activeIndex === 'number' && resizable) {
         setSizes((sizes) => {
-          const calculatedSizes = getCalcaulatedSizes(
+          const calculatedSizes = getCalculatedSizes(
             event,
             activeIndex,
             blocks,

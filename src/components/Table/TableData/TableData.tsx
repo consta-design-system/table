@@ -61,6 +61,24 @@ const getKey = (
   return rowIndex;
 };
 
+const getMiss = (
+  colSpan: number | undefined | 'end',
+  index: number,
+  length: number,
+  pinned: boolean,
+) => {
+  if (pinned) {
+    return 0;
+  }
+  if (colSpan === 'end') {
+    return length - index - 1;
+  }
+  if (typeof colSpan === 'number') {
+    return colSpan - 1;
+  }
+  return 0;
+};
+
 const TableDataRender = (
   props: TableDataProps,
   ref: React.Ref<HTMLDivElement>,
@@ -85,6 +103,7 @@ const TableDataRender = (
         const rowIndex = index + slice[0];
         const rowKey = getKey(row, getRowKey, rowIndex);
         const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
+        let miss = 0;
 
         return (
           <div
@@ -97,9 +116,31 @@ const TableDataRender = (
           >
             {lowHeaders.map(
               (
-                { isSeparator, accessor, pinned, renderCell: RenderCell },
+                {
+                  isSeparator,
+                  accessor,
+                  pinned,
+                  renderCell: RenderCell,
+                  colSpan: getColSpan,
+                },
                 columnIndex,
               ) => {
+                if (miss) {
+                  miss = miss ? miss - 1 : miss;
+                  return null;
+                }
+
+                const colSpan = getColSpan?.({
+                  row,
+                });
+
+                miss = getMiss(
+                  colSpan,
+                  columnIndex,
+                  lowHeaders.length,
+                  !!pinned,
+                );
+
                 return (
                   <div
                     key={`${rowKey}-${accessor || columnIndex}`}
@@ -122,6 +163,8 @@ const TableDataRender = (
                       }),
                     ])}
                     style={{
+                      ['--table-cell-col-span' as string]:
+                        miss > 0 ? miss + 1 : undefined,
                       left:
                         pinned === 'left'
                           ? `var(--table-column-sticky-left-offset-${columnIndex})`

@@ -8,8 +8,8 @@ import { get, set } from '##/utils/object/get';
 import { Header, Position, TableColumn } from './types';
 
 export const columnDefaultMinWidth = 80;
-export const seporatorWidth = 8;
-export const seporatorLargeWidth = 24;
+export const separatorWidth = 8;
+export const separatorLargeWidth = 24;
 
 type TableColumnWidthKey<T> = TableColumn<T> & { key: string };
 

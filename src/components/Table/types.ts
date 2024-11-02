@@ -12,6 +12,8 @@ export type TableRenderCell<T> = (props: {
   row: T;
 }) => React.ReactElement | null;
 
+type TabletColSpan<ROW> = (props: { row: ROW }) => number | 'end' | undefined;
+
 export type TableColumn<ROW> = {
   title?: string;
   width?:
@@ -34,6 +36,7 @@ export type TableColumn<ROW> = {
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
   columns?: TableColumn<ROW>[];
+  colSpan?: TabletColSpan<ROW>;
 } & ValueOf<{
   [K in keyof ROW]: {
     accessor?: K extends string ? K : never;
@@ -64,6 +67,7 @@ export type TableRowMouseEvent<ROW> = (
   props: { e: React.MouseEvent },
 ) => void;
 export type TableDefaultRow = Record<string, unknown>;
+
 export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
   {
     onRowMouseEnter?: TableRowMouseEvent<ROW>;

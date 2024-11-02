@@ -4,7 +4,7 @@
   &-Cell {
     position: sticky;
     z-index: calc(var(--table-header-z-index) + 10);
-    top: calc(var(--table-header-height) + var(--table-body-seporator-height));
+    top: calc(var(--table-header-height) + var(--table-body-separator-height));
   }
 
   &-Resizer {

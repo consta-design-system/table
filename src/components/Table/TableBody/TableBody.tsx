@@ -137,7 +137,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
       <div className={cnTableBody('OverScroll')} />
       {header}
       <div
-        className={cnTableBody('Seporator', { sticky: stickyHeader }, [
+        className={cnTableBody('Separator', { sticky: stickyHeader }, [
           cnTableCell(),
         ])}
       />

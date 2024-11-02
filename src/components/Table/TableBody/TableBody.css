@@ -1,14 +1,14 @@
 .ct--TableBody {
-  --table-body-seporator-height: 2px;
+  --table-body-separator-height: 2px;
   display: grid;
   overflow: auto;
   box-sizing: border-box;
   background: var(--color-bg-default);
   grid-template-columns: var(--table-grid-template-columns);
 
-  &-Seporator {
+  &-Separator {
     z-index: calc(var(--table-header-z-index));
-    height: var(--table-body-seporator-height);
+    height: var(--table-body-separator-height);
     grid-column: var(--table-row-grid-column);
 
     &_sticky {

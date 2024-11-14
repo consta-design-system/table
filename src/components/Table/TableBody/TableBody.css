@@ -26,12 +26,12 @@
   }
 
   &-OverScroll {
-    display: var(--table-over-scroll-display, contents);
     position: absolute;
+    z-index: calc(var(--table-header-z-index) + 5);
     top: 0;
+    right: 0;
     left: 0;
     bottom: 0;
-    right: 0;
-    z-index: calc(var(--table-header-z-index) + 5);
+    display: var(--table-over-scroll-display, contents);
   }
 }

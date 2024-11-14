@@ -1,6 +1,5 @@
 /* --table-data-cell-level - задается в компоненте */
 .ct--DataCell {
-  width: 100%;
   padding-right: var(--space-s);
   padding-left:
     calc(

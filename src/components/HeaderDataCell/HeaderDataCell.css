@@ -1,7 +1,5 @@
 /* --table-header-data-cell-level - задается в компоненте */
 .ct--HeaderDataCell {
-  width: 100%;
-
   &_size {
     &_m {
       --table-header-data-cell-slot-width: var(--space-2xl);

@@ -2,11 +2,12 @@ import './DataCell.css';
 
 import { IconComponent } from '@consta/icons/Icon';
 import { cnMixFlex } from '@consta/uikit/MixFlex';
-import { cnMixSpace, Space } from '@consta/uikit/MixSpace';
+import { cnMixSpace } from '@consta/uikit/MixSpace';
 import { Text } from '@consta/uikit/Text';
 import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
+import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
 import { isNumber, isString } from '##/utils/type-guards';
 
 const cnDataCell = cn('DataCell');
@@ -46,7 +47,7 @@ const renderChildren = (
     return renderContentSlot(
       <Text
         className={cnMixSpace({
-          pV: contentVerticalSpaseMap[size],
+          pV: cellVerticalSpaceMap[size],
         })}
         view={view}
         size={size}
@@ -56,14 +57,6 @@ const renderChildren = (
     );
   }
   return renderContentSlot(children);
-};
-
-const contentVerticalSpaseMap: Record<
-  Exclude<DataCellProps['size'], undefined>,
-  Space
-> = {
-  m: 's',
-  s: 'xs',
 };
 
 export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(

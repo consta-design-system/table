@@ -1,0 +1,5 @@
+.ct--DataNumberingCell {
+  width: 100%;
+  min-height: var(--space-xl);
+  height: 100%;
+}

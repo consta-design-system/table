@@ -1,11 +1,12 @@
 import './HeaderDataCell.css';
 
 import { cnMixFlex } from '@consta/uikit/MixFlex';
-import { cnMixSpace, Space } from '@consta/uikit/MixSpace';
+import { cnMixSpace } from '@consta/uikit/MixSpace';
 import { Text } from '@consta/uikit/Text';
 import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
+import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
 import { isNumber, isString } from '##/utils/type-guards';
 
 const cnHeaderDataCell = cn('HeaderDataCell');
@@ -16,14 +17,6 @@ export type HeaderDataCellProps = {
   children?: React.ReactNode | JSX.Element[];
   size?: 'm' | 's';
 } & JSX.IntrinsicElements['div'];
-
-const contentVerticalSpaseMap: Record<
-  Exclude<HeaderDataCellProps['size'], undefined>,
-  Space
-> = {
-  m: 's',
-  s: 'xs',
-};
 
 const renderContentSlot = (children: HeaderDataCellProps['children']) => (
   <div
@@ -46,7 +39,7 @@ const renderChildren = (
     return renderContentSlot(
       <Text
         className={cnMixSpace({
-          pV: contentVerticalSpaseMap[size],
+          pV: cellVerticalSpaceMap[size],
         })}
         size={size}
       >
@@ -94,12 +87,7 @@ export const HeaderDataCell = forwardRef<HTMLDivElement, HeaderDataCellProps>(
       >
         <div className={cnMixFlex({ flex: 'flex', gap: 'xs' })}>
           {controlLeftSlots.length ? (
-            <div
-              className={cnMixFlex({
-                flex: 'flex',
-                gap: '2xs',
-              })}
-            >
+            <div className={cnMixFlex({ flex: 'flex', gap: '2xs' })}>
               {controlLeftSlots.map((item, index) => (
                 <div
                   className={cnHeaderDataCell('ControlSlot', [

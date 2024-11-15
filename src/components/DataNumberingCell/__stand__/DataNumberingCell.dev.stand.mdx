@@ -1,0 +1,118 @@
+import { MdxTabs, MdxMenu } from '@consta/stand';
+import { DataNumberingCellExampleTable } from './examples/DataNumberingCellExampleTable/DataNumberingCellExampleTable';
+
+```tsx
+import { DataNumberingCell } from '@consta/table/DataNumberingCell';
+```
+
+<MdxMenu>
+
+- [Пример](#пример)
+- [Свойства](#свойства)
+
+</MdxMenu>
+
+## Пример
+
+Чтобы вывести нумерацию строк, используйте `renderCell` в первой колонке. Для вывода нумерации столбцов используйте `renderHeaderCell`.
+
+<MdxTabs>
+
+```tsx
+import React from 'react';
+
+import {
+  Table,
+  TableColumn,
+  TableRenderCell,
+  TableRenderHeaderCell,
+} from '@consta/table/Table';
+import data from '##/components/Table/__mocks__/olympic-winners.json';
+
+import { DataNumberingCell } from '@consta/table/DataNumberingCell';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+  number?: never;
+};
+
+const rows: ROW[] = data;
+
+const renderHeaderNumberingCell: TableRenderHeaderCell = (props) => (
+  <DataNumberingCell>{props.title}</DataNumberingCell>
+);
+const renderNumberingCell: TableRenderCell<ROW> = (props) => (
+  <DataNumberingCell>{props.rowIndex + 1}</DataNumberingCell>
+);
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: '',
+    accessor: 'number',
+    renderCell: renderNumberingCell,
+    width: 48,
+    minWidth: 48,
+  },
+  {
+    title: 'Имя',
+    columns: [
+      {
+        title: 'A',
+        accessor: 'athlete',
+        renderHeaderCell: renderHeaderNumberingCell,
+        minWidth: 140,
+        width: '1fr',
+      },
+    ],
+  },
+  {
+    title: 'Страна',
+    columns: [
+      {
+        title: 'B',
+        accessor: 'country',
+        renderHeaderCell: renderHeaderNumberingCell,
+        minWidth: 140,
+        width: '1fr',
+      },
+    ],
+  },
+  {
+    title: 'Возраст',
+    columns: [
+      {
+        title: 'C',
+        accessor: 'age',
+        renderHeaderCell: renderHeaderNumberingCell,
+        minWidth: 140,
+        width: '1fr',
+      },
+    ],
+  },
+];
+
+export const DataNumberingCellExampleTable = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    zebraStriped
+  />
+);
+```
+
+<DataNumberingCellExampleTable />
+
+</MdxTabs>
+
+## Свойства
+
+| Свойство     | Тип                         | По умолчанию | Описание                       |
+| ------------ | --------------------------- | ------------ | ------------------------------ |
+| `children?`  | `React.ReactNode`           | -            | Ребенок                        |
+| `className?` | `string`                    | -            | Дополнительный CSS-класс       |
+| `ref?`       | `React.Ref<HTMLDivElement>` | -            | Ссылка на корневой DOM-элемент |

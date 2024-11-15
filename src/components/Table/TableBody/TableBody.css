@@ -1,5 +1,5 @@
 .ct--TableBody {
-  --table-body-separator-height: 2px;
+  --table-body-separator-height: 1px;
   display: grid;
   overflow: auto;
   box-sizing: border-box;

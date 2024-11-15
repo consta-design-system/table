@@ -1,7 +1,6 @@
 import { range } from '##/utils/array';
-import { isNotNil, isNumber, isString } from '##/utils/type-guards';
+import { isNumber, isString } from '##/utils/type-guards';
 
-import { isSizesCalculate } from './useResizableColumns/helpers';
 import { UseResizableColumnsSize } from './useResizableColumns/types';
 
 export const getStyleTopOffsets = (topOffsets: number[]) => {
@@ -36,7 +35,7 @@ export const getStyleLeftOffsetsForStickyColumns = (
   getStyleByArray(
     range(sizes.length),
     '--table-column-sticky-left-offset',
-    printTableColumnStickyHorisontalOffsetValue(),
+    printTableColumnStickyHorizontalOffsetValue(),
   );
 
 export const getStyleRightOffsetsForStickyColumns = (
@@ -45,7 +44,7 @@ export const getStyleRightOffsetsForStickyColumns = (
   getStyleByArray(
     range(sizes.length),
     '--table-column-sticky-right-offset',
-    printTableColumnStickyHorisontalOffsetValue(true),
+    printTableColumnStickyHorizontalOffsetValue(true),
   );
 
 export const getGridTemplate = (sizes: UseResizableColumnsSize[]): string =>
@@ -57,7 +56,7 @@ const printHorisontalOffsetPart =
       ? `var(--table-column-size-${array.length - 1 - value})`
       : `var(--table-column-size-${value})`;
 
-export const printTableColumnStickyHorisontalOffsetValue =
+export const printTableColumnStickyHorizontalOffsetValue =
   (reverse: boolean = false) =>
   (index: number, _: number, array: number[]) => {
     const indexArray = range(reverse ? array.length - 1 - index : index);

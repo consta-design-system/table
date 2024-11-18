@@ -70,6 +70,8 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
       view,
       size = 'm',
       indicator,
+      style,
+      ...otherProps
     } = props;
     const level = levelProp < 0 ? 0 : levelProp;
 
@@ -97,6 +99,7 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
 
     return (
       <div
+        {...otherProps}
         className={cnDataCell(
           {
             size,
@@ -106,6 +109,7 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
           [cnMixFlex({ flex: 'flex' }), className],
         )}
         style={{
+          ...style,
           ['--table-data-cell-level' as string]: level || undefined,
           ['--table-data-cell-indicator-color' as string]: indicator
             ? `var(--color-bg-${indicator})`

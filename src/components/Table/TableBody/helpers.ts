@@ -50,17 +50,17 @@ export const getStyleRightOffsetsForStickyColumns = (
 export const getGridTemplate = (sizes: UseResizableColumnsSize[]): string =>
   sizes.map((_, index) => `var(--table-column-size-${index})`).join(' ');
 
-const printHorisontalOffsetPart =
+const printHorizontalOffsetPart =
   (reverse: boolean, array: number[]) => (value: number) =>
     reverse
       ? `var(--table-column-size-${array.length - 1 - value})`
       : `var(--table-column-size-${value})`;
 
-export const printTableColumnStickyHorizontalOffsetValue =
+const printTableColumnStickyHorizontalOffsetValue =
   (reverse: boolean = false) =>
   (index: number, _: number, array: number[]) => {
     const indexArray = range(reverse ? array.length - 1 - index : index);
-    const value = indexArray.map(printHorisontalOffsetPart(reverse, array));
+    const value = indexArray.map(printHorizontalOffsetPart(reverse, array));
 
     if (!value.length) {
       return '0px';

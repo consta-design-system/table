@@ -24,6 +24,7 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
     stickyHeader,
     headerCellsRefs,
     borders,
+    tableRef,
     ...otherProps
   } = props;
 
@@ -71,7 +72,11 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
             key={cnTableHeader('Cell', { index })}
           >
             {column.isSeparator ? null : (
-              <RenderHeaderCell title={column.title} index={index} />
+              <RenderHeaderCell
+                title={column.title}
+                index={index}
+                tableRef={tableRef}
+              />
             )}
           </div>
         );

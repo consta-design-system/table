@@ -1,8 +1,7 @@
 import { Example } from '@consta/stand';
 import { Button } from '@consta/uikit/Button';
 import { getLastPoint, useBreakpoints } from '@consta/uikit/useBreakpoints';
-import { useFlag } from '@consta/uikit/useFlag';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { Table, TableColumn } from '../../..';
 
@@ -22,7 +21,7 @@ const rows: Row[] = [
 ];
 
 const columnsWidthMap: Record<
-  's' | 'm',
+  's' | 'm' | 'l',
   Record<'name' | 'profession' | 'status', TableColumn<Row>>
 > = {
   s: {
@@ -57,10 +56,35 @@ const columnsWidthMap: Record<
       maxWidth: 120,
     },
   },
+  l: {
+    name: {
+      width: 150,
+      minWidth: 150,
+      maxWidth: 150,
+    },
+    profession: {
+      width: '1fr',
+    },
+    status: {
+      width: 150,
+      minWidth: 150,
+      maxWidth: 150,
+    },
+  },
 };
 
+const breakpointsMap = { s: 300, m: 500, l: 760 };
+const breakpointsSequence: (keyof typeof breakpointsMap)[] = ['s', 'm', 'l'];
+
 export const TableExampleAdaptiveColumns = () => {
-  const [isWide, setIsWide] = useFlag(true);
+  const [widthSequence, setWidthSequence] = useState(0);
+
+  const handleWidthChange = useCallback(() => {
+    setWidthSequence((state) => {
+      const newState = state + 1;
+      return newState >= breakpointsSequence.length ? 0 : newState;
+    });
+  }, []);
 
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -68,7 +92,7 @@ export const TableExampleAdaptiveColumns = () => {
     getLastPoint(
       useBreakpoints({
         ref: tableRef,
-        map: { s: 190, m: 490 },
+        map: breakpointsMap,
         isActive: true,
       }),
     ) || 's';
@@ -98,11 +122,14 @@ export const TableExampleAdaptiveColumns = () => {
     <Example col={1}>
       <Table
         ref={tableRef}
-        style={{ outline: '1px solid red', width: isWide ? 500 : 200 }}
+        style={{
+          outline: '1px solid red',
+          width: breakpointsMap[breakpointsSequence[widthSequence]],
+        }}
         rows={rows}
         columns={columns}
       />
-      <Button onClick={setIsWide.toggle} label="Изменить ширину" />
+      <Button onClick={handleWidthChange} label="Изменить ширину" />
     </Example>
   );
 };

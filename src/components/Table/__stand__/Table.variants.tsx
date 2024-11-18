@@ -18,7 +18,7 @@ const AthleteHeaderCell = (props: { title?: string; size: 'm' | 's' }) => {
 
   const [checked, setChecked] = useFlag();
 
-  const bottonSize = size === 'm' ? 's' : 'xs';
+  const buttonSize = size === 'm' ? 's' : 'xs';
 
   return (
     <HeaderDataCell
@@ -28,18 +28,18 @@ const AthleteHeaderCell = (props: { title?: string; size: 'm' | 's' }) => {
       }
       controlRight={[
         <Button
-          size={bottonSize}
+          size={buttonSize}
           view="clear"
           iconLeft={IconUnsort}
           onlyIcon
         />,
         <Button
-          size={bottonSize}
+          size={buttonSize}
           view="clear"
           iconLeft={IconFunnel}
           onlyIcon
         />,
-        <Button size={bottonSize} view="clear" iconLeft={IconKebab} onlyIcon />,
+        <Button size={buttonSize} view="clear" iconLeft={IconKebab} onlyIcon />,
       ]}
     >
       {title}
@@ -166,7 +166,5 @@ const Variants = () => {
     </div>
   );
 };
-
-// allFollowing
 
 export default Variants;

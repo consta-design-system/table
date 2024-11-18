@@ -17,9 +17,10 @@ export const DataNumberingCell = forwardRef<
   HTMLDivElement,
   DataNumberingCellProps
 >((props, ref) => {
-  const { children, className } = props;
+  const { children, className, ...otherProps } = props;
   return (
     <Text
+      {...otherProps}
       ref={ref}
       className={cnDataNumberingCell(null, [
         cnMixSpace({ pV: '3xs' }),

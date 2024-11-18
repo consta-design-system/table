@@ -94,6 +94,7 @@ const TableDataRender = (
     onRowMouseLeave,
     onRowClick,
     getRowKey,
+    tableRef,
     ...otherProps
   } = props;
 
@@ -180,6 +181,7 @@ const TableDataRender = (
                         row={row}
                         rowIndex={rowIndex}
                         columnIndex={columnIndex}
+                        tableRef={tableRef}
                       />
                     ) : (
                       getCellDataByAccessor(row, accessor, isSeparator)

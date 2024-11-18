@@ -7,12 +7,14 @@ export type TableColumnPropPinned = 'left' | 'right';
 export type TableRenderHeaderCell = (props: {
   title?: string;
   index: number;
+  tableRef: React.RefObject<HTMLDivElement>;
 }) => React.ReactElement | null;
 
 export type TableRenderCell<T> = (props: {
   row: T;
   rowIndex: number;
   columnIndex: number;
+  tableRef: React.RefObject<HTMLDivElement>;
 }) => React.ReactElement | null;
 
 type TabletColSpan<ROW> = (props: { row: ROW }) => number | 'end' | undefined;
@@ -101,6 +103,7 @@ export type TableHeaderProps<ROW = TableDefaultRow> =
       stickyRightOffsets: number[];
       headerCellsRefs: React.RefObject<HTMLDivElement>[];
       borders: [boolean, boolean, boolean][];
+      tableRef: React.RefObject<HTMLDivElement>;
     },
     HTMLDivElement
   >;
@@ -140,6 +143,7 @@ export type TableDataProps<ROW = TableDefaultRow> =
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
       getRowKey?: (row: ROW) => string | number;
+      tableRef: React.RefObject<HTMLDivElement>;
     },
     HTMLDivElement
   > & {

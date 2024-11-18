@@ -58,6 +58,7 @@ export const HeaderDataCell = forwardRef<HTMLDivElement, HeaderDataCellProps>(
       controlRight,
       children,
       controlLeft,
+      ...otherProps
     } = props;
 
     const childrenSlots = children
@@ -78,6 +79,7 @@ export const HeaderDataCell = forwardRef<HTMLDivElement, HeaderDataCellProps>(
 
     return (
       <div
+        {...otherProps}
         className={cnHeaderDataCell({ size }, [
           cnMixFlex({ flex: 'flex', gap: 'xs', justify: 'space-between' }),
           cnMixSpace({ pH: 's' }),

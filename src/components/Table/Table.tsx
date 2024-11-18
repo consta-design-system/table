@@ -64,6 +64,7 @@ export const TableRender = (
           stickyLeftOffsets={headerData.stickyLeftOffsets}
           stickyRightOffsets={headerData.stickyRightOffsets}
           borders={headerData.bordersFlattenedHeaders}
+          tableRef={scrollElementRef}
         />
       }
       body={
@@ -77,6 +78,7 @@ export const TableRender = (
           onRowMouseLeave={onRowMouseLeave}
           onRowClick={onRowClick}
           getRowKey={getRowKey}
+          tableRef={scrollElementRef}
         />
       }
     />

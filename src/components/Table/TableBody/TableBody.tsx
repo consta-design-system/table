@@ -1,9 +1,11 @@
 import './TableBody.css';
 
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
-import { getElementSize } from '@consta/uikit/useComponentSize';
 import { useForkRef } from '@consta/uikit/useForkRef';
-import { useResizeObserved } from '@consta/uikit/useResizeObserved';
+import {
+  getElementSize,
+  useResizeObserved,
+} from '@consta/uikit/useResizeObserved';
 import React, { forwardRef, useMemo, useRef } from 'react';
 
 import { cn } from '##/utils/bem';

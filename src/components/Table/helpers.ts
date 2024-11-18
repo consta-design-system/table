@@ -1,6 +1,8 @@
-import { getElementSize } from '@consta/uikit/useComponentSize';
 import { useRefs } from '@consta/uikit/useRefs';
-import { useResizeObserved } from '@consta/uikit/useResizeObserved';
+import {
+  getElementSize,
+  useResizeObserved,
+} from '@consta/uikit/useResizeObserved';
 import React, { useMemo } from 'react';
 
 import { get, set } from '##/utils/object/get';
@@ -34,9 +36,9 @@ const getLastChildrenCount = <T>(columns: TableColumn<T>[]) => {
   return count;
 };
 
-type MapColumsItem = { columns?: MapColumsItem[] };
+type MapColumnsItem = { columns?: MapColumnsItem[] };
 
-const mapColums = <T extends MapColumsItem>(
+const mapColumns = <T extends MapColumnsItem>(
   columns: T[],
   fn: (item: T, index: (string | number)[]) => void,
   stopRef: { current: boolean } = { current: false },
@@ -65,7 +67,7 @@ const mapColums = <T extends MapColumsItem>(
         ...currentIndex.slice(0, -1),
         Number(currentIndex[currentIndex.length - 1]) + 1,
       ];
-      if (get<MapColumsItem>(columns, nextIndex)) {
+      if (get<MapColumnsItem>(columns, nextIndex)) {
         index = nextIndex;
       } else {
         if (currentIndex.length === 1) {
@@ -84,7 +86,7 @@ const mapColums = <T extends MapColumsItem>(
             break;
           }
 
-          if (get<MapColumsItem>(columns, nextIndex)) {
+          if (get<MapColumnsItem>(columns, nextIndex)) {
             index = nextIndex;
             break;
           }
@@ -108,7 +110,7 @@ const pushByKey = <T>(
   let needAdd = true;
   const stopRef = { current: false };
 
-  mapColums<TableColumnWidthKey<T>>(
+  mapColumns<TableColumnWidthKey<T>>(
     inColumns,
     (item) => {
       if (pushed.key === item.key) {
@@ -124,15 +126,15 @@ const pushByKey = <T>(
   }
 
   const keySplited = pushed.key.split('-');
-  const parentkey = keySplited.slice(0, keySplited.length - 1).join('-');
+  const parentKey = keySplited.slice(0, keySplited.length - 1).join('-');
 
-  if (!parentkey) {
+  if (!parentKey) {
     inColumns.push(pushed);
     return;
   }
 
-  mapColums<TableColumnWidthKey<T>>(inColumns, (item, index) => {
-    if (parentkey === item.key) {
+  mapColumns<TableColumnWidthKey<T>>(inColumns, (item, index) => {
+    if (parentKey === item.key) {
       const pushIndex = [...index, 'columns'];
 
       set(inColumns, pushIndex, [
@@ -173,18 +175,18 @@ const pushByIndex = <T>(
 };
 
 const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
-  const pinnetLeftColumns: TableColumnWidthKey<T>[] = [];
-  const pinnetRightColumns: TableColumnWidthKey<T>[] = [];
+  const pinnedLeftColumns: TableColumnWidthKey<T>[] = [];
+  const pinnedRightColumns: TableColumnWidthKey<T>[] = [];
   const otherColumns: TableColumnWidthKey<T>[] = [];
   const notPinnedColumns: TableColumnWidthKey<T>[] = [];
 
-  mapColums<TableColumn<T>>(columns, (item, index) => {
+  mapColumns<TableColumn<T>>(columns, (item, index) => {
     if (!item.columns?.length && item.pinned === 'left') {
-      pushByIndex(index, columns, pinnetLeftColumns, 'left');
+      pushByIndex(index, columns, pinnedLeftColumns, 'left');
       return;
     }
     if (!item.columns?.length && item.pinned === 'right') {
-      pushByIndex(index, columns, pinnetRightColumns, 'right');
+      pushByIndex(index, columns, pinnedRightColumns, 'right');
       return;
     }
     if (item.columns?.length || item.isSeparator || item.accessor) {
@@ -192,13 +194,13 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
     }
   });
 
-  mapColums<TableColumnWidthKey<T>>(otherColumns, (item) => {
+  mapColumns<TableColumnWidthKey<T>>(otherColumns, (item) => {
     if (item.columns?.length || item.isSeparator || item.accessor) {
       pushByKey(item, notPinnedColumns);
     }
   });
 
-  return [...pinnetLeftColumns, ...notPinnedColumns, ...pinnetRightColumns];
+  return [...pinnedLeftColumns, ...notPinnedColumns, ...pinnedRightColumns];
 };
 
 export const transformColumns = <T>(
@@ -313,9 +315,9 @@ export type HeaderData<T> = {
   bordersFlattenedHeaders: [boolean, boolean, boolean][];
 };
 
-const getlowHeaders = <T>(columns: TableColumnWidthKey<T>[]) => {
+const getLowHeaders = <T>(columns: TableColumnWidthKey<T>[]) => {
   const lowHeaders: TableColumnWidthKey<T>[] = [];
-  mapColums<TableColumnWidthKey<T>>(columns, (item) => {
+  mapColumns<TableColumnWidthKey<T>>(columns, (item) => {
     if (!item.columns?.length) {
       lowHeaders.push(item);
     }
@@ -357,7 +359,7 @@ const getResizerTopOffsets = <T>(
 const getFlattenedHeadersLowCellsKeys = <T>(flattenedHeaders: Header<T>[]) => {
   const lowCells = flattenedHeaders.map((flattenedHeaderCell) => {
     const keys: string[] = [];
-    mapColums<Header<T>>([flattenedHeaderCell], (item, index) => {
+    mapColumns<Header<T>>([flattenedHeaderCell], (item, index) => {
       if (!item.columns?.length) {
         keys.push(item.key);
       }
@@ -391,14 +393,14 @@ const getHeaderStickyRightOffsets = <T>(
 };
 
 export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
-  const columnsWinhPinned = useMemo(
+  const columnsWithPinned = useMemo(
     () => transformPinnedColumns(columns),
     [columns],
   );
 
   const headers = useMemo(
-    () => transformColumns(columnsWinhPinned, getMaxLevel(columnsWinhPinned)),
-    [columnsWinhPinned],
+    () => transformColumns(columnsWithPinned, getMaxLevel(columnsWithPinned)),
+    [columnsWithPinned],
   );
 
   const flattenedHeaders = useMemo(() => {
@@ -441,8 +443,8 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
   }, [headers, flattenedHeaders, headerCellsHeights.join('-')]);
 
   const lowHeaders = useMemo(() => {
-    return getlowHeaders(columnsWinhPinned);
-  }, [columnsWinhPinned]);
+    return getLowHeaders(columnsWithPinned);
+  }, [columnsWithPinned]);
 
   const resizersRefs = useRefs<HTMLDivElement>(lowHeaders.length);
 
@@ -469,11 +471,11 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
   }, [flattenedHeaders, lowHeaders]);
 
   const bordersFlattenedHeaders: [boolean, boolean, boolean][] = useMemo(() => {
-    return flattenedHeaders.map((flattenedHeadersCollum, index) => {
+    return flattenedHeaders.map((flattenedHeadersColumn, index) => {
       let prevLowKey = '';
       const stopRef = { current: false };
-      mapColums(
-        [flattenedHeadersCollum],
+      mapColumns(
+        [flattenedHeadersColumn],
         (col) => {
           if (!col.columns?.length) {
             prevLowKey = col.key;
@@ -486,14 +488,14 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
       const lowIndex = lowHeaders.findIndex((col) => col.key === prevLowKey);
 
       return [
-        !flattenedHeadersCollum.position.isFirst &&
+        !flattenedHeadersColumn.position.isFirst &&
           !(
-            flattenedHeadersCollum.pinned !== 'left' &&
+            flattenedHeadersColumn.pinned !== 'left' &&
             lowHeaders[lowIndex - 1]?.pinned === 'left'
           ),
-        flattenedHeadersCollum.pinned === 'left' &&
+        flattenedHeadersColumn.pinned === 'left' &&
           flattenedHeaders[index + 1]?.pinned !== 'left',
-        flattenedHeadersCollum.position.level !== 0,
+        flattenedHeadersColumn.position.level !== 0,
       ];
     });
   }, [flattenedHeaders, lowHeaders]);

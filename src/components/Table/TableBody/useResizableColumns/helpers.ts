@@ -29,6 +29,11 @@ export const sizesEq = (
   sizes: (string | number | undefined)[],
 ) => newSizes.join('-') === sizes.join('-');
 
+const getContainerWidth = (el?: HTMLElement | null) =>
+  el
+    ? el.clientWidth - (el.offsetWidth - el.getBoundingClientRect().width)
+    : undefined;
+
 export const getRefsSizes = (
   blocks: UseResizableColumnsBlock[],
 ): (number | string | undefined)[] => {
@@ -160,7 +165,7 @@ export const getCalculatedSizes = (
   const position = trackPosition(event as MouseEvent | TouchEvent)?.x;
 
   if (position) {
-    const containerWidth = container.current?.clientWidth || 0;
+    const containerWidth = getContainerWidth(container.current) || 0;
     const containerLeft = container.current?.getBoundingClientRect().left || 0;
     const scrollLeft = container.current?.scrollLeft || 0;
     const trackPosition = getTargetBlockPosition(sizes, index);
@@ -198,7 +203,7 @@ export const useResizeContainer = (
   useResizeObserved(
     useMemo(() => [containerRef], [containerRef]),
     useDebounce((el) => {
-      const containerWidth = el?.clientWidth;
+      const containerWidth = getContainerWidth(el);
       const newSizes = [...refs.current[4]];
       const resizable = refs.current[2];
 

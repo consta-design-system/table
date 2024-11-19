@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.3.0 (19/11/2024)
+Самое важное:
+- Добавили пример использования индикаторов ячеек и всплывающих подсказок.
+- Добавили пример адаптивной ширины колонок в зависимости от ширины таблицы.
+- Добавили компонент `DataNumberingCell` для вывода нумерации.
+
+---
+
+- [docs(Table): add indicator example (#14)](https://github.com/consta-design-system/table/commit/5874ce5be10e0ad369f1e3623a52347f7b4a6d4f) - [@gizeasy](https://github.com/gizeasy)
+- [docs(Table): add adaptive columns example (#12)](https://github.com/consta-design-system/table/commit/bf1f115d6c6258fd1d3d1fd662dff9007f7ca471) - [@gizeasy](https://github.com/gizeasy)
+- [fix(Table): fixed calculate columns widths (#13)](https://github.com/consta-design-system/table/commit/fa93073af7d90c2a8db7b42752eaa257d8aa50bc) - [@gizeasy](https://github.com/gizeasy)
+- [feat(DataNumberingCell): add component (#9)](https://github.com/consta-design-system/table/commit/1333f98f71c7f471a29baa1d79ad387eb294bee9) - [@gizeasy](https://github.com/gizeasy)
+- [fix: remove width on cell (#11)](https://github.com/consta-design-system/table/commit/565540394b8280c12df26ac660c8ff31005c5eef) - [@gizeasy](https://github.com/gizeasy)
+- [docs: fixed import path (#10)](https://github.com/consta-design-system/table/commit/35b563d69a1439ec8545fc899a9fd9561cd6cc7c) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.2.0 (02/11/2024)
 Самое важное:
 - В `Table` добавили возможность объединять ячейки по горизонтали.
@@ -12,7 +29,7 @@
 --------------------
 
 ## v0.1.0 (23/10/2024)
-- [feat(Table): add getRowKey (#5)](https://github.com/consta-design-system/table/commit/78e9c07ee18a536f79461dd17bf482998e7b87c3) - [@gizeasy](https://github.com/gizeasy)
+- [feat(Talbe): add getRowKey (#5)](https://github.com/consta-design-system/table/commit/78e9c07ee18a536f79461dd17bf482998e7b87c3) - [@gizeasy](https://github.com/gizeasy)
 - [docs(start.stand.mdx): update (#4)](https://github.com/consta-design-system/table/commit/f5ac07c52d4d41b877544a9a20825728ac5115b1) - [@alyonurchick1](https://github.com/alyonurchick1)
 
 --------------------

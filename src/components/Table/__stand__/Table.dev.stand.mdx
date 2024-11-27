@@ -18,7 +18,7 @@ import {
   TableExampleResizableOutside,
 } from './examples/TableExampleResizable/TableExampleResizable';
 
-import { MdxTabs, MdxMenu } from '@consta/stand';
+import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
 
@@ -36,8 +36,10 @@ import { MdxTabs, MdxMenu } from '@consta/stand';
 - [Управление шириной столбцов](#управление-шириной-столбцов)
   - [resizable = 'inside'](#resizable----inside-)
   - [resizable = 'outside'](#resizable----outside-)
+- [headerZIndex](#headerzindex)
 - [Вложенные строки](#вложенные-строки)
 - [Объединение ячеек](#объединение-ячеек)
+- [Рендер строки](#рендер-строки)
 - [Индикатор ячейки и подсказки](#индикатор-ячейки-и-подсказки)
 - [Ключ строки](#ключ-строки)
 - [Адаптивная ширина колонок](#адаптивная-ширина-колонок)
@@ -831,6 +833,19 @@ export const TableExampleResizableOutside = () => (
 
 </MdxTabs>
 
+## headerZIndex
+
+Свойство `headerZIndex` влияет не только на `z-index` шапки таблицы, но и:
+
+- У ячеек в закрепленных колонках 'z-index: calc(var(--table-header-z-index) - 1);'
+- У ячеек в закрепленных колонках в шапке 'z-index: calc(var(--table-header-z-index) + 1);'
+- У ресайзеров колонок `z-index: calc(var(--table-header-z-index) + 10);`
+
+<MdxInformer
+  status="normal"
+  label="Если используете Popover или Tooltip внутри таблице привязывайте его z-index к --table-header-z-index, например:`z-index: calc(var(--table-header-z-index) - 1);` таким образом плавающий элемент будет находится под шапкой таблицы"
+/>
+
 ## Вложенные строки
 
 Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
@@ -1619,7 +1634,11 @@ const DataCellWithInformer = ({
               viewportRef={tableRef}
               ref={popoverContentRef}
               anchorRef={cellRef}
-              style={{ zIndex: 100 }}
+              style={{
+                zIndex: 'calc(var(--table-header-z-index) + 1)',
+                maxWidth: 180,
+              }}
+              direction="leftStartUp"
               possibleDirections={[
                 'leftStartUp',
                 'rightStartUp',
@@ -1688,9 +1707,13 @@ const columns: TableColumn<Row>[] = [
 
 export const TableExampleWithIndicator = () => {
   return (
-    <Example col={1}>
-      <Table style={{ maxHeight: 400 }} rows={rows} columns={columns} />
-    </Example>
+      <Table
+        style={{ maxHeight: 400 }}
+        rows={rows}
+        columns={columns}
+        headerZIndex={5}
+        stickyHeader
+      />
   );
 };
 ```

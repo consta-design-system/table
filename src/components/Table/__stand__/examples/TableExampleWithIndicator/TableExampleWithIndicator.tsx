@@ -347,7 +347,11 @@ const DataCellWithInformer = ({
               viewportRef={tableRef}
               ref={popoverContentRef}
               anchorRef={cellRef}
-              style={{ zIndex: 100 }}
+              style={{
+                zIndex: 'calc(var(--table-header-z-index) + 1)',
+                maxWidth: 180,
+              }}
+              direction="leftStartUp"
               possibleDirections={[
                 'leftStartUp',
                 'rightStartUp',
@@ -417,7 +421,13 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWithIndicator = () => {
   return (
     <Example col={1}>
-      <Table style={{ maxHeight: 400 }} rows={rows} columns={columns} />
+      <Table
+        style={{ maxHeight: 400 }}
+        rows={rows}
+        columns={columns}
+        headerZIndex={5}
+        stickyHeader
+      />
     </Example>
   );
 };

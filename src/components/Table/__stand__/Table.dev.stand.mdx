@@ -835,16 +835,19 @@ export const TableExampleResizableOutside = () => (
 
 ## headerZIndex
 
-Свойство `headerZIndex` влияет не только на `z-index` шапки таблицы, но и:
+Свойство `headerZIndex` влияет на [`z-index`](https://developer.mozilla.org/ru/docs/Web/CSS/z-index):
 
-- У ячеек в закрепленных колонках 'z-index: calc(var(--table-header-z-index) - 1);'
-- У ячеек в закрепленных колонках в шапке 'z-index: calc(var(--table-header-z-index) + 1);'
-- У ресайзеров колонок `z-index: calc(var(--table-header-z-index) + 10);`
+- Шапки таблицы
+- Ячейки в закрепленных колонках 'z-index: calc(var(--table-header-z-index) - 1);'
+- Ячейки в закрепленных колонках в шапке 'z-index: calc(var(--table-header-z-index) + 1);'
+- Ресайзеры колонок `z-index: calc(var(--table-header-z-index) + 10);`
 
-<MdxInformer
-  status="normal"
-  label="Если используете Popover или Tooltip внутри таблице привязывайте его z-index к --table-header-z-index, например:`z-index: calc(var(--table-header-z-index) - 1);` таким образом плавающий элемент будет находится под шапкой таблицы"
-/>
+<MdxInformer status="success">
+
+Если вы используете всплывающие окна (`Popover`, `Tooltip`), привязывайте их `z-index` к переменной `--table-header-z-index`.  
+Например: `z-index: calc(var(--table-header-z-index) + 1)`. Таким образом плавающий элемент будет находится под шапкой таблицы.
+
+</MdxInformer>
 
 ## Вложенные строки
 

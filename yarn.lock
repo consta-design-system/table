@@ -1798,10 +1798,10 @@
   resolved "https://registry.yarnpkg.com/@consta/icons/-/icons-1.1.0.tgz#f21496bc833ad062f03ddde62b93bdf7631c3c57"
   integrity sha512-vsv41yw3atSzXfrmu9rJSNvcxjChrFau0IMAP/4nxBPzF7AIFx9Jf94ZtOOmK+st0NN/HXqKkaFMey6rYXTUCQ==
 
-"@consta/stand@^0.0.143":
-  version "0.0.143"
-  resolved "https://registry.yarnpkg.com/@consta/stand/-/stand-0.0.143.tgz#9fee3885576aaf7e6f1af4befdeb2b1543011b35"
-  integrity sha512-Vlv1cgcVTH/jDMqQHFKWcrfwKtQQ4VuU5AMe4gJJvolUq2vMqK2DmQaIHOjhFk7V4wpO5omfab73RooihUzROQ==
+"@consta/stand@^0.0.146":
+  version "0.0.146"
+  resolved "https://registry.yarnpkg.com/@consta/stand/-/stand-0.0.146.tgz#adf34e5840daf031596ef992ef0c65b8eb2919a8"
+  integrity sha512-wSqoelMhI2+qEYjpi9jcPvDAQcGApCfVtn3Cp4yAQsL0hQoyhfzi7y4aeNzjpb8329sXi6fNhkXvcVZZ5+GPBQ==
   dependencies:
     "@consta/header" "^3.0.0"
     "@consta/icons" "^1.1.0"

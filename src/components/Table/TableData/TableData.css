@@ -1,8 +1,10 @@
 .ct--TableData {
   display: contents;
+  --table-data-cell-bg: var(--color-bg-default);
 
   &-Cell {
     grid-column: span var(--table-cell-col-span, 1);
+    background: var(--table-data-cell-bg);
 
     &_pinned {
       z-index: calc(var(--table-header-z-index) - 1);
@@ -11,5 +13,21 @@
 
   &-Row {
     display: contents;
+
+    &_zebraStriped {
+      --table-data-cell-bg: color-mix(
+        in srgb,
+        rgb(from var(--color-bg-stripe) r g b / 1) 5%,
+        var(--color-bg-default)
+      );
+    }
+
+    &:has(> * > [data-row-active='true']) {
+      --table-data-cell-bg: color-mix(
+        in srgb,
+        rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
+        var(--color-bg-default)
+      );
+    }
   }
 }

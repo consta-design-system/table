@@ -19,8 +19,6 @@ export const TableRender = (
     rows,
     stickyHeader,
     virtualScroll,
-    style,
-    className,
     resizable,
     zebraStriped,
     headerZIndex = 1,
@@ -28,6 +26,8 @@ export const TableRender = (
     onRowMouseLeave,
     onRowClick,
     getRowKey,
+    getRowActive,
+    ...otherProps
   } = props;
 
   const headerData = useHeaderData(columns);
@@ -44,12 +44,11 @@ export const TableRender = (
 
   return (
     <TableBody
+      {...otherProps}
       topOffsets={headerData.resizerTopOffsets}
       spaceTop={spaceTop}
       ref={useForkRef([scrollElementRef, ref])}
-      style={style}
       headerHeight={headerData.headerHeight}
-      className={className}
       lowHeaders={headerData.lowHeaders}
       resizersRefs={headerData.resizersRefs}
       resizable={resizable}
@@ -79,6 +78,7 @@ export const TableRender = (
           onRowClick={onRowClick}
           getRowKey={getRowKey}
           tableRef={scrollElementRef}
+          getRowActive={getRowActive}
         />
       }
     />

@@ -95,8 +95,11 @@ const TableDataRender = (
     onRowClick,
     getRowKey,
     tableRef,
+    getRowActive,
     ...otherProps
   } = props;
+
+  console.log('TableDataRender');
 
   return (
     <div {...otherProps} ref={ref} className={cnTableData(null, [className])}>
@@ -104,11 +107,12 @@ const TableDataRender = (
         const rowIndex = index + slice[0];
         const rowKey = getKey(row, getRowKey, rowIndex);
         const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
+        const rowActive = getRowActive?.(row, { index: rowIndex });
         let miss = 0;
 
         return (
           <div
-            className={cnTableData('Row')}
+            className={cnTableData('Row', { zebraStriped: rowZebraStriped })}
             key={rowKey}
             onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
             onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
@@ -146,23 +150,29 @@ const TableDataRender = (
                   <div
                     key={`${rowKey}-${accessor || columnIndex}`}
                     ref={columnIndex === 0 ? rowsRefs[rowIndex] : undefined}
-                    className={cnTableData('Cell', { pinned: !!pinned }, [
-                      cnTableCell({
-                        separator: isSeparator,
-                        borderLeft:
-                          columnIndex !== 0 &&
-                          !(
-                            pinned !== 'left' &&
-                            lowHeaders[columnIndex - 1]?.pinned === 'left'
-                          ),
-                        borderRight:
-                          pinned === 'left' &&
-                          lowHeaders[columnIndex + 1]?.pinned !== 'left',
-                        borderTop: !isSeparator && rowIndex !== 0,
-                        sticky: !!pinned,
-                        zebraStriped: rowZebraStriped,
-                      }),
-                    ])}
+                    className={cnTableData(
+                      'Cell',
+                      {
+                        pinned: !!pinned,
+                        active: rowActive,
+                      },
+                      [
+                        cnTableCell({
+                          separator: isSeparator,
+                          borderLeft:
+                            columnIndex !== 0 &&
+                            !(
+                              pinned !== 'left' &&
+                              lowHeaders[columnIndex - 1]?.pinned === 'left'
+                            ),
+                          borderRight:
+                            pinned === 'left' &&
+                            lowHeaders[columnIndex + 1]?.pinned !== 'left',
+                          borderTop: !isSeparator && rowIndex !== 0,
+                          sticky: !!pinned,
+                        }),
+                      ],
+                    )}
                     style={{
                       ['--table-cell-col-span' as string]:
                         miss > 0 ? miss + 1 : undefined,
@@ -176,7 +186,7 @@ const TableDataRender = (
                           : undefined,
                     }}
                   >
-                    {typeof RenderCell === 'function' ? (
+                    {isNotNil(RenderCell) ? (
                       <RenderCell
                         row={row}
                         rowIndex={rowIndex}

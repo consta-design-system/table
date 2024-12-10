@@ -86,6 +86,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     getRowKey?: (row: ROW) => string | number;
     zebraStriped?: boolean;
     headerZIndex?: number;
+    getRowActive?: (row: ROW, props: { index: number }) => boolean;
   },
   HTMLDivElement
 >;
@@ -143,6 +144,7 @@ export type TableDataProps<ROW = TableDefaultRow> =
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
       getRowKey?: (row: ROW) => string | number;
+      getRowActive?: (row: ROW, props: { index: number }) => boolean;
       tableRef: React.RefObject<HTMLDivElement>;
     },
     HTMLDivElement

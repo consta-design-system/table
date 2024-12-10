@@ -13,6 +13,8 @@ import { TableExampleColSpan } from './examples/TableExampleColSpan/TableExample
 import { TableExampleRenderRow } from './examples/TableExampleRenderRow/TableExampleRenderRow';
 import { TableExampleWithIndicator } from './examples/TableExampleWithIndicator/TableExampleWithIndicator';
 import { TableExampleAdaptiveColumns } from './examples/TableExampleAdaptiveColumns/TableExampleAdaptiveColumns';
+import { TableExampleActiveRow } from './examples/TableExampleActiveRow/TableExampleActiveRow';
+import { TableExampleActiveRowWithNumbering } from './examples/TableExampleActiveRowWithNumbering/TableExampleActiveRowWithNumbering';
 import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
@@ -33,6 +35,7 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 - [Закрепление шапки](#закрепление-шапки)
 - [Виртуальный скролл](#виртуальный-скролл)
 - [Таблица в полоску](#таблица-в-полоску)
+- [Выделение строк](#выделение-строк)
 - [Управление шириной столбцов](#управление-шириной-столбцов)
   - [resizable = 'inside'](#resizable----inside-)
   - [resizable = 'outside'](#resizable----outside-)
@@ -667,6 +670,14 @@ export const TableExampleRenderHeaderCell = () => (
 <TableExampleZebraStriped />
 
 </MdxTabs>
+
+## Выделение строк
+
+Для того чтобы указать какие строки у таблице являются выделенными используйте `getRowActive`
+
+<TableExampleActiveRow />
+
+<TableExampleActiveRowWithNumbering />
 
 ## Управление шириной столбцов
 
@@ -1933,18 +1944,19 @@ type TableRowMouseEvent<ROW> = (
 type GetRowKey<ROW> = (row: ROW) => string | number;
 ```
 
-| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
-| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
-| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
-| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
-| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
-| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
-| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
-| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
-| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуального скролла                               |
-| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
-| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
-| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
-| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
-| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
-| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |
+| Свойство           | Тип                                                 | По умолчанию      | Описание                                                     |
+| ------------------ | --------------------------------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`         | `TableColumn[]`                                     | -                 | Колонки                                                      |
+| `rows?`            | `ROW[]`                                             | -                 | Строки                                                       |
+| `getRowKey?`       | `GetRowKey<ROW>`                                    | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`                           | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`                           | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`                           | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`   | `boolean`                                           | -                 | Включение виртуального скролла                               |
+| `stickyHeader?`    | `boolean`                                           | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`       | `'inside'` &#124; `'outside'`                       | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`    | `boolean`                                           | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`    | `number`                                            | `1`               | `zIndex` шапки                                               |
+| `getRowActive?`    | ` (row: ROW, props: { index: number }) => boolean;` | -                 | Указатель выделения строки                                   |
+| `className?`       | `string`                                            | -                 | Дополнительный CSS-класс                                     |
+| `ref?`             | `React.Ref<HTMLDivElement>`                         | -                 | Ссылка на корневой DOM-элемент                               |

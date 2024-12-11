@@ -162,7 +162,6 @@ const Variants = () => {
         stickyHeader={stickyHeader}
         virtualScroll={virtualScroll}
         style={{ maxHeight: '100%' }}
-        getRowActive={(row, { index }) => index === 1 || index === 4}
       />
     </div>
   );

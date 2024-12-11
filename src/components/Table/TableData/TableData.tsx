@@ -95,19 +95,21 @@ const TableDataRender = (
     onRowClick,
     getRowKey,
     tableRef,
-    getRowActive,
+    rowHoverEffect,
     ...otherProps
   } = props;
 
-  console.log('TableDataRender');
-
   return (
-    <div {...otherProps} ref={ref} className={cnTableData(null, [className])}>
+    <div
+      {...otherProps}
+      ref={ref}
+      className={cnTableData({ rowHoverEffect }, [className])}
+    >
       {rows.slice(...slice).map((row, index) => {
         const rowIndex = index + slice[0];
         const rowKey = getKey(row, getRowKey, rowIndex);
         const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
-        const rowActive = getRowActive?.(row, { index: rowIndex });
+
         let miss = 0;
 
         return (
@@ -154,7 +156,6 @@ const TableDataRender = (
                       'Cell',
                       {
                         pinned: !!pinned,
-                        active: rowActive,
                       },
                       [
                         cnTableCell({

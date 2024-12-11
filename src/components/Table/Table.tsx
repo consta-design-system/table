@@ -26,7 +26,7 @@ export const TableRender = (
     onRowMouseLeave,
     onRowClick,
     getRowKey,
-    getRowActive,
+    rowHoverEffect,
     ...otherProps
   } = props;
 
@@ -78,7 +78,7 @@ export const TableRender = (
           onRowClick={onRowClick}
           getRowKey={getRowKey}
           tableRef={scrollElementRef}
-          getRowActive={getRowActive}
+          rowHoverEffect={rowHoverEffect}
         />
       }
     />

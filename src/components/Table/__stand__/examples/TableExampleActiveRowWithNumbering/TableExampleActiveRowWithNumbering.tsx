@@ -1,9 +1,12 @@
 import { Example } from '@consta/stand';
-import { useFlag } from '@consta/uikit/useFlag';
+import { action, atom, AtomMut } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/npm-react';
 import React from 'react';
 
 import { DataNumberingCell } from '##/components/DataNumberingCell';
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
+
+// Types
 
 type ROW = {
   id: number;
@@ -27,15 +30,47 @@ const rows: ROW[] = [
   },
 ];
 
+// Atoms
+
+const activeIdsAtom = atom<Record<ROW['id'], AtomMut<boolean>>>({});
+const hoverIdAtom = atom<ROW['id'] | undefined>(undefined);
+
+// Actions
+
+const onRowClickAction = action<[ROW]>((ctx, row) => {
+  const activeIds = ctx.get(activeIdsAtom);
+  const activeAtom = ctx.get(activeIdsAtom)[row.id];
+  if (activeAtom) {
+    activeAtom(ctx, !ctx.get(activeAtom));
+  } else {
+    activeIdsAtom(ctx, { ...activeIds, [row.id]: atom(true) });
+  }
+});
+
+const onRowMouseEnterAction = action<[ROW]>((ctx, row) =>
+  hoverIdAtom(ctx, row.id),
+);
+
+const onRowMouseLeaveAction = action<[ROW]>((ctx, row) => {
+  const hoveredId = ctx.get(hoverIdAtom);
+  if (hoveredId === row.id) {
+    hoverIdAtom(ctx, undefined);
+  }
+});
+
 const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [active, setActive] = useFlag();
+  const [active] = useAtom((ctx) => {
+    const activeAtom = ctx.spy(activeIdsAtom)[props.row.id];
+    return activeAtom ? ctx.spy(activeAtom) : false;
+  });
+
+  const [hovered] = useAtom((ctx) => {
+    const hoveredId = ctx.spy(hoverIdAtom);
+    return hoveredId === props.row.id;
+  });
 
   return (
-    <DataNumberingCell
-      style={{ cursor: 'pointer' }}
-      onClick={setActive.toggle}
-      data-row-active={active}
-    >
+    <DataNumberingCell data-row-active={active}>
       {props.row.id}
     </DataNumberingCell>
   );
@@ -68,8 +103,22 @@ const columns: TableColumn<ROW>[] = [
   },
 ];
 
-export const TableExampleActiveRowWithNumbering = () => (
-  <Example col={1}>
-    <Table rows={rows} columns={columns} zebraStriped />
-  </Example>
-);
+export const TableExampleActiveRowWithNumbering = () => {
+  const onRowClick = useAction(onRowClickAction);
+  const onRowMouseEnter = useAction(onRowMouseEnterAction);
+  const onRowMouseLeave = useAction(onRowMouseLeaveAction);
+
+  return (
+    <Example col={1}>
+      <Table
+        rows={rows}
+        columns={columns}
+        zebraStriped
+        onRowClick={onRowClick}
+        onRowMouseEnter={onRowMouseEnter}
+        onRowMouseLeave={onRowMouseLeave}
+        rowHoverEffect
+      />
+    </Example>
+  );
+};

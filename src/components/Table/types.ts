@@ -40,13 +40,10 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
-  columns?: TableColumn<ROW>[];
   colSpan?: TabletColSpan<ROW>;
-} & ValueOf<{
-  [K in keyof ROW]: {
-    accessor?: K extends string ? K : never;
-  };
-}>;
+  accessor?: string;
+  columns?: TableColumn<ROW>[];
+};
 
 export type Header<ROW> = TableColumn<ROW> & {
   position: Position;
@@ -75,15 +72,15 @@ export type TableDefaultRow = Record<string, unknown>;
 
 export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
   {
+    columns: TableColumn<ROW>[];
+    rows: ROW[];
+    getRowKey?: (row: ROW) => string | number;
     onRowMouseEnter?: TableRowMouseEvent<ROW>;
     onRowMouseLeave?: TableRowMouseEvent<ROW>;
     onRowClick?: TableRowMouseEvent<ROW>;
     stickyHeader?: boolean;
     virtualScroll?: boolean;
     resizable?: 'inside' | 'outside';
-    columns: TableColumn<ROW>[];
-    rows: ROW[];
-    getRowKey?: (row: ROW) => string | number;
     zebraStriped?: boolean;
     headerZIndex?: number;
     rowHoverEffect?: boolean;

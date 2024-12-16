@@ -1,6 +1,6 @@
 .ct--TableData {
   display: contents;
-  --table-data-cell-bg: transparent;
+  --table-data-cell-bg: var(--color-bg-default);
 
   &-Cell {
     grid-column: span var(--table-cell-col-span, 1);
@@ -19,7 +19,7 @@
       --table-data-cell-bg: color-mix(
         in srgb,
         rgb(from var(--color-bg-stripe) r g b / 1) 5%,
-        transparent
+        var(--color-bg-default)
       );
     }
 
@@ -27,20 +27,20 @@
       --table-data-cell-bg: color-mix(
         in srgb,
         rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
-        transparent
+        var(--color-bg-default)
       );
     }
 
-    &:has(> * > [data-row-hover='true']),
+    &:has(> * > [data-row-hovered='true']),
     .ct--TableData_rowHoverEffect &:hover {
       --table-data-cell-bg: color-mix(
         in srgb,
         rgb(from var(--color-control-typo-ghost-hover) r g b / 1) 9%,
-        transparent
+        var(--color-bg-default)
       );
     }
 
-    &:has(> * > [data-row-hover='true'][data-row-active='true']),
+    &:has(> * > [data-row-hovered='true'][data-row-active='true']),
     .ct--TableData_rowHoverEffect &:hover:has(> * > [data-row-active='true']) {
       --table-data-cell-bg: color-mix(
         in srgb,
@@ -48,7 +48,7 @@
         color-mix(
           in srgb,
           rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
-          transparent
+          var(--color-bg-default)
         )
       );
     }

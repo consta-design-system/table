@@ -59,7 +59,7 @@ const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
   const [hovered] = useAtom(row.hovered);
 
   return (
-    <DataNumberingCell data-row-active={activated} data-row-hovered={hovered}>
+    <DataNumberingCell data-row-active={activated} data-row-hover={hovered}>
       {row.id}
     </DataNumberingCell>
   );

@@ -54,7 +54,7 @@ const DataCellName: TableRenderCell<ROW> = (props) => {
   });
 
   return (
-    <DataNumberingCell data-row-hovered={hovered}>
+    <DataNumberingCell data-row-hover={hovered}>
       {props.row.id}
     </DataNumberingCell>
   );

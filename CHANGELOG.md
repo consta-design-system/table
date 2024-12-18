@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.0 (18/12/2024)
+Самое важное:
+- В `Table` добавили выделение строки при наведении и выборе.
+
+---
+
+- [feat(Table): add active row state (#17)](https://github.com/consta-design-system/table/commit/56e2bc0462b934669c90ea45b3de47f2b83092b3) - [@gizeasy](https://github.com/gizeasy)
+- [docs(Table): add info about headerZIndex (#16)](https://github.com/consta-design-system/table/commit/4d9c9c4e652ee63abfb254f6fbc83e868fdbadf2) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.3.0 (19/11/2024)
 Самое важное:
 - Добавили пример использования индикаторов ячеек и всплывающих подсказок.

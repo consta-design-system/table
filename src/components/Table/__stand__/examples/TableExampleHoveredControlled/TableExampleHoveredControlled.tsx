@@ -32,31 +32,29 @@ const rows: ROW[] = [
 
 // Atoms
 
-const hoveredIdAtom = atom<ROW['id'] | undefined>(undefined);
+const hoverIdAtom = atom<ROW['id'] | undefined>(undefined);
 
 // Actions
 
 const onRowMouseEnterAction = action<[ROW]>((ctx, row) =>
-  hoveredIdAtom(ctx, row.id),
+  hoverIdAtom(ctx, row.id),
 );
 
 const onRowMouseLeaveAction = action<[ROW]>((ctx, row) => {
-  const hoveredId = ctx.get(hoveredIdAtom);
-  if (hoveredId === row.id) {
-    hoveredIdAtom(ctx, undefined);
+  const hoverId = ctx.get(hoverIdAtom);
+  if (hoverId === row.id) {
+    hoverIdAtom(ctx, undefined);
   }
 });
 
 const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [hovered] = useAtom((ctx) => {
-    const hoveredId = ctx.spy(hoveredIdAtom);
-    return hoveredId === props.row.id;
+  const [hover] = useAtom((ctx) => {
+    const hoverId = ctx.spy(hoverIdAtom);
+    return hoverId === props.row.id;
   });
 
   return (
-    <DataNumberingCell data-row-hover={hovered}>
-      {props.row.id}
-    </DataNumberingCell>
+    <DataNumberingCell data-row-hover={hover}>{props.row.id}</DataNumberingCell>
   );
 };
 

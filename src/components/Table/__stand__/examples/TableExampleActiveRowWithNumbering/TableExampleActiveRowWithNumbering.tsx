@@ -14,8 +14,8 @@ type ROW = {
   name: string;
   profession: string;
   status: string;
-  hovered: AtomMut<boolean>;
-  activated: AtomMut<boolean>;
+  hover: AtomMut<boolean>;
+  active: AtomMut<boolean>;
 };
 
 // Atoms
@@ -25,16 +25,16 @@ const rowsAtom = atom<AtomMut<ROW>[]>([
     name: 'Антон Григорьев',
     profession: 'Строитель, который построил дом',
     status: 'недоступен',
-    hovered: atom(false),
-    activated: atom(false),
+    hover: atom(false),
+    active: atom(false),
   }),
   atom({
     id: 2,
     name: 'Василий Пупкин',
     profession: 'Отвечает на вопросы, хотя его не спросили',
     status: 'на связи',
-    hovered: atom(false),
-    activated: atom(false),
+    hover: atom(false),
+    active: atom(false),
   }),
 ]);
 
@@ -42,31 +42,31 @@ const rowsAtom = atom<AtomMut<ROW>[]>([
 
 const onRowClickAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
   const row = ctx.get(rowAtom);
-  row.activated(ctx, !ctx.get(row.activated));
+  row.active(ctx, !ctx.get(row.active));
 });
 
 const onRowMouseEnterAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hovered(ctx, true);
+  ctx.get(rowAtom).hover(ctx, true);
 });
 
 const onRowMouseLeaveAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hovered(ctx, false);
+  ctx.get(rowAtom).hover(ctx, false);
 });
 
 const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
   const [row] = useAtom(props.row);
-  const [activated] = useAtom(row.activated);
-  const [hovered] = useAtom(row.hovered);
+  const [active] = useAtom(row.active);
+  const [hover] = useAtom(row.hover);
 
   return (
-    <DataNumberingCell data-row-active={activated} data-row-hover={hovered}>
+    <DataNumberingCell data-row-active={active} data-row-hover={hover}>
       {row.id}
     </DataNumberingCell>
   );
 };
 
 const createDataCellOther = (
-  accessor: Exclude<keyof ROW, 'hovered' | 'activated'>,
+  accessor: Exclude<keyof ROW, 'hover' | 'active'>,
 ) => {
   const Component: TableRenderCell<AtomMut<ROW>> = (props) => {
     const [row] = useAtom(props.row);

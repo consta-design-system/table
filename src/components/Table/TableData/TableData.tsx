@@ -6,7 +6,7 @@ import { DataCell } from '##/components/DataCell';
 import { cn } from '##/utils/bem';
 import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
-import { cnTableCell } from '../TableCell';
+import { TableDataCell } from '../TableDataCell';
 import {
   TableDataComponent,
   TableDataProps,
@@ -149,55 +149,40 @@ const TableDataRender = (
                 );
 
                 return (
-                  <div
+                  <TableDataCell
                     key={`${rowKey}-${accessor || columnIndex}`}
                     ref={columnIndex === 0 ? rowsRefs[rowIndex] : undefined}
-                    className={cnTableData(
-                      'Cell',
-                      {
-                        pinned: !!pinned,
-                      },
-                      [
-                        cnTableCell({
-                          separator: isSeparator,
-                          borderLeft:
-                            columnIndex !== 0 &&
-                            !(
-                              pinned !== 'left' &&
-                              lowHeaders[columnIndex - 1]?.pinned === 'left'
-                            ),
-                          borderRight:
-                            pinned === 'left' &&
-                            lowHeaders[columnIndex + 1]?.pinned !== 'left',
-                          borderTop: !isSeparator && rowIndex !== 0,
-                          sticky: !!pinned,
-                        }),
-                      ],
-                    )}
-                    style={{
-                      ['--table-cell-col-span' as string]:
-                        miss > 0 ? miss + 1 : undefined,
-                      left:
-                        pinned === 'left'
-                          ? `var(--table-column-sticky-left-offset-${columnIndex})`
-                          : undefined,
-                      right:
-                        pinned === 'right'
-                          ? `var(--table-column-sticky-right-offset-${columnIndex})`
-                          : undefined,
-                    }}
+                    pinned={pinned}
+                    isSeparator={isSeparator}
+                    columnIndex={columnIndex}
+                    borderLeft={
+                      columnIndex !== 0 &&
+                      !(
+                        pinned !== 'left' &&
+                        lowHeaders[columnIndex - 1]?.pinned === 'left'
+                      )
+                    }
+                    borderRight={
+                      pinned === 'left' &&
+                      lowHeaders[columnIndex + 1]?.pinned !== 'left'
+                    }
+                    borderTop={!isSeparator && rowIndex !== 0}
+                    colSpan={miss > 0 ? miss + 1 : undefined}
+                    tableRef={tableRef}
                   >
-                    {isNotNil(RenderCell) ? (
-                      <RenderCell
-                        row={row}
-                        rowIndex={rowIndex}
-                        columnIndex={columnIndex}
-                        tableRef={tableRef}
-                      />
-                    ) : (
-                      getCellDataByAccessor(row, accessor, isSeparator)
-                    )}
-                  </div>
+                    {() => {
+                      return isNotNil(RenderCell) ? (
+                        <RenderCell
+                          row={row}
+                          rowIndex={rowIndex}
+                          columnIndex={columnIndex}
+                          tableRef={tableRef}
+                        />
+                      ) : (
+                        getCellDataByAccessor(row, accessor, isSeparator)
+                      );
+                    }}
+                  </TableDataCell>
                 );
               },
             )}

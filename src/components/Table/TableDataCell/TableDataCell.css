@@ -1,0 +1,9 @@
+.ct--TableDataCell {
+  grid-column: span var(--table-cell-col-span, 1);
+  background: var(--table-data-cell-bg);
+  transition: background-color 0.2s;
+
+  &_pinned {
+    z-index: calc(var(--table-header-z-index) - 1);
+  }
+}

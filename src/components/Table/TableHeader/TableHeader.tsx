@@ -28,6 +28,8 @@ export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
     ...otherProps
   } = props;
 
+  console.log(headerCellsRefs);
+
   return (
     <div {...otherProps} className={cnTableHeader(null, [className])} ref={ref}>
       {headers.map((column, index) => {

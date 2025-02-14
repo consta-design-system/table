@@ -79,6 +79,18 @@ const getMiss = (
   return 0;
 };
 
+const sliceMap = <T, T2>(
+  array: T[],
+  slice: [number, number],
+  mapper: (item: T, index: number) => T2,
+) => {
+  const render = [];
+  for (let index = slice[0]; index < slice[1]; index++) {
+    render.push(mapper(array[index], index));
+  }
+  return render;
+};
+
 const TableDataRender = (
   props: TableDataProps,
   ref: React.Ref<HTMLDivElement>,
@@ -105,8 +117,8 @@ const TableDataRender = (
       ref={ref}
       className={cnTableData({ rowHoverEffect }, [className])}
     >
-      {rows.slice(...slice).map((row, index) => {
-        const rowIndex = index + slice[0];
+      {sliceMap(rows, slice, (row, rowIndex) => {
+        // const rowIndex = index + slice[0
         const rowKey = getKey(row, getRowKey, rowIndex);
         const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
 

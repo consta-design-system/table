@@ -1,7 +1,7 @@
 import './TableDataCell.css';
 
 import { forkRef } from '@consta/uikit/useForkRef';
-import React, { forwardRef, memo, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, memo, useRef } from 'react';
 
 import { cn } from '##/utils/bem';
 import { PropsWithHTMLAttributes } from '##/utils/types/PropsWithHTMLAttributes';
@@ -43,23 +43,6 @@ export const TableDataCell = memo(
       ref,
     ) => {
       const rootRef = useRef<HTMLDivElement>(null);
-      const [isVisible, setIsVisible] = useState(false);
-
-      useEffect(() => {
-        const el = rootRef.current;
-        if (!el) {
-          return;
-        }
-
-        const observer = new IntersectionObserver(([entry]) => {
-          setIsVisible(entry.isIntersecting);
-        });
-        observer.observe(el);
-
-        return () => {
-          observer.unobserve(el);
-        };
-      }, []);
 
       return (
         <div
@@ -90,10 +73,9 @@ export const TableDataCell = memo(
                 : undefined,
           }}
         >
-          {isVisible || columnIndex === 0 ? children() : null}
+          {children()}
         </div>
       );
     },
   ),
-  () => true,
 );

@@ -1,14 +1,25 @@
+import { objectWithDefault } from '@consta/uikit/__internal__/src/utils/object/objectWithDefault';
+import { usePropAtom } from '@consta/uikit/__internal__/src/utils/state/usePickAtom';
+import { useSendToAtom } from '@consta/uikit/__internal__/src/utils/state/useSendToAtom';
+import { withCtx } from '@consta/uikit/__internal__/src/utils/state/withCtx';
 import { useForkRef } from '@consta/uikit/useForkRef';
-import { useVirtualScroll } from '@consta/uikit/useVirtualScroll';
 import React, { forwardRef, memo } from 'react';
+
+import {
+  TableComponent,
+  TableDataComponent,
+  TableHeaderComponent,
+  TableProps,
+} from '##/components/Table/types';
+import { useVirtualScrollAtom } from '##/hooks/useVirtualScrollAtom';
 
 import { useHeaderData } from './helpers';
 import { TableBody } from './TableBody';
 import { TableData } from './TableData';
 import { TableHeader } from './TableHeader/TableHeader';
-import { TableComponent, TableHeaderComponent, TableProps } from './types';
 
 const MemoTableHeader = memo(TableHeader) as unknown as TableHeaderComponent;
+const MemoTableData = memo(TableData) as unknown as TableDataComponent;
 
 export const TableRender = (
   props: TableProps,
@@ -30,48 +41,66 @@ export const TableRender = (
     ...otherProps
   } = props;
 
-  const headerData = useHeaderData(columns);
+  const propsAtom = useSendToAtom(
+    objectWithDefault({ headerZIndex: 1 }, props),
+  );
 
   const {
-    listRefs: rowsRefs,
-    scrollElementRef,
-    slice,
-    spaceTop,
-  } = useVirtualScroll({
-    length: rows.length,
-    isActive: virtualScroll,
-  });
+    resizerTopOffsetsAtom,
+    headerHeightAtom,
+    resizersRefsAtom,
+    lowHeadersAtom,
+    stickyTopOffsetsAtom,
+    flattenedHeadersAtom,
+    headerCellsRefsAtom,
+    stickyLeftOffsetsAtom,
+    stickyRightOffsetsAtom,
+    bordersFlattenedHeadersAtom,
+    intersectingColumnsAtom,
+    leftNoVisibleItemsAtom,
+    rightNoVisibleItemsAtom,
+  } = useHeaderData(
+    usePropAtom(propsAtom, 'columns'),
+    usePropAtom(propsAtom, 'virtualScroll'),
+  );
+
+  const { listRefsAtom, scrollElementRef, sliceAtom, spaceTopAtom } =
+    useVirtualScrollAtom({
+      length: rows.length,
+      isActive: Array.isArray(virtualScroll) ? virtualScroll[1] : virtualScroll,
+    });
 
   return (
     <TableBody
       {...otherProps}
-      topOffsets={headerData.resizerTopOffsets}
-      spaceTop={spaceTop}
+      topOffsetsAtom={resizerTopOffsetsAtom}
+      spaceTopAtom={spaceTopAtom}
       ref={useForkRef([scrollElementRef, ref])}
-      headerHeight={headerData.headerHeight}
-      lowHeaders={headerData.lowHeaders}
-      resizersRefs={headerData.resizersRefs}
+      headerHeightAtom={headerHeightAtom}
+      lowHeadersAtom={lowHeadersAtom}
+      resizersRefsAtom={resizersRefsAtom}
       resizable={resizable}
-      stickyTopOffsets={headerData.stickyTopOffsets}
+      stickyTopOffsetsAtom={stickyTopOffsetsAtom}
       stickyHeader={stickyHeader}
       headerZIndex={headerZIndex}
+      intersectingColumnsAtom={intersectingColumnsAtom}
       header={
         <MemoTableHeader
-          headers={headerData.flattenedHeaders}
-          headerCellsRefs={headerData.headerCellsRefs}
+          headersAtom={flattenedHeadersAtom}
+          headerCellsRefsAtom={headerCellsRefsAtom}
           stickyHeader={stickyHeader}
-          stickyLeftOffsets={headerData.stickyLeftOffsets}
-          stickyRightOffsets={headerData.stickyRightOffsets}
-          borders={headerData.bordersFlattenedHeaders}
+          stickyLeftOffsetsAtom={stickyLeftOffsetsAtom}
+          stickyRightOffsetsAtom={stickyRightOffsetsAtom}
+          bordersAtom={bordersFlattenedHeadersAtom}
           tableRef={scrollElementRef}
         />
       }
       body={
-        <TableData
-          lowHeaders={headerData.lowHeaders}
+        <MemoTableData
+          lowHeadersAtom={lowHeadersAtom}
           rows={rows}
-          rowsRefs={rowsRefs}
-          slice={slice}
+          rowsRefsAtom={listRefsAtom}
+          sliceAtom={sliceAtom}
           zebraStriped={zebraStriped}
           onRowMouseEnter={onRowMouseEnter}
           onRowMouseLeave={onRowMouseLeave}
@@ -79,10 +108,12 @@ export const TableRender = (
           getRowKey={getRowKey}
           tableRef={scrollElementRef}
           rowHoverEffect={rowHoverEffect}
+          leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
+          rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
         />
       }
     />
   );
 };
 
-export const Table = forwardRef(TableRender) as TableComponent;
+export const Table = withCtx(forwardRef(TableRender)) as TableComponent;

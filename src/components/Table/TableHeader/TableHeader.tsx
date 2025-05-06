@@ -1,6 +1,7 @@
 import './TableHeader.css';
 
 import { forkRef } from '@consta/uikit/useForkRef';
+import { useAtom } from '@reatom/npm-react';
 import React, { forwardRef } from 'react';
 
 import { HeaderDataCell } from '##/components/HeaderDataCell';
@@ -17,16 +18,22 @@ const DefaultRenderHeaderCell: TableRenderHeaderCell = ({ title }) => (
 
 export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
   const {
-    headers,
+    headersAtom,
     className,
-    stickyLeftOffsets,
-    stickyRightOffsets,
+    stickyLeftOffsetsAtom,
+    stickyRightOffsetsAtom,
     stickyHeader,
-    headerCellsRefs,
-    borders,
+    headerCellsRefsAtom,
+    bordersAtom,
     tableRef,
     ...otherProps
   } = props;
+
+  const [headers] = useAtom(headersAtom);
+  const [borders] = useAtom(bordersAtom);
+  const [stickyLeftOffsets] = useAtom(stickyLeftOffsetsAtom);
+  const [stickyRightOffsets] = useAtom(stickyRightOffsetsAtom);
+  const [headerCellsRefs] = useAtom(headerCellsRefsAtom);
 
   return (
     <div {...otherProps} className={cnTableHeader(null, [className])} ref={ref}>

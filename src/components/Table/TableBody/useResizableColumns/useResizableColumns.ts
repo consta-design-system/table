@@ -1,5 +1,8 @@
-import { useMutableRef } from '@consta/uikit/useMutableRef';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
+import { useSendToAtom } from '@consta/uikit/__internal__/src/utils/state/useSendToAtom';
+import { action } from '@reatom/core';
+import { useAction, useUpdate } from '@reatom/npm-react';
+import { useEffect } from 'react';
 
 import {
   addResult,
@@ -8,97 +11,121 @@ import {
   sizesEq,
   useResizeContainer,
 } from './helpers';
-import { UseResizableColumnsHook } from './types';
+import { UseResizableColumnsProps } from './types';
 
-export const useResizableColumns: UseResizableColumnsHook = (props) => {
-  const { blocks, container, resizable } = props;
+export const useResizableColumns = (props: UseResizableColumnsProps) => {
+  const propsAtom = useSendToAtom(props);
+  const blocksLengthAtom = useCreateAtom(
+    (ctx) => ctx.get(propsAtom).blocks.length,
+  );
+  const blocksAtom = useCreateAtom((ctx) => ctx.spy(propsAtom).blocks);
+  const resizableAtom = useCreateAtom((ctx) => ctx.spy(propsAtom).resizable);
 
-  const [sizes, setSizes] = useState(getRefsSizes(blocks));
+  const containerAtom = useCreateAtom((ctx) => ctx.spy(propsAtom).container);
 
-  const setSizesWithCompare = useCallback(
-    (newSizes: (string | number | undefined)[]) => {
-      setSizes((sizes) => (sizesEq(newSizes, sizes) ? sizes : newSizes));
-    },
-    [],
+  const { blocks } = props;
+
+  const sizesAtom = useCreateAtom(getRefsSizes(blocks));
+
+  const activeIndexAtom = useCreateAtom<number | null>(null);
+  const resizingAtom = useCreateAtom(
+    (ctx) => typeof ctx.spy(activeIndexAtom) === 'number',
   );
 
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const refs = useMutableRef([
-    container,
-    blocks,
-    resizable,
-    activeIndex,
-    sizes,
-  ] as const);
-
-  const handleRelease = useCallback(() => {
-    controlListeners('remove');
-    setActiveIndex(null);
-  }, []);
-
-  const handleTouchMove = useCallback(
-    (event: MouseEvent | TouchEvent | Event) => {
-      const [container, blocks, resizable, activeIndex] = refs.current;
-      if (typeof activeIndex === 'number' && resizable) {
-        setSizes((sizes) => {
-          const calculatedSizes = getCalculatedSizes(
-            event,
-            activeIndex,
-            blocks,
-            container,
-            sizes,
-            resizable,
-          );
-
-          const newSizes = addResult(calculatedSizes, sizes);
-
-          if (sizesEq(newSizes, sizes)) {
-            return sizes;
-          }
-
-          return newSizes;
-        });
+  const setSizes = useAction(
+    (ctx, newSizes: (string | number | undefined)[]) => {
+      if (!sizesEq(newSizes, ctx.get(sizesAtom))) {
+        sizesAtom(ctx, newSizes);
       }
     },
-    [],
   );
 
-  const controlListeners = useCallback((type: 'add' | 'remove') => {
+  const controlListeners = useAction((_, type: 'add' | 'remove') => {
     const method = type === 'add' ? 'addEventListener' : 'removeEventListener';
     document[method]('mouseup', handleRelease);
     document[method]('touchend', handleRelease);
     document[method]('mousemove', handleTouchMove);
     document[method]('touchmove', handleTouchMove);
-  }, []);
+  });
 
-  const handlePress = useCallback((index: number) => {
-    setActiveIndex(index);
+  const handleRelease = useAction((ctx) => {
+    activeIndexAtom(ctx, null);
+    controlListeners('remove');
+  });
+
+  const handlePress = useAction((ctx, index: number) => {
+    activeIndexAtom(ctx, index);
     controlListeners('add');
-  }, []);
+  });
 
-  const handlers = useMemo(
-    () =>
-      Array.from({ length: blocks.length }).map((_el, index) => ({
-        onMouseDown: () => (resizable ? handlePress(index) : undefined),
-        onTouchStart: () => (resizable ? handlePress(index) : undefined),
-      })),
-    [blocks, container, resizable],
+  const handleTouchMove = useAction(
+    (ctx, event: MouseEvent | TouchEvent | Event) => {
+      const { container, blocks, resizable } = ctx.get(propsAtom);
+      const activeIndex = ctx.get(activeIndexAtom);
+
+      if (typeof activeIndex === 'number' && resizable) {
+        const sizes = ctx.get(sizesAtom);
+
+        setSizes(
+          addResult(
+            getCalculatedSizes(
+              event,
+              activeIndex,
+              blocks,
+              container,
+              sizes,
+              resizable,
+            ),
+            sizes,
+          ),
+        );
+      }
+    },
   );
 
-  useResizeContainer(container, refs, setSizesWithCompare);
+  const handlersAtom = useCreateAtom((ctx) => {
+    const length = ctx.spy(blocksLengthAtom);
+    const resizable = ctx.spy(resizableAtom);
+    if (!resizable) {
+      return [];
+    }
+
+    return Array.from({ length }).map((_el, index) => ({
+      onMouseDown: () => handlePress(index),
+      onTouchStart: () => handlePress(index),
+    }));
+  });
+
+  useResizeContainer(
+    containerAtom,
+    blocksAtom,
+    resizableAtom,
+    sizesAtom,
+    setSizes,
+  );
+
+  useUpdate(
+    (_, blocks) => {
+      setSizes(getRefsSizes(blocks));
+    },
+    [blocksAtom, resizableAtom],
+  );
+
+  useUpdate(
+    (_, resizable) => {
+      !resizable && handleRelease();
+    },
+    [resizableAtom],
+  );
 
   useEffect(() => {
-    setSizesWithCompare(getRefsSizes(blocks));
-  }, [blocks, resizable]);
-
-  useEffect(() => {
-    !resizable && handleRelease();
-  }, [resizable]);
+    return handleRelease;
+  }, []);
 
   return {
-    handlers,
-    sizes,
-    activeIndex,
-    resizing: typeof activeIndex === 'number',
+    handlersAtom,
+    sizesAtom,
+    activeIndexAtom,
+    resizingAtom,
   };
 };

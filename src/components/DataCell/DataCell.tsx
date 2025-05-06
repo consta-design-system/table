@@ -20,11 +20,15 @@ export type DataCellProps = {
   view?: 'primary' | 'alert' | 'success' | 'warning';
   size?: 'm' | 's';
   indicator?: 'alert' | 'warning';
+  truncate?: boolean;
 } & JSX.IntrinsicElements['div'];
 
-const renderContentSlot = (children: DataCellProps['children']) => (
+const renderContentSlot = (
+  children: DataCellProps['children'],
+  truncate?: boolean,
+) => (
   <div
-    className={cnDataCell('ContentSlot', [
+    className={cnDataCell('ContentSlot', { truncate }, [
       cnMixFlex({
         flex: 'flex',
         align: 'center',
@@ -42,6 +46,7 @@ const renderChildren = (
   children: DataCellProps['children'],
   view: DataCellProps['view'],
   size: 'm' | 's',
+  truncate: boolean,
 ) => {
   if (isString(children) || isNumber(children)) {
     return renderContentSlot(
@@ -51,9 +56,11 @@ const renderChildren = (
         })}
         view={view}
         size={size}
+        truncate={truncate}
       >
         {children}
       </Text>,
+      truncate,
     );
   }
   return renderContentSlot(children);
@@ -71,6 +78,7 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
       size = 'm',
       indicator,
       style,
+      truncate = false,
       ...otherProps
     } = props;
     const level = levelProp < 0 ? 0 : levelProp;
@@ -90,8 +98,8 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
     const childrenSlots = children
       ? [
           ...(Array.isArray(children)
-            ? children.map((item) => renderChildren(item, view, size))
-            : [renderChildren(children, view, size)]),
+            ? children.map((item) => renderChildren(item, view, size, truncate))
+            : [renderChildren(children, view, size, truncate)]),
         ]
       : [];
 
@@ -140,7 +148,11 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
           </div>
         ) : undefined}
         {contentSlots.length ? (
-          <div className={cnMixFlex({ flex: 'flex', gap: '2xs' })}>
+          <div
+            className={cnDataCell('Slots', { truncate }, [
+              cnMixFlex({ flex: 'flex', gap: '2xs' }),
+            ])}
+          >
             {contentSlots.map((item, index) => {
               return <Fragment key={index}>{item}</Fragment>;
             })}

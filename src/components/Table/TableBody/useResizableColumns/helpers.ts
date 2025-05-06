@@ -1,6 +1,8 @@
 import { trackPosition } from '@consta/uikit/__internal__/src/components/Slider/useSlider/helper';
 import { useDebounce } from '@consta/uikit/useDebounce';
 import { useResizeObserved } from '@consta/uikit/useResizeObserved';
+import { AtomMut } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/npm-react';
 import React, { useMemo } from 'react';
 
 import { UseResizableColumnsBlock, UseResizableColumnsSize } from './types';
@@ -188,51 +190,51 @@ export const getCalculatedSizes = (
 };
 
 export const useResizeContainer = (
-  containerRef: React.RefObject<HTMLElement>,
-  refs: React.MutableRefObject<
-    readonly [
-      React.RefObject<HTMLElement>,
-      UseResizableColumnsBlock[],
-      'inside' | 'outside' | undefined,
-      number | null,
-      (string | number | undefined)[],
-    ]
-  >,
+  containerAtom: AtomMut<React.RefObject<HTMLElement>>,
+  blocksAtom: AtomMut<UseResizableColumnsBlock[]>,
+  resizableAtom: AtomMut<'inside' | 'outside' | undefined>,
+  sizesAtom: AtomMut<(string | number | undefined)[]>,
   set: (newSizes: (string | number | undefined)[]) => void,
-) =>
-  useResizeObserved(
+) => {
+  const [containerRef] = useAtom(containerAtom);
+
+  return useResizeObserved(
     useMemo(() => [containerRef], [containerRef]),
-    useDebounce((el) => {
-      const containerWidth = getContainerWidth(el);
-      const newSizes = [...refs.current[4]];
-      const resizable = refs.current[2];
+    useDebounce(
+      useAction((ctx, el) => {
+        const containerWidth = getContainerWidth(el);
+        const newSizes = [...ctx.get(sizesAtom)];
+        const resizable = ctx.get(resizableAtom);
 
-      if (containerWidth && isSizesCalculate(newSizes)) {
-        const blocks = refs.current[1];
-        const sizesSum = getSizesSum(newSizes);
-        let gap = containerWidth - sizesSum;
+        if (containerWidth && isSizesCalculate(newSizes)) {
+          const blocks = ctx.get(blocksAtom);
+          const sizesSum = getSizesSum(newSizes);
+          let gap = containerWidth - sizesSum;
 
-        if (
-          (resizable !== 'outside' && gap) ||
-          (resizable === 'outside' && gap > 0)
-        ) {
-          let index = blocks.length - 1;
+          if (
+            (resizable !== 'outside' && gap) ||
+            (resizable === 'outside' && gap > 0)
+          ) {
+            let index = blocks.length - 1;
 
-          while (newSizes[index] && gap) {
-            const blockMinMax = getBlockMaxSizes(blocks[index]);
-            const size = newSizes[index];
-            const newSize =
-              minMax(blockMinMax[0], blockMinMax[1], newSizes[index] + gap) ||
-              0;
+            while (newSizes[index] && gap) {
+              const blockMinMax = getBlockMaxSizes(blocks[index]);
+              const size = newSizes[index];
+              const newSize =
+                minMax(blockMinMax[0], blockMinMax[1], newSizes[index] + gap) ||
+                0;
 
-            gap -= newSize - size;
+              gap -= newSize - size;
 
-            newSizes[index] = newSize;
+              newSizes[index] = newSize;
 
-            index -= 1;
+              index -= 1;
+            }
           }
+          set(newSizes);
         }
-        set(newSizes);
-      }
-    }, 10),
+      }),
+      10,
+    ),
   );
+};

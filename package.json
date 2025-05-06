@@ -13,8 +13,10 @@
     }
   ],
   "peerDependencies": {
-    "@consta/icons": "^1.0.1",
-    "@consta/uikit": "^5.4.1"
+    "@consta/icons": "^1.1.0",
+    "@consta/uikit": "^5.19.2",
+    "@reatom/core": "3.10.1",
+    "@reatom/npm-react": "3.10.6"
   },
   "files": [
     "*",
@@ -42,7 +44,7 @@
     "unit:clear": "jest --clearCache",
     "build:css": "cross-env NODE_ENV=buildProduction postcss 'src/**/*.css' --base src --dir dist/__internal__/src/",
     "build:js": "cross-env NODE_ENV=buildProduction BUILDING_JS=true babel --extensions '.ts,.tsx' --config-file ./babel.config.js --source-maps --out-dir dist/__internal__/src/ ./src",
-    "build:types": "cross-env NODE_ENV=buildProduction ttsc --declaration --outDir dist/__internal__/src/ --emitDeclarationOnly -p tsconfig.build.json",
+    "build:types": "cross-env NODE_ENV=buildProduction tsc --declaration --outDir dist/__internal__/src/ --emitDeclarationOnly -p tsconfig.build.json & node ./scripts/copy.js --src=./tsconfig.json --dest=./dist/__internal__/tsconfig.json & tsconfig-replace-paths -p ./dist/__internal__/tsconfig.json -s ./dist/__internal__ -o ./dist/__internal__ & node ./scripts/rm.js --path=./dist/__internal__/tsconfig.json",
     "build:package.json": "node scripts/prepare-package-json.js",
     "build:reexports": "node scripts/generateReExports.js --config=scripts/generateReExportsConfig.js",
     "build:copy-assets": "node scripts/copyAssets.js",
@@ -96,7 +98,7 @@
     "@bem-react/classnames": "^1.3.10",
     "@bem/sdk.naming.cell.match": "^0.1.3",
     "@bem/sdk.naming.presets": "^0.2.3",
-    "@consta/stand": "^0.0.148",
+    "@consta/stand": "^0.0.154",
     "@mdx-js/loader": "^2.1.5",
     "@oclif/command": "^1.8.16",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
@@ -192,8 +194,8 @@
     "terser-webpack-plugin": "^5.2.5",
     "ts-jest": "^28.0.7",
     "ts-loader": "^9.2.8",
-    "ttypescript": "^1.5.15",
-    "typescript": "^4.6.3",
+    "tsconfig-replace-paths": "^0.0.14",
+    "typescript": "^5.8.3",
     "typescript-eslint-parser": "^22.0.0",
     "typescript-transform-paths": "^3.3.1",
     "use-subscription": "^1.5.1",

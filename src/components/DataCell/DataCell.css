@@ -42,6 +42,12 @@
     }
   }
 
+  &-Slots {
+    &_truncate {
+      overflow: hidden;
+    }
+  }
+
   &-ControlSlot {
     min-width: var(--table-data-cell-slot-width);
     min-height: var(--table-data-cell-slot-height);
@@ -49,6 +55,9 @@
 
   &-ContentSlot {
     min-height: var(--table-data-cell-slot-height);
+    &_truncate {
+      overflow: hidden;
+    }
   }
 }
 

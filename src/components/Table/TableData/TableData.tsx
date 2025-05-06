@@ -1,12 +1,12 @@
 import './TableData.css';
 
+import { useAtom } from '@reatom/npm-react';
 import React, { forwardRef } from 'react';
 
-import { DataCell } from '##/components/DataCell';
 import { cn } from '##/utils/bem';
-import { isNotNil, isNumber, isString } from '##/utils/type-guards';
+import { isNotNil } from '##/utils/type-guards';
 
-import { cnTableCell } from '../TableCell';
+import { TableRow } from '../TableRow';
 import {
   TableDataComponent,
   TableDataProps,
@@ -15,28 +15,6 @@ import {
 } from '../types';
 
 export const cnTableData = cn('TableData');
-
-const getCellDataByAccessor = <T,>(
-  row: T,
-  accessor?: (keyof T extends string ? string & keyof T : never) | undefined,
-  isSeparator?: boolean,
-) => {
-  if (isSeparator) {
-    return '';
-  }
-
-  if (!accessor) {
-    return '';
-  }
-
-  const data = row?.[accessor];
-
-  if (isString(data) || isNumber(data)) {
-    return <DataCell>{data.toString()}</DataCell>;
-  }
-
-  return '';
-};
 
 const getRowMouseEvent = (
   row: TableDefaultRow,
@@ -61,24 +39,6 @@ const getKey = (
   return rowIndex;
 };
 
-const getMiss = (
-  colSpan: number | undefined | 'end',
-  index: number,
-  length: number,
-  pinned: boolean,
-) => {
-  if (pinned) {
-    return 0;
-  }
-  if (colSpan === 'end') {
-    return length - index - 1;
-  }
-  if (typeof colSpan === 'number') {
-    return colSpan - 1;
-  }
-  return 0;
-};
-
 const TableDataRender = (
   props: TableDataProps,
   ref: React.Ref<HTMLDivElement>,
@@ -86,9 +46,9 @@ const TableDataRender = (
   const {
     className,
     rows,
-    lowHeaders,
-    rowsRefs,
-    slice,
+    lowHeadersAtom,
+    rowsRefsAtom,
+    sliceAtom,
     zebraStriped = false,
     onRowMouseEnter,
     onRowMouseLeave,
@@ -96,8 +56,13 @@ const TableDataRender = (
     getRowKey,
     tableRef,
     rowHoverEffect,
+    leftNoVisibleItemsAtom,
+    rightNoVisibleItemsAtom,
     ...otherProps
   } = props;
+
+  const [rowsRefs] = useAtom(rowsRefsAtom);
+  const [slice] = useAtom(sliceAtom);
 
   return (
     <div
@@ -107,101 +72,23 @@ const TableDataRender = (
     >
       {rows.slice(...slice).map((row, index) => {
         const rowIndex = index + slice[0];
-        const rowKey = getKey(row, getRowKey, rowIndex);
         const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
 
-        let miss = 0;
-
         return (
-          <div
-            className={cnTableData('Row', { zebraStriped: rowZebraStriped })}
-            key={rowKey}
+          <TableRow
+            key={getKey(row, getRowKey, rowIndex)}
+            row={row}
+            index={rowIndex}
+            lowHeadersAtom={lowHeadersAtom}
+            zebraStriped={rowZebraStriped}
             onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
             onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
             onClick={getRowMouseEvent(row, onRowClick)}
-            aria-hidden="true"
-          >
-            {lowHeaders.map(
-              (
-                {
-                  isSeparator,
-                  accessor,
-                  pinned,
-                  renderCell: RenderCell,
-                  colSpan: getColSpan,
-                },
-                columnIndex,
-              ) => {
-                if (miss) {
-                  miss = miss ? miss - 1 : miss;
-                  return null;
-                }
-
-                const colSpan = getColSpan?.({
-                  row,
-                });
-
-                miss = getMiss(
-                  colSpan,
-                  columnIndex,
-                  lowHeaders.length,
-                  !!pinned,
-                );
-
-                return (
-                  <div
-                    key={`${rowKey}-${accessor || columnIndex}`}
-                    ref={columnIndex === 0 ? rowsRefs[rowIndex] : undefined}
-                    className={cnTableData(
-                      'Cell',
-                      {
-                        pinned: !!pinned,
-                      },
-                      [
-                        cnTableCell({
-                          separator: isSeparator,
-                          borderLeft:
-                            columnIndex !== 0 &&
-                            !(
-                              pinned !== 'left' &&
-                              lowHeaders[columnIndex - 1]?.pinned === 'left'
-                            ),
-                          borderRight:
-                            pinned === 'left' &&
-                            lowHeaders[columnIndex + 1]?.pinned !== 'left',
-                          borderTop: !isSeparator && rowIndex !== 0,
-                          sticky: !!pinned,
-                        }),
-                      ],
-                    )}
-                    style={{
-                      ['--table-cell-col-span' as string]:
-                        miss > 0 ? miss + 1 : undefined,
-                      left:
-                        pinned === 'left'
-                          ? `var(--table-column-sticky-left-offset-${columnIndex})`
-                          : undefined,
-                      right:
-                        pinned === 'right'
-                          ? `var(--table-column-sticky-right-offset-${columnIndex})`
-                          : undefined,
-                    }}
-                  >
-                    {isNotNil(RenderCell) ? (
-                      <RenderCell
-                        row={row}
-                        rowIndex={rowIndex}
-                        columnIndex={columnIndex}
-                        tableRef={tableRef}
-                      />
-                    ) : (
-                      getCellDataByAccessor(row, accessor, isSeparator)
-                    )}
-                  </div>
-                );
-              },
-            )}
-          </div>
+            tableRef={tableRef}
+            ref={rowsRefs[rowIndex]}
+            leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
+            rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+          />
         );
       })}
     </div>

@@ -1,0 +1,8 @@
+.ct--TableRowCell {
+  background: var(--table-data-cell-bg);
+  transition: background-color 0.2s;
+
+  &_pinned {
+    z-index: calc(var(--table-header-z-index) - 1);
+  }
+}

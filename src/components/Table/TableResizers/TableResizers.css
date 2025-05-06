@@ -11,10 +11,9 @@
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-    --resizer-top:
-      calc(
-        (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
-      );
+    --resizer-top: calc(
+      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
+    );
     position: absolute;
     top: var(--resizer-top);
     right: 0;
@@ -42,5 +41,10 @@
     &_active {
       opacity: 1;
     }
+  }
+  &-VirtualScrollHelper {
+    position: absolute;
+    top: calc(var(--table-header-height) * -1);
+    width: 100%;
   }
 }

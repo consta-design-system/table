@@ -1,4 +1,5 @@
-const { normalize, resolve, join } = require('path');
+const { normalize, resolve } = require('path');
+const { join } = require('./helpers/join');
 const { writeFile, ensureDir, remove } = require('fs-extra');
 const { existsSync } = require('fs');
 const { Command, flags } = require('@oclif/command');
@@ -24,9 +25,9 @@ const generateReExport = async (src, reexport, ignore, distPath) => {
 
   const components = [];
 
-  const files = await fg(join(src, reexport, '**/*.{ts,tsx}'), { ignore });
-
-  // // console.log(files);
+  const files = await fg(join(src, reexport, '**', '*.{ts,tsx}'), {
+    ignore,
+  });
 
   files
     .sort()
@@ -53,8 +54,8 @@ const generateReExport = async (src, reexport, ignore, distPath) => {
     const blockDir = join(reexport, componentName);
     const distDir = join(distPath, componentName);
 
-    // // console.log(componentName);
-    // // console.log(blockDir);
+    // console.log(componentName);
+    // console.log(blockDir);
 
     // скрипт для солздания index.ts для всех компонентов
 

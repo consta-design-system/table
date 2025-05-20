@@ -1,4 +1,5 @@
-const { normalize, dirname, join, relative, resolve } = require('path');
+const { normalize, dirname, relative, resolve } = require('path');
+const { join } = require('./join');
 const {
   readFile,
   writeFile,
@@ -453,7 +454,7 @@ const generateReExports = (
 
         if (!cell) {
           // eslint-disable-next-line no-console
-          // // console.log(logSymbols.warning, 'not exported:', entityName);
+          // console.log(logSymbols.warning, 'not exported:', entityName);
           return;
         }
 
@@ -590,7 +591,7 @@ const generateReExports = (
     const gitignorePath = join(distPath, '.gitignore');
     await updateGitignore(newKeys, gitignorePath);
     // eslint-disable-next-line no-console
-    // // console.log(logSymbols.success, 'Update', gitignorePath);
+    // console.log(logSymbols.success, 'Update', gitignorePath);
   });
 
 module.exports = {

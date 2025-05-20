@@ -14,13 +14,3 @@ export type UseResizableColumnsProps = {
 };
 
 export type UseResizableColumnsSize = number | string | undefined;
-
-export type UseResizableColumnsHook = (props: UseResizableColumnsProps) => {
-  handlers: Array<{
-    onMouseDown: React.MouseEventHandler;
-    onTouchStart: React.TouchEventHandler;
-  }>;
-  sizes: UseResizableColumnsSize[];
-  activeIndex: number | null;
-  resizing: boolean;
-};

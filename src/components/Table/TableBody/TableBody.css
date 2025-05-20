@@ -6,6 +6,10 @@
   background: var(--color-bg-default);
   grid-template-columns: var(--table-grid-template-columns);
 
+  &-VarContainer {
+    display: contents;
+  }
+
   &-Separator {
     z-index: calc(var(--table-header-z-index));
     height: var(--table-body-separator-height);

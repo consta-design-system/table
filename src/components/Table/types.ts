@@ -1,4 +1,6 @@
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
+import { AtomMut } from '@reatom/core';
+import React from 'react';
 
 export type ValueOf<T> = T[keyof T];
 
@@ -17,7 +19,9 @@ export type TableRenderCell<T> = (props: {
   tableRef: React.RefObject<HTMLDivElement>;
 }) => React.ReactElement | null;
 
-type TabletColSpan<ROW> = (props: { row: ROW }) => number | 'end' | undefined;
+export type TabletColSpan<ROW> = (props: {
+  row: ROW;
+}) => number | 'end' | undefined;
 
 export type TableColumn<ROW> = {
   title?: string;
@@ -75,11 +79,12 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     columns: TableColumn<ROW>[];
     rows: ROW[];
     getRowKey?: (row: ROW) => string | number;
+    getRowHeight?: (row: ROW) => number;
     onRowMouseEnter?: TableRowMouseEvent<ROW>;
     onRowMouseLeave?: TableRowMouseEvent<ROW>;
     onRowClick?: TableRowMouseEvent<ROW>;
     stickyHeader?: boolean;
-    virtualScroll?: boolean;
+    virtualScroll?: boolean | [boolean, boolean];
     resizable?: 'inside' | 'outside';
     zebraStriped?: boolean;
     headerZIndex?: number;
@@ -95,12 +100,12 @@ export type TableComponent = <ROW = TableDefaultRow>(
 export type TableHeaderProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
     {
-      headers: Header<ROW>[];
+      headersAtom: AtomMut<Header<ROW>[]>;
       stickyHeader?: boolean;
-      stickyLeftOffsets: number[];
-      stickyRightOffsets: number[];
-      headerCellsRefs: React.RefObject<HTMLDivElement>[];
-      borders: [boolean, boolean, boolean][];
+      stickyLeftOffsetsAtom: AtomMut<number[]>;
+      stickyRightOffsetsAtom: AtomMut<number[]>;
+      headerCellsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
+      bordersAtom: AtomMut<[boolean, boolean, boolean][]>;
       tableRef: React.RefObject<HTMLDivElement>;
     },
     HTMLDivElement
@@ -112,41 +117,61 @@ export type TableHeaderComponent = <ROW = TableDefaultRow>(
 
 export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
-    topOffsets: number[];
-    spaceTop: number;
-    headerHeight: number;
-    resizersRefs: React.RefObject<HTMLDivElement>[];
+    topOffsetsAtom: AtomMut<number[]>;
+    spaceTopAtom: AtomMut<number>;
+    headerHeightAtom: AtomMut<number>;
+    resizersRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
     header: React.ReactNode;
     body: React.ReactNode;
     resizable?: 'inside' | 'outside';
-    stickyTopOffsets: number[];
+    stickyTopOffsetsAtom: AtomMut<number[]>;
     stickyHeader?: boolean;
     headerZIndex: number;
+    intersectingColumnsAtom: AtomMut<boolean[]>;
   },
   HTMLDivElement
 > & {
-  lowHeaders: TableColumn<ROW>[];
+  lowHeadersAtom: AtomMut<TableColumn<ROW>[]>;
 };
 
 export type TableBodyComponent = <ROW>(
   props: TableBodyProps<ROW>,
 ) => React.ReactElement | null;
 
+type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
+  {
+    headerHeightAtom: AtomMut<number>;
+    spaceTopAtom: AtomMut<number>;
+    sizesAtom: AtomMut<(string | number | undefined)[]>;
+    topOffsetsAtom: AtomMut<number[]>;
+    stickyTopOffsetsAtom: AtomMut<number[]>;
+    headerZIndexAtom: AtomMut<number>;
+    resizingAtom: AtomMut<boolean>;
+  },
+  HTMLDivElement
+>;
+
+export type TableBodyRootComponent = (
+  props: TableBodyRootProps,
+) => React.ReactElement | null;
+
 export type TableDataProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
     {
-      rowsRefs: React.Ref<HTMLDivElement>[];
-      slice: [number, number];
+      rowsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
+      sliceAtom: AtomMut<[number, number]>;
       onRowMouseEnter?: TableRowMouseEvent<ROW>;
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
       getRowKey?: (row: ROW) => string | number;
       tableRef: React.RefObject<HTMLDivElement>;
       rowHoverEffect?: boolean;
+      leftNoVisibleItemsAtom: AtomMut<number>;
+      rightNoVisibleItemsAtom: AtomMut<number>;
     },
     HTMLDivElement
   > & {
-    lowHeaders: TableColumn<ROW>[];
+    lowHeadersAtom: AtomMut<TableColumn<ROW>[]>;
     rows: ROW[];
     zebraStriped?: boolean;
   };

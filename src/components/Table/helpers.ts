@@ -1,10 +1,10 @@
-import { useRefs } from '@consta/uikit/useRefs';
-import {
-  getElementSize,
-  useResizeObserved,
-} from '@consta/uikit/useResizeObserved';
-import React, { useMemo } from 'react';
+import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
+import { getElementSize } from '@consta/uikit/useResizeObserved';
+import { AtomMut } from '@reatom/core';
+import { useAtom, useCtx } from '@reatom/npm-react';
+import React, { createRef } from 'react';
 
+import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';
 import { get, set } from '##/utils/object/get';
 
 import { Header, Position, TableColumn } from './types';
@@ -301,18 +301,21 @@ const getIsFirst = <T>(columns: Header<T>[], column: Header<T>): boolean => {
 };
 
 export type HeaderData<T> = {
-  headers: Header<T>[][];
-  flattenedHeaders: Header<T>[];
-  lowHeaders: TableColumn<T>[];
-  headerRowsHeights: number[];
-  resizerTopOffsets: number[];
-  stickyTopOffsets: number[];
-  headerHeight: number;
-  resizersRefs: React.RefObject<HTMLDivElement>[];
-  headerCellsRefs: React.RefObject<HTMLDivElement>[];
-  stickyLeftOffsets: number[];
-  stickyRightOffsets: number[];
-  bordersFlattenedHeaders: [boolean, boolean, boolean][];
+  headersAtom: AtomMut<Header<T>[][]>;
+  flattenedHeadersAtom: AtomMut<Header<T>[]>;
+  lowHeadersAtom: AtomMut<TableColumn<T>[]>;
+  headerRowsHeightsAtom: AtomMut<number[]>;
+  resizerTopOffsetsAtom: AtomMut<number[]>;
+  stickyTopOffsetsAtom: AtomMut<number[]>;
+  headerHeightAtom: AtomMut<number>;
+  resizersRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
+  headerCellsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
+  stickyLeftOffsetsAtom: AtomMut<number[]>;
+  stickyRightOffsetsAtom: AtomMut<number[]>;
+  bordersFlattenedHeadersAtom: AtomMut<[boolean, boolean, boolean][]>;
+  intersectingColumnsAtom: AtomMut<boolean[]>;
+  rightNoVisibleItemsAtom: AtomMut<number>;
+  leftNoVisibleItemsAtom: AtomMut<number>;
 };
 
 const getLowHeaders = <T>(columns: TableColumnWidthKey<T>[]) => {
@@ -392,39 +395,62 @@ const getHeaderStickyRightOffsets = <T>(
   );
 };
 
-export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
-  const columnsWithPinned = useMemo(
-    () => transformPinnedColumns(columns),
-    [columns],
+export const useHeaderData = <T>(
+  columnsAtom: AtomMut<TableColumn<T>[]>,
+  virtualScrollAtom: AtomMut<boolean | undefined | [boolean, boolean]>,
+): HeaderData<T> => {
+  const horizontalVirtualScrollAtom = useCreateAtom((ctx) => {
+    const virtualScroll = ctx.spy(virtualScrollAtom) || false;
+    return Array.isArray(virtualScroll) ? virtualScroll[0] : virtualScroll;
+  });
+
+  const columnsWithPinnedAtom = useCreateAtom((ctx) =>
+    transformPinnedColumns(ctx.spy(columnsAtom)),
   );
 
-  const headers = useMemo(
-    () => transformColumns(columnsWithPinned, getMaxLevel(columnsWithPinned)),
-    [columnsWithPinned],
-  );
+  const headersAtom = useCreateAtom((ctx) => {
+    const columnsWithPinned = ctx.spy(columnsWithPinnedAtom);
+    return transformColumns(columnsWithPinned, getMaxLevel(columnsWithPinned));
+  });
 
-  const flattenedHeaders = useMemo(() => {
+  const flattenedHeadersAtom = useCreateAtom((ctx) => {
+    const headers = ctx.spy(headersAtom);
     return headers.flat().map((column, index, array) => ({
       ...column,
       position: {
         ...column.position,
         isFirst: getIsFirst(array, column),
-
         width: column.width || 'auto',
       },
-    }));
-  }, [headers]);
+    })) as Header<T>[];
+  });
 
-  const headerCellsRefs = useRefs<HTMLDivElement>(flattenedHeaders.length, [
-    columns,
-  ]);
+  const flattenedHeadersLengthAtom = useCreateAtom(
+    (ctx) => ctx.spy(flattenedHeadersAtom).length,
+  );
 
-  const headerCellsHeights = useResizeObserved(
-    headerCellsRefs,
+  const headerCellsRefsAtom = useCreateAtom((ctx) =>
+    new Array(ctx.spy(flattenedHeadersLengthAtom))
+      .fill(null)
+      .map(createRef<HTMLDivElement>),
+  );
+
+  const headerCellsHeightsAtom = useResizeObservedAtom(
+    useAtom(headerCellsRefsAtom)[0],
     (el) => getElementSize(el).height,
   );
 
-  const headerRowsHeights = useMemo(() => {
+  const headerCellsHeightsHashAtom = useCreateAtom((ctx) => {
+    const headerCellsHeights = ctx.spy(headerCellsHeightsAtom);
+    return headerCellsHeights.join('-');
+  });
+
+  const headerRowsHeightsAtom = useCreateAtom((ctx) => {
+    const headers = ctx.spy(headersAtom);
+    const flattenedHeaders = ctx.spy(flattenedHeadersAtom);
+    ctx.spy(headerCellsHeightsHashAtom);
+    const headerCellsHeights = ctx.get(headerCellsHeightsAtom);
+
     return headers.map((arr, index) => {
       const flattenedHeadersWithHeights = flattenedHeaders.map((item, i) => ({
         ...item,
@@ -440,37 +466,64 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
           .map((item, i) => item.position.height),
       );
     });
-  }, [headers, flattenedHeaders, headerCellsHeights.join('-')]);
+  });
 
-  const lowHeaders = useMemo(() => {
-    return getLowHeaders(columnsWithPinned);
-  }, [columnsWithPinned]);
+  const lowHeadersAtom = useCreateAtom((ctx) =>
+    getLowHeaders(ctx.spy(columnsWithPinnedAtom)),
+  );
 
-  const resizersRefs = useRefs<HTMLDivElement>(lowHeaders.length);
+  const lowHeaderslengthAtom = useCreateAtom(
+    (ctx) => ctx.spy(lowHeadersAtom).length,
+  );
 
-  const headerHeight = useMemo(() => {
-    return headerRowsHeights.reduce(reduceSum);
-  }, [headerRowsHeights]);
+  // const resizersRefs = useRefs<HTMLDivElement>(lowHeaders.length);
 
-  const stickyTopOffsets = useMemo(() => {
-    return getStickyTopOffsets(flattenedHeaders, headerRowsHeights);
-  }, [flattenedHeaders, headerRowsHeights, headerCellsHeights]);
+  const resizersRefsAtom = useCreateAtom((ctx) =>
+    new Array(ctx.spy(lowHeaderslengthAtom))
+      .fill(null)
+      .map(createRef<HTMLDivElement>),
+  );
 
-  const resizerTopOffsets = useMemo(() => {
-    return getResizerTopOffsets(flattenedHeaders, lowHeaders, stickyTopOffsets);
-  }, [flattenedHeaders, lowHeaders, stickyTopOffsets]);
+  const headerHeightAtom = useCreateAtom((ctx) =>
+    ctx.spy(headerRowsHeightsAtom).reduce(reduceSum),
+  );
 
-  const [stickyLeftOffsets, stickyRightOffsets] = useMemo(() => {
-    const flattenedHeadersLowCellsKeys =
-      getFlattenedHeadersLowCellsKeys(flattenedHeaders);
+  const stickyTopOffsetsAtom = useCreateAtom((ctx) =>
+    getStickyTopOffsets(
+      ctx.spy(flattenedHeadersAtom),
+      ctx.spy(headerRowsHeightsAtom),
+    ),
+  );
 
-    return [
-      getHeaderStickyLeftOffsets(flattenedHeadersLowCellsKeys, lowHeaders),
-      getHeaderStickyRightOffsets(flattenedHeadersLowCellsKeys, lowHeaders),
-    ];
-  }, [flattenedHeaders, lowHeaders]);
+  const resizerTopOffsetsAtom = useCreateAtom((ctx) =>
+    getResizerTopOffsets(
+      ctx.spy(flattenedHeadersAtom),
+      ctx.spy(lowHeadersAtom),
+      ctx.spy(stickyTopOffsetsAtom),
+    ),
+  );
 
-  const bordersFlattenedHeaders: [boolean, boolean, boolean][] = useMemo(() => {
+  const flattenedHeadersLowCellsKeysAtom = useCreateAtom((ctx) =>
+    getFlattenedHeadersLowCellsKeys(ctx.spy(flattenedHeadersAtom)),
+  );
+
+  const stickyLeftOffsetsAtom = useCreateAtom((ctx) =>
+    getHeaderStickyLeftOffsets(
+      ctx.spy(flattenedHeadersLowCellsKeysAtom),
+      ctx.spy(lowHeadersAtom),
+    ),
+  );
+
+  const stickyRightOffsetsAtom = useCreateAtom((ctx) =>
+    getHeaderStickyRightOffsets(
+      ctx.spy(flattenedHeadersLowCellsKeysAtom),
+      ctx.spy(lowHeadersAtom),
+    ),
+  );
+
+  const bordersFlattenedHeadersAtom = useCreateAtom((ctx) => {
+    const flattenedHeaders = ctx.spy(flattenedHeadersAtom);
+    const lowHeaders = ctx.spy(lowHeadersAtom);
     return flattenedHeaders.map((flattenedHeadersColumn, index) => {
       let prevLowKey = '';
       const stopRef = { current: false };
@@ -497,21 +550,65 @@ export const useHeaderData = <T>(columns: TableColumn<T>[]): HeaderData<T> => {
           flattenedHeaders[index + 1]?.pinned !== 'left',
         flattenedHeadersColumn.position.level !== 0,
       ];
-    });
-  }, [flattenedHeaders, lowHeaders]);
+    }) as [boolean, boolean, boolean][];
+  });
+
+  const intersectingColumnsAtom = useCreateAtom<boolean[]>([]);
+
+  const leftNoVisibleItemsAtom = useCreateAtom((ctx) => {
+    const intersectingColumns = ctx.spy(intersectingColumnsAtom);
+    const horizontalVirtualScroll = ctx.spy(horizontalVirtualScrollAtom);
+
+    if (!horizontalVirtualScroll) {
+      return 0;
+    }
+
+    if (intersectingColumns.length === 0) {
+      return ctx.get(lowHeadersAtom).length;
+    }
+
+    let offset = 0;
+
+    while (intersectingColumns[offset] === false) {
+      offset++;
+    }
+
+    return offset;
+  });
+
+  const rightNoVisibleItemsAtom = useCreateAtom((ctx) => {
+    const intersectingColumns = ctx.spy(intersectingColumnsAtom);
+
+    const horizontalVirtualScroll = ctx.spy(horizontalVirtualScrollAtom);
+
+    if (!horizontalVirtualScroll) {
+      return 0;
+    }
+
+    let offset = intersectingColumns.length - 1;
+
+    while (intersectingColumns[offset] === false) {
+      offset--;
+    }
+
+    return intersectingColumns.length - offset - 1;
+  });
 
   return {
-    headers,
-    flattenedHeaders,
-    lowHeaders,
-    headerRowsHeights,
-    resizerTopOffsets,
-    headerHeight,
-    resizersRefs,
-    stickyTopOffsets,
-    stickyLeftOffsets,
-    stickyRightOffsets,
-    headerCellsRefs,
-    bordersFlattenedHeaders,
+    headersAtom,
+    flattenedHeadersAtom,
+    lowHeadersAtom: lowHeadersAtom as unknown as AtomMut<TableColumn<T>[]>,
+    headerRowsHeightsAtom,
+    resizerTopOffsetsAtom,
+    headerHeightAtom,
+    resizersRefsAtom,
+    stickyTopOffsetsAtom,
+    stickyLeftOffsetsAtom,
+    stickyRightOffsetsAtom,
+    headerCellsRefsAtom,
+    bordersFlattenedHeadersAtom,
+    intersectingColumnsAtom,
+    rightNoVisibleItemsAtom,
+    leftNoVisibleItemsAtom,
   };
 };

@@ -1,0 +1,63 @@
+import { ToolbarContentExample } from './examples/ToolbarContentExample/ToolbarContentExample';
+import { ToolbarFormExample } from './examples/ToolbarFormExample/ToolbarFormExample';
+import { MdxTabs, MdxMenu } from '@consta/stand';
+
+<MdxMenu>
+
+- [Наполнение](#наполнение)
+- [Форма](#форма)
+- [Свойства](#свойства)
+
+</MdxMenu>
+
+## Наполнение
+
+Компонент Toolbar может быть наполнен слева(`leftSide`) и справа(`rightSide`) . Слева и справа могут быть любыми компонентами. Если передавать массив компонентов, то между ними будет расстояние `var(--space-s)`.
+
+<MdxTabs>
+
+```tsx
+<Toolbar
+  leftSide={[
+    <Button iconLeft={IconArrowLeft} view="ghost" />,
+    <Button iconLeft={IconArrowRight} view="ghost" />,
+  ]}
+  rightSide={<Button label="Применить" />}
+/>
+```
+
+<ToolbarContentExample />
+
+</MdxTabs>
+
+## Форма
+
+За форму компонента отвечает свойство `form`. Может быть одним из следующих значений:
+
+- `default` - скругленный со всех сторон
+- `brick` - прямоугольный со всех сторон
+- `brickDefault` - прямоугольный сверху скругленный снизу
+- `defaultBrick` - скругленный сверху прямоугольный снизу
+
+<MdxTabs>
+
+```tsx
+<Toolbar form="default" />
+<Toolbar form="brick" />
+<Toolbar form="brickDefault" />
+<Toolbar form="defaultBrick" />
+```
+
+<ToolbarFormExample />
+
+</MdxTabs>
+
+## Свойства
+
+| Имя       | Тип                                                              | По умолчанию | Описание            |
+| --------- | ---------------------------------------------------------------- | ------------ | ------------------- |
+| form      | `'default'` \| `'brick'` \| `'brickDefault'` \| `'defaultBrick'` | `'default'`  | Форма компонента    |
+| leftSide  | `ReactNode`                                                      | -            | Наполнение слева    |
+| rightSide | `ReactNode`                                                      | -            | Наполнение справа   |
+| className | `string`                                                         | -            | Класс компонента    |
+| ref       | `React.Ref<HTMLDivElement>`                                      | -            | Ссылка на компонент |

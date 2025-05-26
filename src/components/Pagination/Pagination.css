@@ -1,0 +1,14 @@
+.ct--Pagination {
+  &-Slot {
+    display: flex;
+    gap: var(--space-s);
+  }
+
+  &-Select.FieldControlLayout {
+    width: 84px;
+  }
+
+  &-OffsetLabel {
+    color: var(--color-control-typo-ghost);
+  }
+}

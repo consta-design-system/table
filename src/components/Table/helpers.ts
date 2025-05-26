@@ -1,7 +1,7 @@
 import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
 import { AtomMut } from '@reatom/core';
-import { useAtom, useCtx } from '@reatom/npm-react';
+import { useAtom } from '@reatom/npm-react';
 import React, { createRef } from 'react';
 
 import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';

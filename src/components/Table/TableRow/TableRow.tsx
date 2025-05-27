@@ -5,11 +5,8 @@ import { AtomMut } from '@reatom/core';
 import { useAtom } from '@reatom/npm-react';
 import React, { forwardRef } from 'react';
 
-import { DataCell } from '##/components/DataCell';
 import { cn } from '##/utils/bem';
-import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
-import { cnTableCell } from '../TableCell';
 import { TableRowCell } from '../TableRowCell';
 import { TableColumn, TableDefaultRow } from '../types';
 
@@ -46,28 +43,6 @@ const getMiss = (
     return colSpan - 1;
   }
   return 0;
-};
-
-const getCellDataByAccessor = <T,>(
-  row: T,
-  accessor?: (keyof T extends string ? string & keyof T : never) | undefined,
-  isSeparator?: boolean,
-) => {
-  if (isSeparator) {
-    return '';
-  }
-
-  if (!accessor) {
-    return '';
-  }
-
-  const data = row?.[accessor];
-
-  if (isString(data) || isNumber(data)) {
-    return <DataCell>{data.toString()}</DataCell>;
-  }
-
-  return '';
 };
 
 export const TableRow: TableRowComponent = forwardRef((props, ref) => {

@@ -1,6 +1,5 @@
 import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
 import { useSendToAtom } from '@consta/uikit/__internal__/src/utils/state/useSendToAtom';
-import { action } from '@reatom/core';
 import { useAction, useUpdate } from '@reatom/npm-react';
 import { useEffect } from 'react';
 

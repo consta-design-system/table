@@ -5,6 +5,7 @@ dist/*
 builder/*
 scripts/*
 build.config.js
+babel.config.js
 repos/*
 .husky/*
 .github/*

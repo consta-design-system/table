@@ -1,11 +1,13 @@
 import { ToolbarContentExample } from './examples/ToolbarContentExample/ToolbarContentExample';
 import { ToolbarFormExample } from './examples/ToolbarFormExample/ToolbarFormExample';
-import { MdxTabs, MdxMenu } from '@consta/stand';
+import { ToolbarBorderExample } from './examples/ToolbarBorderExample/ToolbarBorderExample';
+import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
 
 - [Наполнение](#наполнение)
 - [Форма](#форма)
+- [Обводка](#обводка)
 - [Свойства](#свойства)
 
 </MdxMenu>
@@ -49,6 +51,32 @@ import { MdxTabs, MdxMenu } from '@consta/stand';
 ```
 
 <ToolbarFormExample />
+
+</MdxTabs>
+
+## Обводка
+
+За обводку отвечает свойство `border`. Может быть одним из следующих значений:
+
+- `all` - обводка вокруг компонента,
+- `top` - обводка сверху компонента,
+- `bottom` - обводка снизу компонента.
+
+<MdxInformer>
+
+Компонент не даст обвести только скругленную сторону. К примеру если вы передадите `form="default"` и `border="top"`, то компонент не будет обведен сверху.
+
+</MdxInformer>
+
+<MdxTabs>
+
+```tsx
+<Toolbar border="all" form="brick" />
+<Toolbar border="top" form="brick" />
+<Toolbar border="bottom" form="brick"/>
+```
+
+<ToolbarBorderExample />
 
 </MdxTabs>
 

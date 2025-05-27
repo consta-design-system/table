@@ -1873,9 +1873,9 @@
     workbox-webpack-plugin "^6.4.1"
 
 "@consta/uikit@^5.18.0":
-  version "5.19.2"
-  resolved "https://registry.yarnpkg.com/@consta/uikit/-/uikit-5.19.2.tgz#0b3eab4f18c431a41f7ee5cfb8585ee6194560bb"
-  integrity sha512-Bn6oHK5DGKjkax54gnLDwDjtzGFwaqBjiUaojizgIVnCIqQro3h3gDfDZJAcJJQO3eUGMLkAjh2GD2rh07CceA==
+  version "5.20.1"
+  resolved "https://registry.yarnpkg.com/@consta/uikit/-/uikit-5.20.1.tgz#1fe886118a446b46d8ccd2b6f96ffa4a38662163"
+  integrity sha512-+icdM/a+pdrf6+LF3kolQs3jeedcEfwHuQ4urIpars/Ajx17vvqvTwYjWCUXKQvkQvCdXfysjLJ0R+ZKacDF3A==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"

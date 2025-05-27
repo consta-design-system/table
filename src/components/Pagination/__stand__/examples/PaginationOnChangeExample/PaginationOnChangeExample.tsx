@@ -9,7 +9,7 @@ export const PaginationOnChangeExample = () => {
   return (
     <Example col={1}>
       <Pagination offset={offset} onChange={setOffset} />
-      <Text>Пропущено элементов - {offset}</Text>
+      <Text>Пропущено элементов — {offset}</Text>
     </Example>
   );
 };

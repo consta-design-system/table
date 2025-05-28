@@ -6,23 +6,23 @@ import React from 'react';
 
 import { Toolbar, ToolbarProps } from '../../..';
 
-const forms: Exclude<ToolbarProps['form'], undefined>[] = [
-  'default',
-  'brick',
-  'brickDefault',
-  'defaultBrick',
+const borders: Exclude<ToolbarProps['border'], undefined>[] = [
+  'all',
+  'top',
+  'bottom',
 ];
 
-export const ToolbarFormExample = () => {
+export const ToolbarBorderExample = () => {
   return (
     <Example
       col={{ 1: 0, 2: 480 }}
-      items={forms}
-      getItemLabel={(form) => `form=${form}`}
-      getItemNode={(form) => {
+      items={borders}
+      getItemLabel={(border) => `border=${border}`}
+      getItemNode={(border) => {
         return (
           <Toolbar
-            form={form}
+            border={border}
+            form="brick"
             leftSide={<Button iconLeft={IconArrowLeft} view="ghost" />}
             rightSide={<Button iconRight={IconArrowRight} view="ghost" />}
           />

@@ -1,0 +1,178 @@
+import { PaginationOnChangeExample } from './examples/PaginationOnChangeExample/PaginationOnChangeExample';
+import { PaginationOnStepChangeExample } from './examples/PaginationOnStepChangeExample/PaginationOnStepChangeExample';
+import { PaginationStepsExample } from './examples/PaginationStepsExample/PaginationStepsExample';
+import { PaginationTotalExample } from './examples/PaginationTotalExample/PaginationTotalExample';
+import { PaginationLabelExample } from './examples/PaginationLabelExample/PaginationLabelExample';
+import { PaginationOffsetLabelExample } from './examples/PaginationOffsetLabelExample/PaginationOffsetLabelExample';
+import { PaginationToolbarExample } from './examples/PaginationToolbarExample/PaginationToolbarExample';
+
+import { MdxTabs, MdxMenu } from '@consta/stand';
+
+```tsx
+import { Pagination } from '@consta/table/Pagination';
+```
+
+<MdxMenu>
+
+- [Обработка отступа](#обработка-отступа)
+- [Шаги](#шаги)
+- [Всего элементов](#всего-элементов)
+- [Текст слева](#текст-слева)
+- [Текст текущей позиции](#текст-текущей-позиции)
+- [Использование вместе с Toolbar](#использование-вместе-с-toolbar)
+- [Свойства](#свойства)
+
+</MdxMenu>
+
+## Обработка отступа
+
+Чтобы получить текущий отступ, используйте свойство `onChange`.
+
+Чтобы указать отступ, используйте свойство `offset`.
+
+<MdxTabs>
+
+```tsx
+const PaginationOnChangeExample = () => {
+  const [offset, setOffset] = useState(0);
+  return (
+    <>
+      <Pagination offset={offset} onChange={setOffset} />
+      <Text>Пропущено элементов — {offset}</Text>
+    </>
+  );
+};
+```
+
+<PaginationOnChangeExample />
+
+</MdxTabs>
+
+## Шаги
+
+Чтобы получить текущий шаг, используйте свойство `onStepChange`.
+
+Чтобы указать шаг, используйте свойство `step`.
+
+<MdxTabs>
+
+```tsx
+const PaginationOnStepChangeExample = () => {
+  const [step, setStep] = useState(10);
+  return (
+    <>
+      <Pagination step={step} onStepChange={setStep} />
+      <Text>Шаг - {step}</Text>
+    </>
+  );
+};
+```
+
+<PaginationOnStepChangeExample />
+
+</MdxTabs>
+
+Чтобы указать шаги, используйте свойство `steps`. Шаги должны быть отсортированы по возрастанию. По умолчанию используются шаги `[10, 25, 50, 100]`.
+
+<MdxTabs>
+
+```tsx
+const PaginationStepsExample = () => {
+  const [step, setStep] = useState(10);
+  return (
+    <>
+      <Pagination step={step} onStepChange={setStep} steps={[10, 20, 30]} />
+      <Text>Шаг - {step}</Text>
+    </>
+  );
+};
+```
+
+<PaginationStepsExample />
+
+</MdxTabs>
+
+## Всего элементов
+
+Чтобы указать общее количество элементов, используйте свойство `total`. Это свойство влияет на формат вывода текущей позиции (например `1-10 из 300`), на состояние `disabled` кнопки следующей страницы и на `onChange` не давая выйти за границы диапазона.
+
+<MdxTabs>
+
+```tsx
+<Pagination total={300} step={100} />
+```
+
+<PaginationTotalExample />
+
+</MdxTabs>
+
+## Текст слева
+
+Чтобы указать текст слева компонента, используйте свойство `label`. По умолчанию используется текст `'Строк на странице'`.
+
+<MdxTabs>
+
+```tsx
+<Pagination label="Показывать по:" />
+```
+
+<PaginationLabelExample />
+
+</MdxTabs>
+
+## Текст текущей позиции
+
+Чтобы указать текст текущей позиции, используйте свойство `offsetLabel`.
+
+```tsx
+type OffsetLabel =
+  | string
+  | ((offset: number, step: number, total: number | undefined) => string);
+```
+
+<MdxTabs>
+
+```tsx
+<Pagination
+  offsetLabel={(offset, step) => `Элементы с ${offset + 1} по ${offset + step}`}
+/>
+```
+
+<PaginationOffsetLabelExample />
+
+</MdxTabs>
+
+## Использование вместе с Toolbar
+
+Рекомендуем использовать компонент `Toolbar` для отображения компонента `Pagination`.
+
+<MdxTabs>
+
+```tsx
+<Toolbar>
+  <Toolbar form="brickDefault" rightSide={<Pagination total={300} />} />
+</Toolbar>
+```
+
+<PaginationToolbarExample />
+
+</MdxTabs>
+
+## Свойства
+
+```tsx
+type OffsetLabel =
+  | string
+  | ((offset: number, step: number, total: number | undefined) => string);
+```
+
+| Имя          | Тип                                                            | По умолчанию          | Описание                                 |
+| ------------ | -------------------------------------------------------------- | --------------------- | ---------------------------------------- |
+| offset       | `number`                                                       | `0`                   | Отступ, количество пропущенных элементов |
+| step         | `number`                                                       | `10`                  | Шаг, количество элементов на странице    |
+| steps        | `number[]`                                                     | `[10, 25, 50, 100]`   | Список доступных шагов для выбора        |
+| total        | `number \| undefined`                                          | -                     | Всего элементов                          |
+| label        | `string`                                                       | `'Строк на странице'` | Текст слева                              |
+| offsetLabel  | `OffsetLabel`                                                  | `Function`            | Текст текущей позиции                    |
+| onChange     | `(value: number, props: { e: React.SyntheticEvent }) => void;` | -                     | Обработчик изменения отступа             |
+| onStepChange | `(value: number, props: { e: React.SyntheticEvent }) => void;` | -                     | Обработчик изменения шага                |

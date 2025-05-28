@@ -1,9 +1,10 @@
 .ct--Toolbar {
   --bar-default-border-radius: calc(var(--control-radius) * 2);
+  --bar-default-border: var(--control-border-width) solid var(--color-bg-border);
 
   padding: var(--space-s) var(--space-m);
   background: var(--color-bg-stripe);
-  border: var(--control-border-width) solid var(--color-bg-border);
+  /* border: var(--control-border-width) solid var(--color-bg-border); */
 
   &_form {
     &_default {
@@ -19,6 +20,18 @@
     &_brickDefault {
       border-radius: 0 0 var(--bar-default-border-radius)
         var(--bar-default-border-radius);
+    }
+  }
+
+  &_border {
+    &_all {
+      border: var(--bar-default-border);
+    }
+    &_top {
+      border-top: var(--bar-default-border);
+    }
+    &_bottom {
+      border-bottom: var(--bar-default-border);
     }
   }
 }

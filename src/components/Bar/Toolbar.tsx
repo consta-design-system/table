@@ -12,6 +12,7 @@ export type ToolbarProps = JSX.IntrinsicElements['div'] & {
   rightSide?: React.ReactNode | React.ReactNode[];
   form?: 'default' | 'brick' | 'brickDefault' | 'defaultBrick';
   children?: never;
+  border?: 'top' | 'bottom' | 'all';
 };
 
 const renderSlot = (slot: React.ReactNode | React.ReactNode[]) => {
@@ -25,13 +26,38 @@ const renderSlot = (slot: React.ReactNode | React.ReactNode[]) => {
   return <div className={cnToolbar('Slots')}>{slot}</div>;
 };
 
+const guardBorder = (
+  border: ToolbarProps['border'],
+  form: ToolbarProps['form'],
+) => {
+  if (
+    (border === 'top' && form === 'defaultBrick') ||
+    (border === 'bottom' && form === 'brickDefault') ||
+    (border === 'top' && form === 'default') ||
+    (border === 'bottom' && form === 'default')
+  ) {
+    return undefined;
+  }
+  return border;
+};
+
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
-  ({ leftSide, rightSide, className, form = 'default', ...otherProps }) => {
+  ({
+    leftSide,
+    rightSide,
+    className,
+    form = 'default',
+    border,
+    ...otherProps
+  }) => {
     return (
       <div
         {...otherProps}
-        className={cnToolbar({ form }, [
-          cnMixFlex({ justify: 'space-between', gap: 's' }),
+        className={cnToolbar({ form, border: guardBorder(border, form) }, [
+          cnMixFlex({
+            justify: rightSide && !leftSide ? 'flex-end' : 'space-between',
+            gap: 's',
+          }),
           className,
         ])}
       >
@@ -39,7 +65,9 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
           <div className={cnMixFlex({ gap: 's' })}>{renderSlot(leftSide)}</div>
         )}
         {rightSide && (
-          <div className={cnMixFlex({ gap: 's' })}>{renderSlot(rightSide)}</div>
+          <div className={cnMixFlex({ gap: 's', justify: 'flex-end' })}>
+            {renderSlot(rightSide)}
+          </div>
         )}
       </div>
     );

@@ -13,6 +13,12 @@ const Variants = () => {
     'default',
   );
 
+  const border: ToolbarProps['border'] = useSelect('border', [
+    'all',
+    'top',
+    'bottom',
+  ]);
+
   return (
     <div style={{ width: '100%' }}>
       <Toolbar
@@ -22,6 +28,7 @@ const Variants = () => {
           <Button iconLeft={IconArrowRight} view="ghost" />,
         ]}
         rightSide={<Button label="Применить" />}
+        border={border}
       />
     </div>
   );

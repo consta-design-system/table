@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.6.0 (28/05/2025)
+Самое важное:
+- Добавили компонент `Pagination` для реализации постраничной навигации.
+- Добавили компонент `Toolbar` для составления панелей управления таблицы.
+
+---
+
+- [feat(Pagination): add component (#23)](https://github.com/consta-design-system/table/commit/379f25690ea14b9021b383ec5c07d45ec6b85724) - [@gizeasy](https://github.com/gizeasy)
+- [chore: update builder](https://github.com/consta-design-system/table/commit/6df1941b28086d27d1fc83c1eaa01d38c05048f3) - [@gizeasy](https://github.com/gizeasy)
+- [feat(Toolbar): add component (#22)](https://github.com/consta-design-system/table/commit/b801deb5c3bc0ffe87fb6474c6bd89452c561444) - [@gizeasy](https://github.com/gizeasy)
+- [chore: update builder](https://github.com/consta-design-system/table/commit/927b5adf02b3fcbd3ade23b275a8f91cafc55856) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.5.0 (20/05/2025)
 Самое важное:
 - повысили производительность компонента `Table`,

@@ -1,7 +1,7 @@
 import { Example } from '@consta/stand';
 import React from 'react';
 
-import { Toolbar } from '##/components/Bar';
+import { Toolbar } from '##/components/Toolbar';
 
 import { Pagination } from '../../..';
 

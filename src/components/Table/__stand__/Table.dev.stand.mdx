@@ -22,7 +22,7 @@ import {
   TableExampleResizableOutside,
 } from './examples/TableExampleResizable/TableExampleResizable';
 
-import { MdxTabs, MdxMenu, MdxInformer, MdxCollapse } from '@consta/stand';
+import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
 
@@ -59,9 +59,9 @@ import { MdxTabs, MdxMenu, MdxInformer, MdxCollapse } from '@consta/stand';
 - `rows` - строки. Тип строки может быть любым массивом объекта `Record<string, unknown>`.
 - `columns`- колонки. Представляют массив объектов, у которого `accessor` это свойство объекта ваших данных.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleSimple />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -99,11 +99,7 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleSimple = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleSimple />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Свойства
 
@@ -222,9 +218,9 @@ export type TableColumn<ROW> = {
 
 К примеру, если требуется зафиксировать размер первой колонки на `180px`, вторая и третья должны быть одинаковыми, но третья должна быть не меньше `150px`.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleWidth />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -266,19 +262,15 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleWidth />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Разделитель колонок
 
 Чтобы поставить разделитель колонки, вам необходимо указать еще одну колонку с указанием `{isSeparator: true}` и при необходимости указать `title`.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleSeparator />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -323,11 +315,7 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleSeparator />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Закрепление колонок
 
@@ -339,9 +327,9 @@ export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 
 </MdxInformer>
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExamplePinned />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -404,19 +392,15 @@ const columns: TableColumn<Row>[] = [
 export const TableExamplePinned = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExamplePinned />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Группировка колонок
 
 При необходимости объединить колонки в группу, вы можете вложить в колонку другие колонки, тем самым родитель будет группой колонок.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleGroupColumns />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -513,19 +497,15 @@ export const TableExampleGroupColumns = () => (
 );
 ```
 
-<TableExampleGroupColumns />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Представление данных в ячейке
 
 По умолчанию компонент таблицы пытается привести данные к строке и выводит их через компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable). Вы можете в колонке использовать свойство `renderCell` и выводить данные, как вам потребуется.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleRenderCell />
 
 ```tsx
 import { Badge, BadgePropStatus } from '@consta/uikit/Badge';
@@ -618,20 +598,16 @@ export const TableExampleRenderCell = () => (
 );
 ```
 
-<TableExampleRenderCell />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Представление данных в ячейке в шапке
 
 По умолчанию компонент таблицы пытается привести данные к строке и выводит их через компонент [`HeaderDataCell`](##LIBS.LIB.STAND/lib:table/stand:components-headerdatacell-stable).
 Вы можете в колонке использовать свойство `renderHeaderCell` и выводить данные, как вам потребуется.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleRenderHeaderCell />
 
 ```tsx
 import { IconFunnel } from '@consta/icons/IconFunnel';
@@ -704,11 +680,7 @@ export const TableExampleRenderHeaderCell = () => (
 );
 ```
 
-<TableExampleRenderHeaderCell />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Объединение ячеек
 
@@ -724,9 +696,9 @@ export const TableExampleRenderHeaderCell = () => (
 
 </MdxInformer>
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleColSpan />
 
 ```tsx
 import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
@@ -934,11 +906,7 @@ export const TableExampleColSpan = () => {
 };
 ```
 
-<TableExampleColSpan />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Закрепление шапки
 
@@ -1017,9 +985,11 @@ export const TableExampleColSpan = () => {
 
 </MdxInformer>
 
-<MdxCollapse label="Пример с наведением и выбором строки">
+Пример с наведением и выбором строки:
 
 <MdxTabs>
+
+<TableExampleActiveRowWithNumbering />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -1152,11 +1122,7 @@ export const TableExampleActiveRowWithNumbering = () => {
 };
 ```
 
-<TableExampleActiveRowWithNumbering />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Наведение на строку
 
@@ -1164,9 +1130,11 @@ export const TableExampleActiveRowWithNumbering = () => {
 
 - Автоматически, с помощью Свойства `rowHoverEffect`. В этом случае все строки будут подсвечиваться при наведении мыши.
 
-<MdxCollapse label="Пример автоматического способа">
+Пример автоматического способа:
 
 <MdxTabs>
+
+<TableExampleRowHoverEffect />
 
 ```tsx
 import React from 'react';
@@ -1217,17 +1185,15 @@ export const TableExampleRowHoverEffect = () => (
 );
 ```
 
-<TableExampleRowHoverEffect />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 - Подконтрольный. Для этого нужно у любой ячейки в строке указать атрибут `data-row-hover='true'`. В этом режиме вы можете выбирать, у каких строк включить этот эффект а у каких нет.
 
-<MdxCollapse label="Пример подконтрольного способа">
+Пример подконтрольного способа:
 
 <MdxTabs>
+
+<TableExampleHoveredControlled />
 
 ```tsx
 import { action, atom } from '@reatom/core';
@@ -1333,19 +1299,17 @@ export const TableExampleHoveredControlled = () => {
 };
 ```
 
-<TableExampleHoveredControlled />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ### Выбор строки
 
 Для выбора строки укажите в любой ячейке строки атрибут `data-row-active='true'`.
 
-<MdxCollapse label="Пример с использованием стейт-менеджера">
+Пример с использованием стейт-менеджера:
 
 <MdxTabs>
+
+<TableExampleActiveRow />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -1435,11 +1399,7 @@ export const TableExampleActiveRow = () => (
 );
 ```
 
-<TableExampleActiveRow />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Управление шириной столбцов
 
@@ -1457,9 +1417,9 @@ export const TableExampleActiveRow = () => (
 
 - `inside`. При `resizable = 'inside'` таблица будет стараться уместить весь контент в ширину контейнера таблицы. То есть при увеличении ширины одного столбца будет уменьшаться ширина другого, и наоборот. Рекомендуется использовать этот режим, когда столбцов мало и они все помещаются в таблицу.
 
-<MdxCollapse label="Пример с inside">
-
 <MdxTabs>
+
+<TableExampleResizableInside />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -1509,17 +1469,13 @@ export const TableExampleResizable = () => (
 );
 ```
 
-<TableExampleResizableInside />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 - `outside`. При `resizable = 'outside'` таблица будет расширятся при увеличении колонки. Рекомендуется использовать этот режим, когда столбцов много и они не помещаются в таблицу.
 
-<MdxCollapse label="Пример с outside">
-
 <MdxTabs>
+
+<TableExampleResizableOutside />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -1605,11 +1561,7 @@ export const TableExampleResizableOutside = () => (
 );
 ```
 
-<TableExampleResizableOutside />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## headerZIndex
 
@@ -1631,9 +1583,9 @@ export const TableExampleResizableOutside = () => (
 
 Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleNestedRows />
 
 ```tsx
 import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
@@ -1786,19 +1738,15 @@ export const TableExampleNestedRows = () => {
 };
 ```
 
-<TableExampleNestedRows />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Рендер строки
 
 Чтобы вывести всю строку с собственным представлением, укажите у первого столбца `colSpan = () => 'end'`, и `renderCell`.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleRenderRow />
 
 ```tsx
 import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
@@ -2051,19 +1999,17 @@ export const TableExampleRenderRow = () => {
 };
 ```
 
-<TableExampleRenderRow />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Индикатор ячейки и подсказки
 
 Для отображения индикатора используйте свойство `indicator` у компонента `DataCell`. Для вывода подсказок используйте компонент `Popover`. В примере ниже реализована логика показа подсказок по наведению курсора.
 
-<MdxCollapse label="Пример со всплывающими подсказками">
+Пример со всплывающими подсказками:
 
 <MdxTabs>
+
+<TableExampleWithIndicator />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -2287,11 +2233,7 @@ export const TableExampleWithIndicator = () => {
 };
 ```
 
-<TableExampleWithIndicator />
-
 </MdxTabs>
-
-</MdxCollapse>
 
 ## Ключ строки
 
@@ -2311,9 +2253,9 @@ export const TableExampleWithIndicator = () => {
 
 Вы можете менять ширину колонок в зависимости от ширины самой таблицы.
 
-<MdxCollapse label="Пример">
-
 <MdxTabs>
+
+<TableExampleAdaptiveColumns />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -2453,8 +2395,4 @@ export const TableExampleAdaptiveColumns = () => {
 };
 ```
 
-<TableExampleAdaptiveColumns />
-
 </MdxTabs>
-
-</MdxCollapse>

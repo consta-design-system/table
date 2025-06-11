@@ -30,10 +30,6 @@ type TableRowCellProps = PropsWithHTMLAttributesAndRef<
 
 const cnTableRowCell = cn('TableRowCell');
 
-type TableRowCellComponent = (
-  props: TableRowCellProps,
-) => React.ReactElement | null;
-
 const getCellDataByAccessor = <T,>(
   row: T,
   accessor?: (keyof T extends string ? string & keyof T : never) | undefined,
@@ -56,67 +52,70 @@ const getCellDataByAccessor = <T,>(
   return '';
 };
 
-export const TableRowCell: TableRowCellComponent = memo(
-  forwardRef((props, ref) => {
-    const {
-      className,
-      index,
-      separator,
-      accessor,
-      pinned,
-      borderLeft,
-      borderRight,
-      borderTop,
-      miss,
-      renderCell: RenderCell,
-      row,
-      rowIndex,
-      tableRef,
-      ...otherProps
-    } = props;
+const TableRowCellRender = (
+  props: TableRowCellProps,
+  ref: React.Ref<HTMLDivElement>,
+) => {
+  const {
+    className,
+    index,
+    separator,
+    accessor,
+    pinned,
+    borderLeft,
+    borderRight,
+    borderTop,
+    miss,
+    renderCell: RenderCell,
+    row,
+    rowIndex,
+    tableRef,
+    ...otherProps
+  } = props;
 
-    return (
-      <div
-        {...otherProps}
-        ref={ref}
-        className={cnTableRowCell(
-          {
-            pinned: !!pinned,
-          },
-          [
-            cnTableCell({
-              separator,
-              borderLeft,
-              borderRight,
-              borderTop,
-              sticky: !!pinned,
-            }),
-            className,
-          ],
-        )}
-        style={{
-          left:
-            pinned === 'left'
-              ? `var(--table-column-sticky-left-offset-${index})`
-              : undefined,
-          right:
-            pinned === 'right'
-              ? `var(--table-column-sticky-right-offset-${index})`
-              : undefined,
-          gridColumn: `${index + 1} / span ${miss > 0 ? miss + 1 : 1}`,
-        }}
-      >
-        {isNotNil(RenderCell) ? (
-          <RenderCell
-            row={row}
-            rowIndex={rowIndex}
-            columnIndex={index}
-            tableRef={tableRef}
-          />
-        ) : (
-          getCellDataByAccessor(row, accessor, separator)
-        )}
-      </div>
-    );
-  }),
-);
+  return (
+    <div
+      {...otherProps}
+      ref={ref}
+      className={cnTableRowCell(
+        {
+          pinned: !!pinned,
+        },
+        [
+          cnTableCell({
+            separator,
+            borderLeft,
+            borderRight,
+            borderTop,
+            sticky: !!pinned,
+          }),
+          className,
+        ],
+      )}
+      style={{
+        left:
+          pinned === 'left'
+            ? `var(--table-column-sticky-left-offset-${index})`
+            : undefined,
+        right:
+          pinned === 'right'
+            ? `var(--table-column-sticky-right-offset-${index})`
+            : undefined,
+        gridColumn: `${index + 1} / span ${miss > 0 ? miss + 1 : 1}`,
+      }}
+    >
+      {isNotNil(RenderCell) ? (
+        <RenderCell
+          row={row}
+          rowIndex={rowIndex}
+          columnIndex={index}
+          tableRef={tableRef}
+        />
+      ) : (
+        getCellDataByAccessor(row, accessor, separator)
+      )}
+    </div>
+  );
+};
+
+export const TableRowCell = memo(forwardRef(TableRowCellRender));

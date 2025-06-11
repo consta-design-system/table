@@ -2353,13 +2353,13 @@ export const TableExampleAdaptiveColumns = () => {
 export type TableRenderHeaderCell = (props: {
   title?: string;
   index: number;
-}) => React.ReactElement | null;
+}) => React.ReactNode | null;
 
 export type TableRenderCell<T> = (props: {
   row: T;
   rowIndex: number;
   columnIndex: number;
-}) => React.ReactElement | null;
+}) => React.ReactNode | null;
 
 export type TableColumn<ROW> = {
   title?: string;

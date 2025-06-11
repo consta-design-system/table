@@ -15,7 +15,7 @@ type Props<T> = {
 
 type TableSeparatorTitlesComponent = <T>(
   props: Props<T>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 const cnTableSeparatorTitles = cn('TableSeparatorTitles');
 

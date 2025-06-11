@@ -28,7 +28,7 @@ type TableResizersProps<T> = {
 
 export type TableResizersComponent = <T>(
   props: TableResizersProps<T>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 const cnTableResizers = cn('TableResizers');
 
@@ -51,7 +51,7 @@ type TableResizerProps<T> = PropsWithHTMLAttributesAndRef<
 
 export type TableResizerComponent = <T>(
   props: TableResizerProps<T>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 const TableResizer: TableResizerComponent = forwardRef(
   (

@@ -25,7 +25,7 @@ type TableRowProps = PropsWithHTMLAttributesAndRef<
 
 const cnTableRow = cn('TableRow');
 
-type TableRowComponent = (props: TableRowProps) => React.ReactElement | null;
+type TableRowComponent = (props: TableRowProps) => React.ReactNode | null;
 
 const getMiss = (
   colSpan: number | undefined | 'end',

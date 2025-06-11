@@ -10,14 +10,14 @@ export type TableRenderHeaderCell = (props: {
   title?: string;
   index: number;
   tableRef: React.RefObject<HTMLDivElement>;
-}) => React.ReactElement | null;
+}) => React.ReactNode | null;
 
 export type TableRenderCell<T> = (props: {
   row: T;
   rowIndex: number;
   columnIndex: number;
   tableRef: React.RefObject<HTMLDivElement>;
-}) => React.ReactElement | null;
+}) => React.ReactNode | null;
 
 export type TabletColSpan<ROW> = (props: {
   row: ROW;
@@ -95,7 +95,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
 
 export type TableComponent = <ROW = TableDefaultRow>(
   props: TableProps<ROW>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 export type TableHeaderProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
@@ -113,7 +113,7 @@ export type TableHeaderProps<ROW = TableDefaultRow> =
 
 export type TableHeaderComponent = <ROW = TableDefaultRow>(
   props: TableHeaderProps<ROW>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
@@ -136,7 +136,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
 
 export type TableBodyComponent = <ROW>(
   props: TableBodyProps<ROW>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
   {
@@ -153,7 +153,7 @@ type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
 
 export type TableBodyRootComponent = (
   props: TableBodyRootProps,
-) => React.ReactElement | null;
+) => React.ReactNode | null;
 
 export type TableDataProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
@@ -178,4 +178,4 @@ export type TableDataProps<ROW = TableDefaultRow> =
 
 export type TableDataComponent = <ROW = TableDefaultRow>(
   props: TableDataProps<ROW>,
-) => React.ReactElement | null;
+) => React.ReactNode | null;

@@ -38,6 +38,7 @@ export const TableRender = (
     onRowClick,
     getRowKey,
     rowHoverEffect,
+    onScrollToBottom,
     ...otherProps
   } = props;
 
@@ -68,6 +69,7 @@ export const TableRender = (
     useVirtualScrollAtom({
       length: rows.length,
       isActive: Array.isArray(virtualScroll) ? virtualScroll[1] : virtualScroll,
+      onScrollToBottom,
     });
 
   return (

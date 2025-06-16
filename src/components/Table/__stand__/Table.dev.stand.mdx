@@ -17,6 +17,7 @@ import { TableExampleActiveRow } from './examples/TableExampleActiveRow/TableExa
 import { TableExampleActiveRowWithNumbering } from './examples/TableExampleActiveRowWithNumbering/TableExampleActiveRowWithNumbering';
 import { TableExampleRowHoverEffect } from './examples/TableExampleRowHoverEffect/TableExampleRowHoverEffect';
 import { TableExampleHoveredControlled } from './examples/TableExampleHoveredControlled/TableExampleHoveredControlled';
+import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
 import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
@@ -36,6 +37,7 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Представление данных в ячейке в шапке](#представление-данных-в-ячейке-в-шапке)
 - [Закрепление шапки](#закрепление-шапки)
 - [Виртуальный скролл](#виртуальный-скролл)
+- [onScrollToBottom](#onScrollToBottom)
 - [Таблица в полоску](#таблица-в-полоску)
 - [Выделение строк](#выделение-строк)
   - [Наведение на строку](#наведение-на-строку)
@@ -660,6 +662,38 @@ export const TableExampleRenderHeaderCell = () => (
 ```
 
 <TableExampleVirtualScroll />
+
+</MdxTabs>
+
+## onScrollToBottom
+
+Свойство `onScrollToBottom` позволяет отслеживать когда пользователь достиг конца таблицы. Полезно для дозагрузки данных в момент достижения конца таблицы.
+
+<MdxTabs>
+
+```tsx
+const TableExampleOnScrollToBottom = () => {
+  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
+
+  return (
+    <>
+      <Text size="m" weight="bold">
+        {isScrollToBottom ? 'Вы проскроллилили до конца' : 'Скрольте вниз'}
+      </Text>
+      <Table
+        style={{ maxHeight: 400 }}
+        rows={rows}
+        columns={columns}
+        stickyHeader
+        virtualScroll
+        onScrollToBottom={() => setIsScrollToBottom(true)}
+      />
+    </>
+  );
+};
+```
+
+<TableExampleOnScrollToBottom />
 
 </MdxTabs>
 
@@ -2395,19 +2429,20 @@ type TableRowMouseEvent<ROW> = (
 type GetRowKey<ROW> = (row: ROW) => string | number;
 ```
 
-| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
-| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
-| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
-| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
-| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
-| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
-| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
-| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
-| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
-| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
-| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
-| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
-| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
-| `rowHoverEffect?`  | `boolean`                     | -                 | Включает эффект наведения на строку                          |
-| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
-| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |
+| Свойство            | Тип                           | По умолчанию      | Описание                                                          |
+| ------------------- | ----------------------------- | ----------------- | ----------------------------------------------------------------- |
+| `columns?`          | `TableColumn[]`               | -                 | Колонки                                                           |
+| `rows?`             | `ROW[]`                       | -                 | Строки                                                            |
+| `getRowKey?`        | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index`      |
+| `onRowMouseEnter?`  | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                                  |
+| `onRowMouseLeave?`  | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                                  |
+| `onRowClick?`       | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                       |
+| `virtualScroll?`    | `boolean`                     | -                 | Включение виртуальной прокрутки                                   |
+| `stickyHeader?`     | `boolean`                     | -                 | Зафиксировать шапку сверху                                        |
+| `resizable?`        | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                     |
+| `zebraStriped?`     | `boolean`                     | -                 | Окрашивание строк через одну                                      |
+| `headerZIndex?`     | `number`                      | `1`               | `zIndex` шапки                                                    |
+| `rowHoverEffect?`   | `boolean`                     | -                 | Включает эффект наведения на строку                               |
+| `className?`        | `string`                      | -                 | Дополнительный CSS-класс                                          |
+| `onScrollToBottom?` | `(length: number) => void;`   | -                 | Событие сработает, когда пользователь проскроллит до конца списка |
+| `ref?`              | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                                    |

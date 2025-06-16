@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.1 (11/06/2025)
+- [feat: update react types (#27)](https://github.com/consta-design-system/table/commit/abdbeee8ef6c0c40629999396696f14b2ed20581) - [@gizeasy](https://github.com/gizeasy)
+- [docs(Toolbar): fix example (#25)](https://github.com/consta-design-system/table/commit/c3badb9c9c4183aac4ac1c85e8aed6556f392401) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.6.0 (28/05/2025)
 Самое важное:
 - Добавили компонент `Pagination` для реализации постраничной навигации.

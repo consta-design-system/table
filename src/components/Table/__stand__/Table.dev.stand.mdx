@@ -2396,3 +2396,68 @@ export const TableExampleAdaptiveColumns = () => {
 ```
 
 </MdxTabs>
+
+## Свойства
+
+```ts
+export type TableRenderHeaderCell = (props: {
+  title?: string;
+  index: number;
+}) => React.ReactNode | null;
+
+export type TableRenderCell<T> = (props: {
+  row: T;
+  rowIndex: number;
+  columnIndex: number;
+}) => React.ReactNode | null;
+
+export type TableColumn<ROW> = {
+  title?: string;
+  width?:
+    | number
+    | 'auto'
+    | '1fr'
+    | '2fr'
+    | '3fr'
+    | '4fr'
+    | '5fr'
+    | '6fr'
+    | '7fr'
+    | '8fr'
+    | '9fr'
+    | '10fr';
+  maxWidth?: number;
+  minWidth?: number;
+  renderHeaderCell?: TableRenderHeaderCell;
+  isSeparator?: boolean;
+  pinned?: TableColumnPropPinned;
+  renderCell?: TableRenderCell<ROW>;
+  colSpan?: TabletColSpan<ROW>;
+  accessor?: string;
+  columns?: TableColumn<ROW>[];
+};
+
+type TableRowMouseEvent<ROW> = (
+  row: ROW,
+  props: { e: React.MouseEvent },
+) => void;
+
+type GetRowKey<ROW> = (row: ROW) => string | number;
+```
+
+| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
+| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
+| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
+| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
+| `rowHoverEffect?`  | `boolean`                     | -                 | Включает эффект наведения на строку                          |
+| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
+| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |

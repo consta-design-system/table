@@ -17,7 +17,7 @@ export type UseVirtualScrollReturn<ITEM_ELEMENT, SCROLL_ELEMENT> = {
 
 export type Bounds = [[number, number], [number, number]];
 
-export const defaultItemsCalculationCount = 5;
+export const defaultItemsCalculationCount = 1;
 
 export const arraysIsEq = (arr1: number[], arr2: number[]) =>
   arr1.join('-') === arr2.join('-');
@@ -91,9 +91,13 @@ const addCount = (
   const average =
     lastSavedSize.reduce((a, b) => a + b, 0) / lastSavedSize.length;
 
-  let add = defaultItemsCalculationCount;
+  let add = 0;
 
-  while (visiblePosition[1] >= pxs[1] + add * average) {
+  if (visiblePosition[1] < pxs[1] + add * average) {
+    return add;
+  }
+
+  while (visiblePosition[1] > pxs[1] + add * average) {
     add += defaultItemsCalculationCount;
   }
 

@@ -60,7 +60,6 @@ const columns: TableColumn<ROW>[] = [
   {
     title: 'Медали',
     accessor: 'medals',
-
     columns: [
       {
         title: 'Золото',
@@ -96,14 +95,16 @@ const columns: TableColumn<ROW>[] = [
 
 export const TableExampleVirtualScroll = () => (
   <Example col={1}>
-    <div>
-      <Table
-        style={{ maxHeight: 400 }}
-        rows={rows}
-        columns={columns}
-        stickyHeader
-        virtualScroll
-      />
+    <div style={{ maxHeight: 400, overflow: 'scroll' }}>
+      <div style={{ maxHeight: 200, overflow: 'scroll' }}>
+        <Table
+          style={{ maxHeight: '100%' }}
+          rows={rows}
+          columns={columns}
+          stickyHeader
+          virtualScroll
+        />
+      </div>
     </div>
   </Example>
 );

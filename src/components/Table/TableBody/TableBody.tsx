@@ -7,7 +7,7 @@ import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { useForkRef } from '@consta/uikit/useForkRef';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
 import { AtomMut } from '@reatom/core';
-import { useAtom } from '@reatom/npm-react';
+import { useAction, useAtom } from '@reatom/npm-react';
 import React, { forwardRef, memo, useMemo, useRef } from 'react';
 
 import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';
@@ -88,10 +88,20 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
       useMemo(() => [bodyRef], [bodyRef]),
       getElementSize,
     );
+    const bodyOffsetHeightSizeAtom = useResizeObservedAtom(
+      useMemo(() => [bodyRef], [bodyRef]),
+      (el) => el?.scrollHeight || 0,
+    );
 
     const tableBodyHeightAtom = useCreateAtom(
       (ctx) => `--table-body-height: ${ctx.spy(bodySizeAtom)[0].height}px;`,
     );
+
+    const bodyOffsetHeightAtom = useCreateAtom(
+      (ctx) =>
+        `--table-body-offset-height: ${ctx.spy(bodyOffsetHeightSizeAtom)}px;`,
+    );
+
     const tableBodyWidthAtom = useCreateAtom(
       (ctx) => `--table-body-width: ${ctx.spy(bodySizeAtom)[0].width}px;`,
     );
@@ -152,6 +162,7 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
         <Styles
           className={randomClass}
           atoms={[
+            bodyOffsetHeightAtom,
             tableBodyHeightAtom,
             tableBodyWidthAtom,
             tableHeaderHeightAtom,
@@ -198,6 +209,8 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
   const resizableAtom = usePropAtom(propsAtom, 'resizable');
 
   const bodyRef = useRef<HTMLDivElement>(null);
+  const bodyElAtom = useCreateAtom<HTMLDivElement | null>(null);
+  const setBodyEl = useAction((ctx, el: HTMLDivElement) => bodyElAtom(ctx, el));
 
   const [blocks] = useAtom((ctx) => {
     const lowHeaders = ctx.spy(lowHeadersAtom);
@@ -235,7 +248,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
   return (
     <TableBodyRoot
       {...otherProps}
-      ref={useForkRef([ref, bodyRef])}
+      ref={useForkRef([ref, bodyRef, setBodyEl])}
       headerHeightAtom={headerHeightAtom}
       spaceTopAtom={spaceTopAtom}
       sizesAtom={sizesAtom}
@@ -253,6 +266,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
       />
       <TableSeparatorTitles lowHeadersAtom={lowHeadersAtom} />
       <TableResizers
+        bodyElAtom={bodyElAtom}
         lowHeadersAtom={lowHeadersAtom}
         resizersRefsAtom={resizersRefsAtom}
         handlersAtom={handlersAtom}

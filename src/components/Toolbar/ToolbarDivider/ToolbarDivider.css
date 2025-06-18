@@ -1,0 +1,5 @@
+.ct--ToolbarDivider {
+  background-color: var(--color-bg-border);
+  width: calc(var(--control-border-width) * 2);
+  height: var(--toolbar-divider-height);
+}

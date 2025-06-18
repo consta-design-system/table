@@ -1,0 +1,23 @@
+## Импорт
+
+```js
+import { Collapse } from '@сonsta/table/Collapse';
+```
+
+## Свойства
+
+| Имя                 | Тип                                                                | По умолчанию | Описание                                                  |
+| ------------------- | ------------------------------------------------------------------ | ------------ | --------------------------------------------------------- |
+| expandButton        | `boolean`                                                          | —            | Показывает кнопку раскрытия.                              |
+| expanded            | `boolean`                                                          | `false`      | Указывает, раскрыт ли компонент.                          |
+| expandedMaxHeight   | `number \| 'auto'`                                                 | `'auto'`     | Максимальная высота при раскрытии.                        |
+| onExpand            | `(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void` | —            | Обработчик изменения состояния раскрытия.                 |
+| fullscreenButton    | `boolean`                                                          | —            | Показывает кнопку полноэкранного режима.                  |
+| fullscreen          | `boolean`                                                          | `false`      | Указывает, находится ли компонент в полноэкранном режиме. |
+| onFullscreen        | `(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void` | —            | Обработчик изменения полноэкранного режима.               |
+| leftSide            | `React.ReactNode`                                                  | —            | Контент для отображения на левой стороне.                 |
+| rightSide           | `React.ReactNode`                                                  | —            | Контент для отображения на правой стороне.                |
+| fullscreenContainer | `Element \| React.RefObject<HTMLElement>`                          | —            | Контейнер для полноэкранного режима.                      |
+| fullscreenZIndex    | `number`                                                           | `1000`       | Уровень z-index для полноэкранного режима.                |
+| className           | `string`                                                           | —            | Дополнительный класс.                                     |
+| children            | `React.ReactNode`                                                  | —            | Контент для отображения внутри компонента.                |

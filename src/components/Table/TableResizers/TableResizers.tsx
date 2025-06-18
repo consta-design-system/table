@@ -24,6 +24,7 @@ type TableResizersProps<T> = {
   resizableAtom: AtomMut<'inside' | 'outside' | undefined>;
   activeIndexAtom: AtomMut<number | null>;
   intersectingColumnsAtom: AtomMut<boolean[]>;
+  bodyElAtom: AtomMut<HTMLDivElement | null>;
 };
 
 export type TableResizersComponent = <T>(
@@ -114,12 +115,17 @@ export const TableResizers: TableResizersComponent = memo((props) => {
     resizableAtom,
     activeIndexAtom,
     intersectingColumnsAtom,
+    bodyElAtom,
   } = props;
   const [resizersRefs] = useAtom(resizersRefsAtom);
   const [lowHeaders] = useAtom(lowHeadersAtom);
   const virtualScrollHelperRefs = useRefs<HTMLDivElement>(lowHeaders.length);
 
-  useVisibleColumns(virtualScrollHelperRefs, intersectingColumnsAtom);
+  useVisibleColumns(
+    virtualScrollHelperRefs,
+    intersectingColumnsAtom,
+    bodyElAtom,
+  );
 
   return (
     <div className={cnTableResizers()}>

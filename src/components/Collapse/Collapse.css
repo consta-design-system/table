@@ -1,0 +1,23 @@
+.ct--Collapse {
+  &-Content {
+    display: grid;
+    grid-template-rows: 0fr;
+    grid-template-columns: 100%;
+
+    transition: grid-template-rows 0.2s ease-in-out;
+    &_expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+  &-ChildrenWrapper {
+    overflow: hidden;
+  }
+  &-Title {
+    display: flex;
+    align-items: center;
+    height: var(--control-height-s);
+  }
+  &-Toolbar.ct--Toolbar {
+    background: var(--color-bg-secondary);
+  }
+}

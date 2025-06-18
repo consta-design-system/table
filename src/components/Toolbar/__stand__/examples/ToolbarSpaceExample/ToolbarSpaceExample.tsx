@@ -11,22 +11,25 @@ import React from 'react';
 
 import { Toolbar } from '../../..';
 
-export const ToolbarContentExample = () => {
+export const ToolbarSpaceExample = () => {
   return (
     <Example col={1}>
       <Toolbar
+        border
+        space={{ p: 'm' }}
+        itemsGap="m"
         leftSide={[
           <TextField
-            size="s"
+            size="m"
             placeholder="Найти"
-            style={{ width: 150 }}
+            style={{ width: 180 }}
             leftSide={IconSearchStroked}
           />,
-          <Button iconLeft={IconFunnel} view="ghost" size="s" />,
+          <Button iconLeft={IconFunnel} view="ghost" size="m" />,
         ]}
         rightSide={[
-          <Button iconLeft={IconKebab} size="s" view="clear" />,
-          <FieldGroup size="s">
+          <Button iconLeft={IconKebab} size="m" view="clear" />,
+          <FieldGroup size="m">
             <Button iconLeft={IconAdd} />
             <Button iconLeft={IconSelect} />
           </FieldGroup>,

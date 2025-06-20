@@ -1,0 +1,16 @@
+.ct--Collapse {
+  &-Content {
+    display: grid;
+    grid-template-rows: 0px;
+    grid-template-columns: 100%;
+    transition: grid-template-rows 0.2s ease-in-out;
+    &_expanded {
+      grid-template-rows: 200px;
+    }
+  }
+  &-ChildrenWrapper {
+    height: 200px;
+
+    /* overflow: hidden; */
+  }
+}

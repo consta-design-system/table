@@ -60,7 +60,6 @@ const columns: TableColumn<ROW>[] = [
   {
     title: 'Медали',
     accessor: 'medals',
-
     columns: [
       {
         title: 'Золото',

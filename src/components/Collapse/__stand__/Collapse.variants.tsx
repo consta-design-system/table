@@ -1,3 +1,5 @@
+import { useBoolean, useSelect, useText } from '@consta/stand';
+import { Button } from '@consta/uikit/Button';
 import React from 'react';
 
 import { DataCell } from '##/components/DataCell';
@@ -95,85 +97,34 @@ const columns: TableColumn<ROW>[] = [
 ];
 
 const Variants = () => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  console.log(ref);
+  const leftSide = useText('leftSide', 'Заголовок таблицы');
+
+  const rightSide = useBoolean('rightSide');
   return (
     <div
       style={{
         width: '100%',
         maxWidth: 800,
-        height: '100%',
-        display: 'flex',
-        overflow: 'scroll',
-        flexDirection: 'row',
-        gap: 16,
       }}
     >
-      <div style={{ flex: 'none' }}>меню</div>
-      <div ref={ref} style={{ flex: 1, position: 'relative', minHeight: 500 }}>
-        afsdfsdf sdfsdf sdfsdfsdf
-        <Collapse
-          expandButton
-          fullscreenButton
-          leftSide="Заголовок таблицы"
-          expandedMaxHeight={600}
-          fullscreenContainer={ref}
-        >
-          <Table
-            style={{ maxHeight: '100%', width: '100%' }}
-            rows={rows.slice(0, 10)}
-            columns={columns}
-            virtualScroll
-          />
-        </Collapse>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-        <p>afsdfsdf sdfsdf sdfsdfsdf</p>
-      </div>
+      <Collapse
+        expandButton
+        fullscreenButton
+        leftSide={leftSide}
+        expandedMaxHeight={300}
+        rightSide={
+          rightSide ? (
+            <Button size="s" label="Кнопка" view="ghost" form="round" />
+          ) : undefined
+        }
+      >
+        <Table
+          style={{ maxHeight: '100%', width: '100%' }}
+          rows={rows}
+          columns={columns}
+          virtualScroll
+        />
+      </Collapse>
     </div>
   );
 };

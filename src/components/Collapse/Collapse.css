@@ -12,4 +12,12 @@
   &-ChildrenWrapper {
     overflow: hidden;
   }
+  &-Title {
+    display: flex;
+    align-items: center;
+    height: var(--control-height-s);
+  }
+  &-Toolbar.ct--Toolbar {
+    background: var(--color-bg-secondary);
+  }
 }

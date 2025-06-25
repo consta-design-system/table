@@ -16,6 +16,9 @@
   &-ChildrenWrapper {
     height: calc(100% - var(--collapse-toolbar-height));
   }
+  &-Toolbar.ct--Toolbar {
+    background: var(--color-bg-secondary);
+  }
 }
 
 .MixPopoverAnimate.ct--CollapseFullscreen {

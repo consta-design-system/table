@@ -1,6 +1,5 @@
 import './CollapseFullscreen.css';
 
-import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
 import {
   animateTimeout,
   cnMixPopoverAnimate,
@@ -11,7 +10,7 @@ import {
 } from '@consta/uikit/PortalWithTheme';
 import { useTheme } from '@consta/uikit/Theme';
 import { getElementHeight } from '@consta/uikit/useResizeObserved';
-import { useAtom, useUpdate } from '@reatom/npm-react';
+import { useAtom } from '@reatom/npm-react';
 import React, { useMemo, useRef } from 'react';
 import { Transition } from 'react-transition-group';
 
@@ -27,7 +26,7 @@ type CollapseFullscreenProps = JSX.IntrinsicElements['div'] & {
   onFullscreen?: React.MouseEventHandler<HTMLButtonElement>;
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
-  afterExit?: () => void;
+
   container?: HTMLElement | React.RefObject<HTMLElement>;
   zIndex?: number;
 };
@@ -36,7 +35,6 @@ const cnCollapseFullscreen = cn('CollapseFullscreen');
 
 export const CollapseFullscreen: React.FC<CollapseFullscreenProps> = ({
   active = false,
-  afterExit,
   container,
   zIndex,
   rightSide,
@@ -60,7 +58,6 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> = ({
       unmountOnExit
       nodeRef={portalRef}
       timeout={animateTimeout}
-      onExited={afterExit}
     >
       {(animate) => (
         <PortalWithTheme
@@ -80,6 +77,7 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> = ({
           <PortalWithThemeConsumer ignoreClicksInsideRefs={[portalRef]}>
             <div className={cnCollapseFullscreen('ToolbarWrapper')}>
               <Toolbar
+                className={cnCollapseFullscreen('Toolbar')}
                 ref={toolbarRef}
                 leftSide={leftSide}
                 form="brick"

@@ -1,18 +1,15 @@
 import './Collapse.css';
 
-import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
 import { withCtx } from '@consta/uikit/__internal__/src/utils/state/withCtx';
 import { isString } from '@consta/uikit/__internal__/src/utils/type-guards';
 import { animateTimeout } from '@consta/uikit/MixPopoverAnimate';
 import { Text } from '@consta/uikit/Text';
 import { useMutableRef } from '@consta/uikit/useMutableRef';
-import { getElementHeight } from '@consta/uikit/useResizeObserved';
 import { useAction, useAtom, useUpdate } from '@reatom/npm-react';
-import React, { forwardRef, useEffect, useMemo, useRef } from 'react';
+import React, { forwardRef, useRef } from 'react';
 import { Transition } from 'react-transition-group';
 
 import { Toolbar } from '##/components/Toolbar';
-import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';
 import { cn } from '##/utils/bem';
 
 import { CollapseButton } from './CollapseButton';
@@ -35,8 +32,6 @@ export type CollapseProps = JSX.IntrinsicElements['div'] & {
   ) => void;
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
-  border?: 'bottom' | 'all' | boolean;
-  afterExitFullscreen?: () => void;
   fullscreenContainer?: Element | React.RefObject<Element>;
   fullscreenZIndex?: number;
 };
@@ -54,8 +49,6 @@ export const Collapse = withCtx(
       rightSide,
       className,
       children,
-      border,
-      afterExitFullscreen,
       fullscreenContainer,
       fullscreenZIndex = 1000,
       expandedMaxHeight = 'auto',
@@ -66,16 +59,22 @@ export const Collapse = withCtx(
 
     const contentRef = useRef<HTMLDivElement>(null);
 
-    const [expanded, setExpanded, expandedAtom] = useAtom(expandedProp);
-    const [fullscreen, setFullscreen, fullscreenAtom] = useAtom(fullscreenProp);
-    const [fakeContentHeight, setFakeContentHeight, fakeContentHeightAtom] =
-      useAtom<number | undefined>(undefined);
+    const [expanded, , expandedAtom] = useAtom(expandedProp);
+    const [fullscreen, , fullscreenAtom] = useAtom(fullscreenProp);
+    const [fakeContentHeight, setFakeContentHeight] = useAtom<
+      number | undefined
+    >(undefined);
+    const [expandedContentMounted, , expandedContentMountedAtom] =
+      useAtom(expanded);
 
     const toggleExpanded = useAction(
       (ctx, e: React.MouseEvent<HTMLButtonElement>) => {
         const value = !ctx.get(expandedAtom);
         refs.current[0]?.(value, e);
         expandedAtom(ctx, value);
+        if (value) {
+          expandedContentMountedAtom(ctx, true);
+        }
       },
     );
 
@@ -83,30 +82,36 @@ export const Collapse = withCtx(
       (ctx, e: React.MouseEvent<HTMLButtonElement>) => {
         const value = !ctx.get(fullscreenAtom);
         refs.current[1]?.(value, e);
-        fullscreenAtom(ctx, !ctx.get(fullscreenAtom));
+        fullscreenAtom(ctx, value);
 
-        if (value) {
-          setFakeContentHeight(contentRef.current?.clientHeight);
-        } else {
-          setFakeContentHeight(undefined);
-        }
+        setFakeContentHeight(
+          value ? contentRef.current?.clientHeight : undefined,
+        );
       },
     );
 
-    const title = isString(leftSide) ? <Text>{leftSide}</Text> : leftSide;
+    const afterExitExpanded = useAction((ctx) => {
+      expandedContentMountedAtom(ctx, false);
+    });
+
+    const title = isString(leftSide) ? (
+      <Text className={cnCollapse('Title')} size="m" weight="semibold">
+        {leftSide}
+      </Text>
+    ) : (
+      leftSide
+    );
 
     useUpdate(expandedAtom, [expandedProp]);
     useUpdate(fullscreenAtom, [fullscreenProp]);
 
     return (
       <>
-        <div
-          {...otherProps}
-          ref={ref}
-          className={cnCollapse({ expanded, fullscreen }, [className])}
-        >
+        <div {...otherProps} ref={ref} className={className}>
           <Toolbar
-            border={border}
+            className={cnCollapse('Toolbar')}
+            form="brick"
+            border={expandedContentMounted ? 'bottom' : undefined}
             leftSide={[
               expandButton ? (
                 <CollapseButton
@@ -140,6 +145,7 @@ export const Collapse = withCtx(
                 unmountOnExit
                 nodeRef={contentRef}
                 timeout={animateTimeout}
+                onExited={afterExitExpanded}
               >
                 <div
                   className={cnCollapse('ChildrenWrapper')}
@@ -155,7 +161,6 @@ export const Collapse = withCtx(
         {children && (
           <CollapseFullscreen
             active={fullscreen}
-            afterExit={afterExitFullscreen}
             onFullscreen={toggleFullscreen}
             container={
               fullscreenContainer as

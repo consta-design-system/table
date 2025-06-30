@@ -98,8 +98,10 @@ const columns: TableColumn<ROW>[] = [
 
 const Variants = () => {
   const leftSide = useText('leftSide', 'Заголовок таблицы');
-
   const rightSide = useBoolean('rightSide');
+  const expandButton = useBoolean('expandButton', true);
+  const fullscreenButton = useBoolean('fullscreenButton');
+
   return (
     <div
       style={{
@@ -108,8 +110,8 @@ const Variants = () => {
       }}
     >
       <Collapse
-        expandButton
-        fullscreenButton
+        expandButton={expandButton}
+        fullscreenButton={fullscreenButton}
         leftSide={leftSide}
         expandedMaxHeight={300}
         rightSide={

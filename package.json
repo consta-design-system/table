@@ -54,7 +54,8 @@
     "stand:start": "cross-env NODE_ENV=development webpack serve --open --progress --mode development --hot --progress --config node_modules/@consta/stand/webpack.config.js",
     "start": "yarn stand:generate && yarn stand:start",
     "rm:dist": "node ./scripts/rm.js --path=./dist",
-    "rm:build": "node ./scripts/rm.js --path=./build"
+    "rm:build": "node ./scripts/rm.js --path=./build",
+    "rm:node_modules": "node ./scripts/rm.js --path=./node_modules"
   },
   "config": {
     "commitizen": {

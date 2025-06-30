@@ -32,9 +32,28 @@ export type CollapseProps = JSX.IntrinsicElements['div'] & {
   ) => void;
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
-  fullscreenContainer?: Element | React.RefObject<Element>;
+  fullscreenContainer?: Element | React.RefObject<HTMLElement>;
   fullscreenZIndex?: number;
 };
+
+/**
+ * Props for the Collapse component.
+ *
+ * @extends JSX.IntrinsicElements['div']
+ * @property {boolean} [expandButton] - показывает кнопку раскрытия..
+ * @property {boolean} [expanded=false] - указывает, раскрыт ли компонент.
+ * @property {number | 'auto'} [expandedMaxHeight='auto'] - максимальная высота при раскрытии..
+ * @property {(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void} [onExpand] - обработчик изменения состояния раскрытия.
+ * @property {boolean} [fullscreenButton] - показывает кнопку полноэкранного режима.
+ * @property {boolean} [fullscreen=false] - указывает, находится ли компонент в полноэкранном режиме.
+ * @property {(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void} [onFullscreen] - обработчик изменения полноэкранного режима.
+ * @property {React.ReactNode} leftSide - контент для отображения на левой стороне.
+ * @property {React.ReactNode} [rightSide] - контент для отображения на правой стороне.
+ * @property {Element | React.RefObject<HTMLElement>} [fullscreenContainer] -  контейнер для полноэкранного режима.
+ * @property {number} [fullscreenZIndex=1000] - уровень z-index для полноэкранного режима.
+ * @property {string} [className] - дополнительный класс.
+ * @property {React.ReactNode} children - контент для отображения внутри компонента.
+ */
 
 export const Collapse = withCtx(
   forwardRef<HTMLDivElement, CollapseProps>((props, ref) => {
@@ -162,12 +181,7 @@ export const Collapse = withCtx(
           <CollapseFullscreen
             active={fullscreen}
             onFullscreen={toggleFullscreen}
-            container={
-              fullscreenContainer as
-                | HTMLElement
-                | React.RefObject<HTMLElement>
-                | undefined
-            }
+            container={fullscreenContainer}
             zIndex={fullscreenZIndex}
             leftSide={title}
             rightSide={rightSide}

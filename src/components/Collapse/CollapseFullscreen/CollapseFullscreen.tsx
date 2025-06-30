@@ -27,7 +27,7 @@ type CollapseFullscreenProps = JSX.IntrinsicElements['div'] & {
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
 
-  container?: HTMLElement | React.RefObject<HTMLElement>;
+  container?: Element | React.RefObject<HTMLElement>;
   zIndex?: number;
 };
 

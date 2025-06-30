@@ -23,7 +23,7 @@ const Variants = () => {
     'all',
     'top',
     'bottom',
-  ]);
+  ] as const);
 
   const itemsGap = useSelect<Space>(
     'itemsGap',

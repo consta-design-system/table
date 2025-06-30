@@ -49,7 +49,7 @@ export type CollapseProps = JSX.IntrinsicElements['div'] & {
  * @property {(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void} [onFullscreen] - обработчик изменения полноэкранного режима.
  * @property {React.ReactNode} leftSide - контент для отображения на левой стороне.
  * @property {React.ReactNode} [rightSide] - контент для отображения на правой стороне.
- * @property {Element | React.RefObject<HTMLElement>} [fullscreenContainer] -  контейнер для полноэкранного режима.
+ * @property {Element | React.RefObject<HTMLElement>} [fullscreenContainer=`window.document.body`] -  контейнер для полноэкранного режима.
  * @property {number} [fullscreenZIndex=1000] - уровень z-index для полноэкранного режима.
  * @property {string} [className] - дополнительный класс.
  * @property {React.ReactNode} children - контент для отображения внутри компонента.
@@ -68,7 +68,7 @@ export const Collapse = withCtx(
       rightSide,
       className,
       children,
-      fullscreenContainer,
+      fullscreenContainer = window.document.body,
       fullscreenZIndex = 1000,
       expandedMaxHeight = 'auto',
       ...otherProps
@@ -139,10 +139,10 @@ export const Collapse = withCtx(
                   onClick={toggleExpanded}
                 />
               ) : null,
-              title,
+              ...(Array.isArray(title) ? title : [title]),
             ]}
             rightSide={[
-              rightSide,
+              ...(Array.isArray(rightSide) ? rightSide : [rightSide]),
               fullscreenButton ? (
                 <CollapseButton
                   active={fullscreen}

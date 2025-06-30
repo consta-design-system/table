@@ -1,12 +1,22 @@
-import { useBoolean, useText } from '@consta/stand';
-import { Button } from '@consta/uikit/Button';
-import React from 'react';
+import './CollapseExampleFullscreenContainer.css';
 
+import { Example } from '@consta/stand';
+import React, { useRef } from 'react';
+
+import { Collapse } from '##/components/Collapse';
 import { DataCell } from '##/components/DataCell';
 import { Table, TableColumn } from '##/components/Table';
 import rows from '##/components/Table/__mocks__/olympic-winners.json';
+import { cn } from '##/utils/bem';
 
-import { Collapse } from '../Collapse';
+const cnCollapseExampleFullscreenContainer = cn(
+  'CollapseExampleFullscreenContainer',
+);
+
+const Cell = (props: { title: string | number | null }) => {
+  const { title } = props;
+  return <DataCell truncate>{title}</DataCell>;
+};
 
 type ROW = {
   athlete: string;
@@ -20,12 +30,6 @@ type ROW = {
   bronze: number;
   total: number;
 };
-
-const Cell = (props: { title: string | number | null }) => {
-  const { title } = props;
-  return <DataCell truncate>{title}</DataCell>;
-};
-
 const columns: TableColumn<ROW>[] = [
   {
     title: 'Имя',
@@ -96,39 +100,30 @@ const columns: TableColumn<ROW>[] = [
   },
 ];
 
-const Variants = () => {
-  const leftSide = useText('leftSide', 'Заголовок таблицы');
-  const rightSide = useBoolean('rightSide');
-  const expandButton = useBoolean('expandButton', true);
-  const fullscreenButton = useBoolean('fullscreenButton');
+export const CollapseExampleFullscreenContainer = () => {
+  const gridRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: 800,
-      }}
-    >
-      <Collapse
-        expandButton={expandButton}
-        fullscreenButton={fullscreenButton}
-        leftSide={leftSide}
-        expandedMaxHeight={300}
-        rightSide={
-          rightSide ? (
-            <Button size="s" label="Кнопка" view="ghost" form="round" />
-          ) : undefined
-        }
-      >
-        <Table
-          style={{ maxHeight: '100%', width: '100%' }}
-          rows={rows}
-          columns={columns}
-          virtualScroll
-        />
-      </Collapse>
-    </div>
+    <Example col={1}>
+      <div className={cnCollapseExampleFullscreenContainer()} ref={gridRef}>
+        {new Array(4).fill(null).map((_, index) => (
+          <Collapse
+            key={index}
+            className={cnCollapseExampleFullscreenContainer('Item')}
+            leftSide={`Таблица ${index + 1}`}
+            fullscreenButton
+            expanded
+            fullscreenContainer={gridRef}
+          >
+            <Table
+              className={cnCollapseExampleFullscreenContainer('Table')}
+              rows={rows}
+              columns={columns}
+              virtualScroll
+            />
+          </Collapse>
+        ))}
+      </div>
+    </Example>
   );
 };
-
-export default Variants;

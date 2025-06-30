@@ -1,3 +1,30 @@
+import {
+  CollapseExampleExpandButton,
+  CollapseExampleExpandControl,
+} from './examples/CollapseExampleExpandButton/CollapseExampleExpandButton';
+import { CollapseExampleContent } from './examples/CollapseExampleContent/CollapseExampleContent';
+import { CollapseExampleExpandedMaxHeight } from './examples/CollapseExampleExpandedMaxHeight/CollapseExampleExpandedMaxHeight';
+import { CollapseExampleFullscreenContainer } from './examples/CollapseExampleFullscreenContainer/CollapseExampleFullscreenContainer';
+import {
+  CollapseExampleFullscreenButton,
+  CollapseExampleFullscreenControl,
+} from './examples/CollapseExampleFullscreenButton/CollapseExampleFullscreenButton';
+import { MdxMenu, MdxTabs, MdxInformer } from '@consta/stand';
+
+<MdxMenu>
+
+- [Импорт](#импорт)
+- [Свойства](#свойства)
+- [Заголовок и контент](#заголовок-и-контент)
+- [Разворачивание](#разворачивание)
+- [Подконтрольное состояние раскрытия](#подконтрольное-состояние-раскрытия)
+- [Полноэкранный режим](#полноэкранный-режим)
+- [Подконтрольное полноэкранный режим](#подконтрольное-полноэкранный-режим)
+- [Ограничение высоты контента](#ограничение-высоты-контента)
+- [Контейнер полноэкранного режима](#контейнер-полноэкранного-режима)
+
+</MdxMenu>
+
 ## Импорт
 
 ```js
@@ -21,3 +48,217 @@ import { Collapse } from '@сonsta/table/Collapse';
 | fullscreenZIndex    | `number`                                                           | `1000`       | Уровень z-index для полноэкранного режима.                |
 | className           | `string`                                                           | —            | Дополнительный класс.                                     |
 | children            | `React.ReactNode`                                                  | —            | Контент для отображения внутри компонента.                |
+
+## Заголовок и контент
+
+Для того чтобы показать заголовок используйте `leftSide`. Для того чтобы показать контент используйте `children`. Также можно ис использовать `rightSide` для отображения контента справа.
+
+<MdxTabs>
+
+<CollapseExampleContent />
+
+```tsx
+<Collapse
+  leftSide="Заголовок"
+  rightSide={[
+    <Button label="Кнопка" size="s" view="ghost" form="round" />,
+    <Button label="Кнопка 2" size="s" form="round" />,
+  ]}
+>
+  Content
+</Collapse>
+```
+
+</MdxTabs>
+
+## Разворачивание
+
+Для того чтобы показать кнопку разворота используйте `expandButton`.
+
+<MdxTabs>
+
+<CollapseExampleExpandButton />
+
+```tsx
+<Collapse leftSide="Заголовок таблицы" expandButton>
+  <Table rows={rows} columns={columns} virtualScroll />
+</Collapse>
+```
+
+</MdxTabs>
+
+## Подконтрольное состояние раскрытия
+
+Для того чтобы контролировать состояние раскрытия используйте `expanded` и `onExpand`.
+
+<MdxTabs>
+
+<CollapseExampleExpandControl />
+
+```tsx
+export const CollapseExampleExpandControl = () => {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <>
+      <Button
+        onClick={() => setExpanded(!expanded)}
+        label={expanded ? 'Свернуть' : 'Развернуть'}
+      />
+      <Collapse
+        leftSide="Заголовок таблицы"
+        expandButton
+        expanded={expanded}
+        onExpand={() => setExpanded(!expanded)}
+      >
+        <Table rows={rows} columns={columns} virtualScroll />
+      </Collapse>
+    </>
+  );
+};
+```
+
+</MdxTabs>
+
+## Полноэкранный режим
+
+Для того чтобы показать кнопку полноэкранный режима используйте `fullscreenButton`.
+
+<MdxTabs>
+
+<CollapseExampleFullscreenButton />
+
+```tsx
+<Collapse leftSide="Заголовок таблицы" fullscreenButton>
+  <Table rows={rows} columns={columns} virtualScroll />
+</Collapse>
+```
+
+</MdxTabs>
+
+## Подконтрольное полноэкранный режим
+
+Для того чтобы контролировать состояние полноэкранного режима используйте `fullscreen` и `onFullscreen`.
+
+<MdxTabs>
+
+<CollapseExampleFullscreenControl />
+
+```tsx
+export const CollapseExampleFullscreenControl = () => {
+  const [fullscreen, setFullscreen] = useState(false);
+  return (
+    <>
+      <Button
+        onClick={() => setFullscreen(!fullscreen)}
+        label={fullscreen ? 'Свернуть' : 'Развернуть'}
+      />
+      <Collapse
+        leftSide="Заголовок таблицы"
+        expandButton
+        expanded={fullscreen}
+        onExpand={() => setFullscreen(!fullscreen)}
+      >
+        <Table rows={rows} columns={columns} virtualScroll />
+      </Collapse>
+    </>
+  );
+};
+```
+
+</MdxTabs>
+
+## Ограничение высоты контента
+
+Для того чтобы ограничить высоту контента используйте `expandedMaxHeight` для ограничения высоты разворота. Так же следует ограничить высоту контента в `maxHeight: 100%`, чтобы контент не выходил за пределы компонента как в режиме разворота так и в полноэкранном режиме.
+
+<MdxTabs>
+
+<CollapseExampleExpandedMaxHeight />
+
+```tsx
+<Collapse
+  leftSide="Заголовок таблицы"
+  fullscreenButton
+  expandButton
+  expandedMaxHeight={300}
+>
+  <Table
+    style={{ maxHeight: '100%' }}
+    rows={rows}
+    columns={columns}
+    virtualScroll
+  />
+</Collapse>
+```
+
+</MdxTabs>
+
+## Контейнер полноэкранного режима
+
+Вы можете указать любой контейнер в котором разворачивается контент, используйте `fullscreenContainer`. По умолчанию используется `window.document.body`.
+
+<MdxInformer>
+
+Контейнер должен иметь `position: relative`;
+
+</MdxInformer>
+
+<MdxTabs>
+
+<CollapseExampleFullscreenContainer />
+
+```tsx
+export const CollapseExampleFullscreenContainer = () => {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Example col={1}>
+      <div className={cnCollapseExampleFullscreenContainer()} ref={gridRef}>
+        {new Array(4).fill(null).map((_, index) => (
+          <Collapse
+            key={index}
+            className={cnCollapseExampleFullscreenContainer('Item')}
+            leftSide={`Таблица ${index + 1}`}
+            fullscreenButton
+            expanded
+            fullscreenContainer={gridRef}
+          >
+            <Table
+              className={cnCollapseExampleFullscreenContainer('Table')}
+              rows={rows}
+              columns={columns}
+              virtualScroll
+            />
+          </Collapse>
+        ))}
+      </div>
+    </Example>
+  );
+};
+```
+
+```css
+.ct--CollapseExampleFullscreenContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: var(--space-m);
+
+  &-Item {
+    height: 360px;
+    .ct--Collapse-Content {
+      height: calc(
+        100% - calc(var(--control-height-s) + var(--control-border-width) + var(
+                --space-xs
+              ) * 2)
+      );
+    }
+  }
+
+  &-Table {
+    max-height: 100%;
+  }
+}
+```
+
+</MdxTabs>

@@ -1,12 +1,15 @@
-import { useBoolean, useText } from '@consta/stand';
-import { Button } from '@consta/uikit/Button';
+import { Example } from '@consta/stand';
 import React from 'react';
 
+import { Collapse } from '##/components/Collapse';
 import { DataCell } from '##/components/DataCell';
 import { Table, TableColumn } from '##/components/Table';
 import rows from '##/components/Table/__mocks__/olympic-winners.json';
 
-import { Collapse } from '../Collapse';
+const Cell = (props: { title: string | number | null }) => {
+  const { title } = props;
+  return <DataCell truncate>{title}</DataCell>;
+};
 
 type ROW = {
   athlete: string;
@@ -20,12 +23,6 @@ type ROW = {
   bronze: number;
   total: number;
 };
-
-const Cell = (props: { title: string | number | null }) => {
-  const { title } = props;
-  return <DataCell truncate>{title}</DataCell>;
-};
-
 const columns: TableColumn<ROW>[] = [
   {
     title: 'Имя',
@@ -96,39 +93,22 @@ const columns: TableColumn<ROW>[] = [
   },
 ];
 
-const Variants = () => {
-  const leftSide = useText('leftSide', 'Заголовок таблицы');
-  const rightSide = useBoolean('rightSide');
-  const expandButton = useBoolean('expandButton', true);
-  const fullscreenButton = useBoolean('fullscreenButton');
-
+export const CollapseExampleExpandedMaxHeight = () => {
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: 800,
-      }}
-    >
+    <Example col={1}>
       <Collapse
-        expandButton={expandButton}
-        fullscreenButton={fullscreenButton}
-        leftSide={leftSide}
+        leftSide="Заголовок таблицы"
+        fullscreenButton
+        expandButton
         expandedMaxHeight={300}
-        rightSide={
-          rightSide ? (
-            <Button size="s" label="Кнопка" view="ghost" form="round" />
-          ) : undefined
-        }
       >
         <Table
-          style={{ maxHeight: '100%', width: '100%' }}
+          style={{ maxHeight: '100%' }}
           rows={rows}
           columns={columns}
           virtualScroll
         />
       </Collapse>
-    </div>
+    </Example>
   );
 };
-
-export default Variants;

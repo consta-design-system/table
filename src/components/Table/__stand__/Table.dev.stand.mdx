@@ -21,7 +21,7 @@ import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
 } from './examples/TableExampleResizable/TableExampleResizable';
-
+import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
 import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
@@ -38,6 +38,7 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Объединение ячеек](#объединение-ячеек)
 - [Закрепление шапки](#закрепление-шапки)
 - [Виртуальный скролл](#виртуальный-скролл)
+- [onScrollToBottom](#onScrollToBottom)
 - [Таблица в полоску](#таблица-в-полоску)
 - [Выделение строк](#выделение-строк)
   - [Наведение на строку](#наведение-на-строку)
@@ -948,6 +949,38 @@ export const TableExampleColSpan = () => {
 ```
 
 <TableExampleVirtualScroll />
+
+</MdxTabs>
+
+## onScrollToBottom
+
+Свойство `onScrollToBottom` позволяет отслеживать, когда пользователь достиг конца таблицы. Полезно для дозагрузки данных в момент достижения конца таблицы.
+
+<MdxTabs>
+
+```tsx
+const TableExampleOnScrollToBottom = () => {
+  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
+
+  return (
+    <>
+      <Text size="m" weight="bold">
+        {isScrollToBottom ? 'Вы проскроллилили до конца' : 'Скролльте вниз'}
+      </Text>
+      <Table
+        style={{ maxHeight: 400 }}
+        rows={rows}
+        columns={columns}
+        stickyHeader
+        virtualScroll
+        onScrollToBottom={() => setIsScrollToBottom(true)}
+      />
+    </>
+  );
+};
+```
+
+<TableExampleOnScrollToBottom />
 
 </MdxTabs>
 

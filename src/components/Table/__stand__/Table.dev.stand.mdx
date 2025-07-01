@@ -17,16 +17,16 @@ import { TableExampleActiveRow } from './examples/TableExampleActiveRow/TableExa
 import { TableExampleActiveRowWithNumbering } from './examples/TableExampleActiveRowWithNumbering/TableExampleActiveRowWithNumbering';
 import { TableExampleRowHoverEffect } from './examples/TableExampleRowHoverEffect/TableExampleRowHoverEffect';
 import { TableExampleHoveredControlled } from './examples/TableExampleHoveredControlled/TableExampleHoveredControlled';
-import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
 import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
 } from './examples/TableExampleResizable/TableExampleResizable';
-
+import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
 import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
 
+- [Свойства](#свойства)
 - [Как формируется таблица](#как-формируется-таблица)
 - [Колонка](#колонка)
   - [Ширина колонки](#ширина-колонки)
@@ -35,40 +35,34 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Группировка колонок](#группировка-колонок)
   - [Представление данных в ячейке](#представление-данных-в-ячейке)
   - [Представление данных в ячейке в шапке](#представление-данных-в-ячейке-в-шапке)
+  - [Объединение ячеек](#объединение-ячеек)
 - [Закрепление шапки](#закрепление-шапки)
 - [Виртуальный скролл](#виртуальный-скролл)
 - [onScrollToBottom](#onScrollToBottom)
 - [Таблица в полоску](#таблица-в-полоску)
 - [Выделение строк](#выделение-строк)
   - [Наведение на строку](#наведение-на-строку)
-    - [Автоматический способ](#автоматический-способ)
-    - [Подконтрольный способ](#подконтрольный-способ)
-  - [Активность строки](#активность-строки)
-  - [Пример с наведением и активацией строки](#пример-с-наведением-и-активацией-строки)
+  - [Выбор строки](#выбор-строки)
 - [Управление шириной столбцов](#управление-шириной-столбцов)
-  - [resizable = 'inside'](#resizable----inside-)
-  - [resizable = 'outside'](#resizable----outside-)
 - [headerZIndex](#headerzindex)
 - [Вложенные строки](#вложенные-строки)
-- [Объединение ячеек](#объединение-ячеек)
 - [Рендер строки](#рендер-строки)
 - [Индикатор ячейки и подсказки](#индикатор-ячейки-и-подсказки)
 - [Ключ строки](#ключ-строки)
 - [Адаптивная ширина колонок](#адаптивная-ширина-колонок)
-- [Свойства](#свойства)
 
 </MdxMenu>
 
 ## Как формируется таблица
 
-Для вывода самой простой таблицы вам необходимо использовать 2 свойства:
+Для вывода самой простой таблицы, используйте 2 свойства:
 
-- `rows` - строки, тип строки может быть любым массивом объекта `Record<string, unknown>`.
-- `columns`- колонки, представляют массив объектов, у которого `accessor` это свойство объекта ваших данных.
-
-К примеру:
+- `rows` - строки. Тип строки может быть любым массивом объекта `Record<string, unknown>`.
+- `columns`- колонки. Представляют массив объектов, у которого `accessor` это свойство объекта ваших данных.
 
 <MdxTabs>
+
+<TableExampleSimple />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -106,15 +100,76 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleSimple = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleSimple />
-
 </MdxTabs>
+
+## Свойства
+
+```ts
+export type TableRenderHeaderCell = (props: {
+  title?: string;
+  index: number;
+}) => React.ReactNode | null;
+
+export type TableRenderCell<T> = (props: {
+  row: T;
+  rowIndex: number;
+  columnIndex: number;
+}) => React.ReactNode | null;
+
+export type TableColumn<ROW> = {
+  title?: string;
+  width?:
+    | number
+    | 'auto'
+    | '1fr'
+    | '2fr'
+    | '3fr'
+    | '4fr'
+    | '5fr'
+    | '6fr'
+    | '7fr'
+    | '8fr'
+    | '9fr'
+    | '10fr';
+  maxWidth?: number;
+  minWidth?: number;
+  renderHeaderCell?: TableRenderHeaderCell;
+  isSeparator?: boolean;
+  pinned?: TableColumnPropPinned;
+  renderCell?: TableRenderCell<ROW>;
+  colSpan?: TabletColSpan<ROW>;
+  accessor?: string;
+  columns?: TableColumn<ROW>[];
+};
+
+type TableRowMouseEvent<ROW> = (
+  row: ROW,
+  props: { e: React.MouseEvent },
+) => void;
+
+type GetRowKey<ROW> = (row: ROW) => string | number;
+```
+
+| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
+| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
+| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
+| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
+| `rowHoverEffect?`  | `boolean`                     | -                 | Включает эффект наведения на строку                          |
+| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
+| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |
 
 ## Колонка
 
-Построение колонок базируется на `display: grid` и `grid-template-columns`.
-
-Тип колонки:
+Колонки формируются с помощью CSS-свойств `display: grid` и `grid-template-columns`.
 
 ```ts
 export type TableColumn<ROW> = {
@@ -144,17 +199,19 @@ export type TableColumn<ROW> = {
 };
 ```
 
-- `accessor`, уникальный указатель содержимого для каждой колонки,
-- `title`, заголовок колонки,
-- `width`, ширина колонки, можно указать число, а также `'auto'` и значение в `'*fr'`,
-- `maxWidth`, максимальная ширина колонки,
-- `minWidth`, минимальная ширина колонки,
-- `isSeparator`, при включении колонка становится разделителем,
-- `pinned`, закрепление колонки слева или справа,
-- `columns`, вложенные колонки,
-- `renderCell`, функция(компонент) для вывода данных ячеики,
-- `renderHeaderCell`, функция(компонент) для вывода данных ячейки в шапке.
-- [`colSpan`](#объединение-ячеек), функция для вывода количества занятых колонок ячейкой.
+| Свойство колонки                                             | Описание                                                                   |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| [`width`](#ширина-колонки)                                   | Ширина колонки, можно указать число, а также `'auto'` и значение в `'*fr'` |
+| `maxWidth`                                                   | Максимальная ширина колонки                                                |
+| `minWidth`                                                   | Минимальная ширина колонки                                                 |
+| [`isSeparator`](#разделитель-колонок)                        | При включении колонка становится разделителем                              |
+| `title`                                                      | Заголовок колонки                                                          |
+| [`pinned`](#закрепление-колонок)                             | Закрепление колонки слева или справа                                       |
+| [`renderCell`](#представление-данных-в-ячейке)               | Функция(компонент) для вывода данных ячейки                                |
+| [`renderHeaderCell`](#представление-данных-в-ячейке-в-шапке) | Функция(компонент) для вывода данных ячейки в шапке                        |
+| `accessor`                                                   | Уникальный указатель содержимого для каждой колонки                        |
+| `columns`                                                    | Вложенные колонки                                                          |
+| [`colSpan`](#объединение-ячеек)                              | Функция для вывода количества занятых колонок ячейкой                      |
 
 ## Ширина колонки
 
@@ -163,6 +220,8 @@ export type TableColumn<ROW> = {
 К примеру, если требуется зафиксировать размер первой колонки на `180px`, вторая и третья должны быть одинаковыми, но третья должна быть не меньше `150px`.
 
 <MdxTabs>
+
+<TableExampleWidth />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -204,17 +263,15 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleWidth />
-
 </MdxTabs>
 
 ### Разделитель колонок
 
 Чтобы поставить разделитель колонки, вам необходимо указать еще одну колонку с указанием `{isSeparator: true}` и при необходимости указать `title`.
 
-Пример:
-
 <MdxTabs>
+
+<TableExampleSeparator />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -259,15 +316,21 @@ const columns: TableColumn<Row>[] = [
 export const TableExampleWidth = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExampleSeparator />
-
 </MdxTabs>
 
 ### Закрепление колонок
 
 Если в таблице есть горизонтальный скролл, вы можете закрепить несколько колонок справа или слева, используя свойство `pinned`.
 
+<MdxInformer status="normal">
+
+Закрепленные колонки (`pinned`) не могут изменять размер.
+
+</MdxInformer>
+
 <MdxTabs>
+
+<TableExamplePinned />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -330,15 +393,15 @@ const columns: TableColumn<Row>[] = [
 export const TableExamplePinned = () => <Table rows={rows} columns={columns} />;
 ```
 
-<TableExamplePinned />
-
 </MdxTabs>
 
 ### Группировка колонок
 
-При необходимости объединить колонки в группу, мы можете вложить в колонку другие колонки, тем самым родитель будет группой колонок.
+При необходимости объединить колонки в группу, вы можете вложить в колонку другие колонки, тем самым родитель будет группой колонок.
 
 <MdxTabs>
+
+<TableExampleGroupColumns />
 
 ```tsx
 import { Table, TableColumn } from '@consta/table/Table';
@@ -435,8 +498,6 @@ export const TableExampleGroupColumns = () => (
 );
 ```
 
-<TableExampleGroupColumns />
-
 </MdxTabs>
 
 ### Представление данных в ячейке
@@ -444,6 +505,8 @@ export const TableExampleGroupColumns = () => (
 По умолчанию компонент таблицы пытается привести данные к строке и выводит их через компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable). Вы можете в колонке использовать свойство `renderCell` и выводить данные, как вам потребуется.
 
 <MdxTabs>
+
+<TableExampleRenderCell />
 
 ```tsx
 import { Badge, BadgePropStatus } from '@consta/uikit/Badge';
@@ -536,8 +599,6 @@ export const TableExampleRenderCell = () => (
 );
 ```
 
-<TableExampleRenderCell />
-
 </MdxTabs>
 
 ### Представление данных в ячейке в шапке
@@ -546,6 +607,8 @@ export const TableExampleRenderCell = () => (
 Вы можете в колонке использовать свойство `renderHeaderCell` и выводить данные, как вам потребуется.
 
 <MdxTabs>
+
+<TableExampleRenderHeaderCell />
 
 ```tsx
 import { IconFunnel } from '@consta/icons/IconFunnel';
@@ -618,907 +681,25 @@ export const TableExampleRenderHeaderCell = () => (
 );
 ```
 
-<TableExampleRenderHeaderCell />
-
 </MdxTabs>
 
-## Закрепление шапки
+### Объединение ячеек
 
-Вы можете закрепить шапку, используйте свойство `stickyHeader` и ограничьте высоту таблицы.
+Чтобы объединить несколько колонок в одной ячейке, используйте свойство `colSpan` в объекте колонки (columns). `colSpan` — это функция, которая возвращает одно из следующих значений:
 
-<MdxTabs>
+- `number` — количество колонок, которое должна занимать ячейка.
+- `end` — ячейка растянется до конца строки, захватывая все оставшиеся колонки.
+- `undefined` — ячейка займет только одну колонку (эквивалентно 1).
 
-```tsx
-<Table style={{ maxHeight: 400 }} rows={rows} columns={columns} stickyHeader />
-```
+<MdxInformer status="warning">
 
-<TableExampleStickyHeader />
-
-</MdxTabs>
-
-## Виртуальный скролл
-
-Если в таблице много данных, включите свойство `virtualScroll` и ограничьте высоту таблицы для лучшей производительности. Может принимать два значения:
-
-- `boolean` – будет включен виртуальный скролл по горизонтали и вертикали,
-- `[boolean, boolean]` – первый элемент определяет, включается ли виртуальный скролл по горизонтали, второй – по вертикали.
-
-<MdxInformer>
-
-Если включаете виртуальный скролл по горизонтали, то высота ячеек в строке должна быть одинаковая чтобы избежать скачков строки.
+Если вы используете закрепление колонок, убедитесь, что объединённые ячейки не входят в закреплённую область.
 
 </MdxInformer>
 
 <MdxTabs>
 
-```tsx
-<Table
-  style={{ maxHeight: 400 }}
-  rows={rows}
-  columns={columns}
-  stickyHeader
-  virtualScroll
-/>
-```
-
-<TableExampleVirtualScroll />
-
-</MdxTabs>
-
-## onScrollToBottom
-
-Свойство `onScrollToBottom` позволяет отслеживать, когда пользователь достиг конца таблицы. Полезно для дозагрузки данных в момент достижения конца таблицы.
-
-<MdxTabs>
-
-```tsx
-const TableExampleOnScrollToBottom = () => {
-  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
-
-  return (
-    <>
-      <Text size="m" weight="bold">
-        {isScrollToBottom ? 'Вы проскроллилили до конца' : 'Скролльте вниз'}
-      </Text>
-      <Table
-        style={{ maxHeight: 400 }}
-        rows={rows}
-        columns={columns}
-        stickyHeader
-        virtualScroll
-        onScrollToBottom={() => setIsScrollToBottom(true)}
-      />
-    </>
-  );
-};
-```
-
-<TableExampleOnScrollToBottom />
-
-</MdxTabs>
-
-## Таблица в полоску
-
-Для отображения таблицы в полоску используйте `zebraStriped`.
-
-<MdxTabs>
-
-```tsx
-<Table
-  style={{ maxHeight: 400 }}
-  rows={rows}
-  columns={columns}
-  stickyHeader
-  virtualScroll
-  zebraStriped
-/>
-```
-
-<TableExampleZebraStriped />
-
-</MdxTabs>
-
-## Выделение строк
-
-Строки могут иметь состояние:
-
-- Наведение на строку – `hover`,
-- Выбор строки - `active`
-
-### Наведение на строку
-
-Есть 2 способа задать состояние `hover` строкам:
-
-- Автоматически, с помощью Свойства `rowHoverEffect`. В этом случае все строки будут подсвечиваться при наведении мыши.
-- Подконтрольный. Для этого нужно у любой ячейки в строке указать атрибут `data-row-hover='true'`. В этом режиме вы можете выбирать, у каких строк включить этот эффект а у каких нет.
-
-#### Автоматический способ
-
-Пример со свойством `rowHoverEffect`:
-
-<MdxTabs>
-
-```tsx
-import React from 'react';
-
-import { Table, TableColumn } from '@consta/table/Table';
-import rows from '##/components/Table/__mocks__/olympic-winners.json';
-
-type ROW = {
-  athlete: string;
-  age: number | null;
-  country: string;
-  year: number;
-  date: string;
-  sport: string;
-  gold: number;
-  silver: number;
-  bronze: number;
-  total: number;
-};
-
-const columns: TableColumn<ROW>[] = [
-  {
-    title: 'Имя',
-    width: 'auto',
-    accessor: 'athlete',
-  },
-  {
-    title: 'Страна',
-    accessor: 'country',
-    width: 'auto',
-  },
-  {
-    title: 'Возраст',
-    accessor: 'age',
-    minWidth: 100,
-  },
-];
-
-export const TableExampleRowHoverEffect = () => (
-  <Table
-    style={{ maxHeight: 400 }}
-    rows={rows}
-    columns={columns}
-    stickyHeader
-    virtualScroll
-    rowHoverEffect
-  />
-);
-```
-
-<TableExampleRowHoverEffect />
-
-</MdxTabs>
-
-#### Подконтрольный способ
-
-Пример с атрибутом `data-row-hover`.
-
-<MdxInformer status="success">
-
-Чтобы не рендерить всю таблицу при каждом изменении данных в ячейке, используйте [стейт-менеджер](https://www.reatom.dev/blog/what-is-state-manager/) или [контекст](https://react.dev/reference/react/createContext).
-
-</MdxInformer>
-
-В примере ниже используется стейт-менеджер [reatom](https://www.reatom.dev/).
-
-<MdxTabs>
-
-```tsx
-import { action, atom } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
-import React from 'react';
-
-import { DataNumberingCell } from '@consta/table/DataNumberingCell';
-import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
-
-// Types
-
-type ROW = {
-  id: number;
-  name: string;
-  profession: string;
-  status: string;
-};
-
-const rows: ROW[] = [
-  {
-    id: 1,
-    name: 'Антон Григорьев',
-    profession: 'Строитель, который построил дом',
-    status: 'недоступен',
-  },
-  {
-    id: 2,
-    name: 'Василий Пупкин',
-    profession: 'Отвечает на вопросы, хотя его не спросили',
-    status: 'на связи',
-  },
-];
-
-// Atoms
-
-const hoverIdAtom = atom<ROW['id'] | undefined>(undefined);
-
-// Actions
-
-const onRowMouseEnterAction = action<[ROW]>((ctx, row) =>
-  hoverIdAtom(ctx, row.id),
-);
-
-const onRowMouseLeaveAction = action<[ROW]>((ctx, row) => {
-  const hoverId = ctx.get(hoverIdAtom);
-  if (hoverId === row.id) {
-    hoverIdAtom(ctx, undefined);
-  }
-});
-
-const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [hover] = useAtom((ctx) => {
-    const hoverId = ctx.spy(hoverIdAtom);
-    return hoverId === props.row.id;
-  });
-
-  return (
-    <DataNumberingCell data-row-hover={hover}>{props.row.id}</DataNumberingCell>
-  );
-};
-
-const columns: TableColumn<ROW>[] = [
-  {
-    title: '',
-    accessor: 'id',
-    width: 48,
-    maxWidth: 48,
-    minWidth: 48,
-    renderCell: DataCellName,
-  },
-  {
-    title: 'Имя',
-    accessor: 'name',
-    width: 240,
-  },
-  {
-    title: 'Профессия',
-    accessor: 'profession',
-    width: '1fr',
-  },
-  {
-    title: 'Статус',
-    accessor: 'status',
-    width: '1fr',
-    minWidth: 150,
-  },
-];
-
-export const TableExampleHoveredControlled = () => {
-  const onRowMouseEnter = useAction(onRowMouseEnterAction);
-  const onRowMouseLeave = useAction(onRowMouseLeaveAction);
-
-  return (
-    <Table
-      rows={rows}
-      columns={columns}
-      zebraStriped
-      onRowMouseEnter={onRowMouseEnter}
-      onRowMouseLeave={onRowMouseLeave}
-      rowHoverEffect
-    />
-  );
-};
-```
-
-<TableExampleHoveredControlled />
-
-</MdxTabs>
-
-### Выбор строки
-
-Для выбора строки укажите в любой ячейке строки атрибут `data-row-active='true'`.
-
-<MdxInformer status="success">
-
-Чтобы не рендерить всю таблицу при каждом изменении данных в ячейке, используйте [стейт-менеджер](https://www.reatom.dev/blog/what-is-state-manager/) или [контекст](https://react.dev/reference/react/createContext).
-
-</MdxInformer>
-
-В примере ниже используется стейт-менеджер [reatom](https://www.reatom.dev/).
-
-<MdxTabs>
-
-```tsx
-import { Example } from '@consta/stand';
-import { Checkbox } from '@consta/uikit/Checkbox';
-import { atom, AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
-import React from 'react';
-
-import { DataCell } from '##/components/DataCell';
-import { Table, TableColumn, TableRenderCell } from '##/components/Table';
-
-type ROW = {
-  id: number;
-  name: string;
-  profession: string;
-  status: string;
-};
-
-const activeIdsAtom = atom<Record<ROW['id'], AtomMut<boolean>>>({});
-
-const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [active] = useAtom((ctx) => {
-    const activeAtom = ctx.spy(activeIdsAtom)[props.row.id];
-    return activeAtom ? ctx.spy(activeAtom) : false;
-  });
-
-  const onChange = useAction((ctx) => {
-    const activeIds = ctx.get(activeIdsAtom);
-    const activeAtom = ctx.get(activeIdsAtom)[props.row.id];
-
-    if (activeAtom) {
-      activeAtom(ctx, !ctx.get(activeAtom));
-    } else {
-      activeIdsAtom(ctx, { ...activeIds, [props.row.id]: atom(true) });
-    }
-  });
-
-  return (
-    <DataCell
-      data-row-active={active}
-      control={<Checkbox size="s" checked={active} onChange={onChange} />}
-    >
-      {props.row.name}
-    </DataCell>
-  );
-};
-
-const columns: TableColumn<ROW>[] = [
-  {
-    title: 'Имя',
-    accessor: 'name',
-    width: 240,
-    renderCell: DataCellName,
-  },
-  {
-    title: 'Профессия',
-    accessor: 'profession',
-    width: '1fr',
-  },
-  {
-    title: 'Статус',
-    accessor: 'status',
-    width: '1fr',
-    minWidth: 150,
-  },
-];
-
-const rows: ROW[] = [
-  {
-    id: 1,
-    name: 'Антон Григорьев',
-    profession: 'Строитель, который построил дом',
-    status: 'недоступен',
-  },
-  {
-    id: 2,
-    name: 'Василий Пупкин',
-    profession: 'Отвечает на вопросы, хотя его не спросили',
-    status: 'на связи',
-  },
-];
-
-export const TableExampleActiveRow = () => (
-  <Example col={1}>
-    <Table rows={rows} columns={columns} zebraStriped />
-  </Example>
-);
-```
-
-<TableExampleActiveRow />
-
-</MdxTabs>
-
-### Пример с наведением и активацией строки
-
-<MdxInformer status="success">
-
-Чтобы не рендерить всю таблицу при каждом изменении данных в ячейке, используйте [стейт-менеджер](https://www.reatom.dev/blog/what-is-state-manager/) или [контекст](https://react.dev/reference/react/createContext).
-
-</MdxInformer>
-
-В примере ниже используется стейт-менеджер [reatom](https://www.reatom.dev/).
-
-<MdxTabs>
-
-```tsx
-import { Example } from '@consta/stand';
-import { action, atom, AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
-import React from 'react';
-
-import { DataCell } from '##/components/DataCell';
-import { DataNumberingCell } from '##/components/DataNumberingCell';
-import { Table, TableColumn, TableRenderCell } from '##/components/Table';
-
-// Types
-
-type ROW = {
-  id: number;
-  name: string;
-  profession: string;
-  status: string;
-  hover: AtomMut<boolean>;
-  active: AtomMut<boolean>;
-};
-
-// Atoms
-const rowsAtom = atom<AtomMut<ROW>[]>([
-  atom({
-    id: 1,
-    name: 'Антон Григорьев',
-    profession: 'Строитель, который построил дом',
-    status: 'недоступен',
-    hover: atom(false),
-    active: atom(false),
-  }),
-  atom({
-    id: 2,
-    name: 'Василий Пупкин',
-    profession: 'Отвечает на вопросы, хотя его не спросили',
-    status: 'на связи',
-    hover: atom(false),
-    active: atom(false),
-  }),
-]);
-
-// Actions
-
-const onRowClickAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  const row = ctx.get(rowAtom);
-  row.active(ctx, !ctx.get(row.active));
-});
-
-const onRowMouseEnterAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hover(ctx, true);
-});
-
-const onRowMouseLeaveAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hover(ctx, false);
-});
-
-const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
-  const [row] = useAtom(props.row);
-  const [active] = useAtom(row.active);
-  const [hover] = useAtom(row.hover);
-
-  return (
-    <DataNumberingCell data-row-active={active} data-row-hover={hover}>
-      {row.id}
-    </DataNumberingCell>
-  );
-};
-
-const createDataCellOther = (
-  accessor: Exclude<keyof ROW, 'hover' | 'active'>,
-) => {
-  const Component: TableRenderCell<AtomMut<ROW>> = (props) => {
-    const [row] = useAtom(props.row);
-
-    return <DataCell>{row[accessor]}</DataCell>;
-  };
-
-  return Component;
-};
-
-const columns: TableColumn<AtomMut<ROW>>[] = [
-  {
-    title: '',
-    accessor: 'id',
-    width: 48,
-    maxWidth: 48,
-    minWidth: 48,
-    renderCell: DataCellName,
-  },
-  {
-    title: 'Имя',
-    accessor: 'name',
-    width: 240,
-    renderCell: createDataCellOther('name'),
-  },
-  {
-    title: 'Профессия',
-    accessor: 'profession',
-    width: '1fr',
-    renderCell: createDataCellOther('profession'),
-  },
-  {
-    title: 'Статус',
-    accessor: 'status',
-    width: '1fr',
-    minWidth: 150,
-    renderCell: createDataCellOther('status'),
-  },
-];
-
-export const TableExampleActiveRowWithNumbering = () => {
-  const onRowClick = useAction(onRowClickAction);
-  const onRowMouseEnter = useAction(onRowMouseEnterAction);
-  const onRowMouseLeave = useAction(onRowMouseLeaveAction);
-  const [rows] = useAtom(rowsAtom);
-
-  return (
-    <Example col={1}>
-      <Table
-        rows={rows}
-        columns={columns}
-        zebraStriped
-        onRowClick={onRowClick}
-        onRowMouseEnter={onRowMouseEnter}
-        onRowMouseLeave={onRowMouseLeave}
-      />
-    </Example>
-  );
-};
-```
-
-<TableExampleActiveRowWithNumbering />
-
-</MdxTabs>
-
-## Управление шириной столбцов
-
-Чтобы дать пользователю возможность управлять шириной столбцов, используйте свойство `resizable`.
-
-Уменьшение и увеличение будет в пределах `minWidth` `maxWidth` у колонки.
-Если есть необходимость запретить изменение ширины у определенной колонки, установите у `minWidth` и `maxWidth` равное значение.
-
-Закрепленные (`pinned`) колонки не имеют возможности изменять размер.
-
-Есть 2 режима работы: `'inside'` и `'outside'`:
-
-### `resizable = 'inside'`
-
-При `resizable = 'inside'` таблица будет стараться уместить весь контент в ширину контейнера таблицы, т.е. при увеличении ширины одного столбца будет уменьшаться ширина другого, и наоборот.
-Рекомендуется использовать этот режим, когда столбцов мало и они все помещаются в таблицу.
-
-<MdxTabs>
-
-```tsx
-import { Example } from '@consta/stand';
-import React from 'react';
-
-import { Table, TableColumn } from '@consta/table/Table';
-import rows from '##/components/Table/__mocks__/olympic-winners.json';
-
-type ROW = {
-  athlete: string;
-  age: number | null;
-  country: string;
-};
-
-const columns: TableColumn<ROW>[] = [
-  {
-    title: 'Имя',
-    width: 'auto',
-    accessor: 'athlete',
-    // Запретили менять ширину у колонки
-    minWidth: 200,
-    maxWidth: 200,
-  },
-  {
-    title: 'Страна',
-    accessor: 'country',
-    width: 'auto',
-    minWidth: 140,
-  },
-  {
-    title: 'Возраст',
-    accessor: 'age',
-    width: 'auto',
-    minWidth: 100,
-  },
-];
-
-export const TableExampleResizable = () => (
-  <Table
-    style={{ maxHeight: 400 }}
-    rows={rows}
-    columns={columns}
-    stickyHeader
-    virtualScroll
-    resizable="inside"
-  />
-);
-```
-
-<TableExampleResizableInside />
-
-</MdxTabs>
-
-### `resizable = 'outside'`
-
-При `resizable = 'outside'` таблица будет расширятся при увеличении колонки.
-Рекомендуется использовать этот режим, когда столбцов много и они не помещаются в таблицу.
-
-<MdxTabs>
-
-```tsx
-import { Example } from '@consta/stand';
-import React from 'react';
-
-import { Table, TableColumn } from '@consta/table/Table';
-import rows from '##/components/Table/__mocks__/olympic-winners.json';
-
-type ROW = {
-  athlete: string;
-  age: number | null;
-  country: string;
-};
-
-const columns: TableColumn<ROW>[] = [
-  {
-    title: 'Имя',
-    width: 'auto',
-    accessor: 'athlete',
-    minWidth: 200,
-  },
-  {
-    title: 'Страна',
-    accessor: 'country',
-    width: 'auto',
-    minWidth: 140,
-    pinned: 'left',
-  },
-  {
-    title: 'Возраст',
-    accessor: 'age',
-    width: 'auto',
-    minWidth: 100,
-  },
-  {
-    title: 'Медали',
-    columns: [
-      {
-        title: 'Бронза',
-        accessor: 'bronze',
-        width: 'auto',
-        minWidth: 100,
-      },
-      {
-        title: 'Серебро',
-        accessor: 'silver',
-        width: 'auto',
-        minWidth: 100,
-      },
-      {
-        title: 'Золото',
-        accessor: 'gold',
-        width: 'auto',
-        minWidth: 100,
-      },
-      {
-        title: 'Всего',
-        accessor: 'total',
-        width: 'auto',
-        minWidth: 100,
-      },
-    ],
-  },
-  {
-    title: 'Год',
-    accessor: 'year',
-    width: 'auto',
-    minWidth: 140,
-    pinned: 'right',
-  },
-];
-
-export const TableExampleResizableOutside = () => (
-  <Table
-    style={{ maxHeight: 400 }}
-    rows={rows}
-    columns={columns}
-    stickyHeader
-    virtualScroll
-    resizable="outside"
-    zebraStriped
-  />
-);
-```
-
-<TableExampleResizableOutside />
-
-</MdxTabs>
-
-## headerZIndex
-
-Свойство `headerZIndex` влияет на [`z-index`](https://developer.mozilla.org/ru/docs/Web/CSS/z-index):
-
-- Шапки таблицы
-- Ячейки в закрепленных колонках 'z-index: calc(var(--table-header-z-index) - 1);'
-- Ячейки в закрепленных колонках в шапке 'z-index: calc(var(--table-header-z-index) + 1);'
-- Ресайзеры колонок `z-index: calc(var(--table-header-z-index) + 10);`
-
-<MdxInformer status="success">
-
-Если вы используете всплывающие окна (`Popover`, `Tooltip`), привязывайте их `z-index` к переменной `--table-header-z-index`.  
-Например: `z-index: calc(var(--table-header-z-index) + 1)`. Таким образом плавающий элемент будет находится под шапкой таблицы.
-
-</MdxInformer>
-
-## Вложенные строки
-
-Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
-
-<MdxTabs>
-
-```tsx
-import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
-import { IconArrowRight } from '@consta/icons/IconArrowRight';
-import { withAnimateSwitcherHOC } from '@consta/icons/withAnimateSwitcherHOC';
-import { Button } from '@consta/uikit/Button';
-import { useMutableRef } from '@consta/uikit/useMutableRef';
-import React, { useCallback, useMemo, useState } from 'react';
-
-import { DataCell } from '@consta/table/DataCell';
-import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
-import { range } from '##/utils/array';
-
-type ROW = {
-  idx: number;
-  col1: string;
-  col2: string;
-  col3: string;
-  parent: number | undefined;
-  level: number;
-};
-
-const IconArrow = withAnimateSwitcherHOC({
-  startIcon: IconArrowRight,
-  startDirection: 0,
-  endDirection: 90,
-});
-
-const getDataCell = (idx: number): ROW => {
-  const parent = Math.floor(idx / 10) * 10;
-
-  return {
-    idx,
-    col1: `Данные 1 - ${idx}`,
-    col2: `Данные 2 - ${idx}`,
-    col3: `Данные 3 - ${idx}`,
-    parent: parent === idx ? undefined : parent,
-    level: parent === idx ? 0 : 1,
-  };
-};
-
-const data = range(100000).map(getDataCell);
-
-const DataCellCol1 = (props: {
-  row: {
-    col1: string;
-    parent: number | undefined;
-    idx: number;
-    level: number;
-  };
-  opened: boolean | undefined;
-  toggle: (idx: number) => void;
-}) => {
-  const {
-    row: { col1, parent, idx, level },
-    opened,
-    toggle,
-  } = props;
-
-  return (
-    <AnimateIconSwitcherProvider active={opened}>
-      <DataCell
-        level={level}
-        control={
-          typeof parent === 'undefined' ? (
-            <Button
-              size="s"
-              view="clear"
-              iconLeft={IconArrow}
-              onlyIcon
-              onClick={() => toggle(idx)}
-            />
-          ) : undefined
-        }
-      >
-        {col1}
-      </DataCell>
-    </AnimateIconSwitcherProvider>
-  );
-};
-
-export const TableExampleNestedRows = () => {
-  const [openedList, setOpenedList] = useState<number[]>([]);
-
-  const openedListRef = useMutableRef(openedList);
-
-  const rows = useMemo(() => {
-    return data.filter(
-      (dataItem) =>
-        dataItem.parent === undefined ||
-        openedList.findIndex(
-          (openedListItem) => openedListItem === dataItem.parent,
-        ) !== -1,
-    );
-  }, [openedList]);
-
-  const toggle = useCallback((idx: number) => {
-    setOpenedList((state) => {
-      const open = state.findIndex((value) => value === idx) !== -1;
-      if (open) {
-        return state.filter((value) => value !== idx);
-      }
-      return [...state, idx];
-    });
-  }, []);
-
-  const renderCellCol1: TableRenderCell<ROW> = useCallback(
-    (props) => (
-      <DataCellCol1
-        {...props}
-        toggle={toggle}
-        opened={
-          openedListRef.current.findIndex((item) => item === props.row.idx) !==
-          -1
-        }
-      />
-    ),
-    [],
-  );
-
-  const columns: TableColumn<ROW>[] = useMemo(
-    () => [
-      {
-        title: 'Колонка - 1',
-        accessor: 'col1',
-        renderCell: renderCellCol1,
-      },
-      {
-        title: 'Колонка - 2',
-        accessor: 'col2',
-      },
-      {
-        title: 'Колонка - 3',
-        accessor: 'col3',
-      },
-    ],
-    [],
-  );
-
-  return (
-    <Table
-      style={{ maxHeight: 400 }}
-      rows={rows}
-      columns={columns}
-      stickyHeader
-      virtualScroll
-      getRowKey={(row) => row.idx}
-    />
-  );
-};
-```
-
-<TableExampleNestedRows />
-
-</MdxTabs>
-
-## Объединение ячеек
-
-Чтобы объединить ячейки, используйте свойство `columns.colSpan`. Результат функции должен вернуть `number` | `'end'` | `undefined`, где:
-
-- `number` - количество колонок, которое занимает ячейка.
-- `'end'` - ячейка займет все следующие столбцы до конца строки.
-- `undefined` - ячейка займет одну колонку(эквивалентно `1`)
-
-> Если вы хотите [закрепить колонки](#закрепление-колонок), следите, чтобы объединенные ячейки не были закреплены.
-
-<MdxTabs>
+<TableExampleColSpan />
 
 ```tsx
 import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
@@ -1726,7 +907,869 @@ export const TableExampleColSpan = () => {
 };
 ```
 
-<TableExampleColSpan />
+</MdxTabs>
+
+## Закрепление шапки
+
+Чтобы закрепить шапку, используйте свойство `stickyHeader` и ограничьте высоту таблицы в свойстве `maxHeight`.
+
+<MdxTabs>
+
+```tsx
+<Table style={{ maxHeight: 400 }} rows={rows} columns={columns} stickyHeader />
+```
+
+<TableExampleStickyHeader />
+
+</MdxTabs>
+
+## Виртуальный скролл
+
+Если в таблице много данных, включите свойство `virtualScroll` и ограничьте высоту таблицы для лучшей производительности. Может принимать два значения:
+
+- `boolean` – будет включен виртуальный скролл по горизонтали и вертикали,
+- `[boolean, boolean]` – первый элемент определяет, включается ли виртуальный скролл по горизонтали, второй – по вертикали.
+
+<MdxInformer>
+
+Чтобы избежать скачков строки при включении виртуального скролла, задайте одинаковую высоту ячеек в строке.
+
+</MdxInformer>
+
+<MdxTabs>
+
+```tsx
+<Table
+  style={{ maxHeight: 400 }}
+  rows={rows}
+  columns={columns}
+  stickyHeader
+  virtualScroll
+/>
+```
+
+<TableExampleVirtualScroll />
+
+</MdxTabs>
+
+## onScrollToBottom
+
+Свойство `onScrollToBottom` позволяет отслеживать, когда пользователь достиг конца таблицы. Полезно для дозагрузки данных в момент достижения конца таблицы.
+
+<MdxTabs>
+
+```tsx
+const TableExampleOnScrollToBottom = () => {
+  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
+
+  return (
+    <>
+      <Text size="m" weight="bold">
+        {isScrollToBottom ? 'Вы проскроллилили до конца' : 'Скролльте вниз'}
+      </Text>
+      <Table
+        style={{ maxHeight: 400 }}
+        rows={rows}
+        columns={columns}
+        stickyHeader
+        virtualScroll
+        onScrollToBottom={() => setIsScrollToBottom(true)}
+      />
+    </>
+  );
+};
+```
+
+<TableExampleOnScrollToBottom />
+
+</MdxTabs>
+
+## Таблица в полоску
+
+Для отображения таблицы в полоску используйте `zebraStriped`.
+
+<MdxTabs>
+
+```tsx
+<Table
+  style={{ maxHeight: 400 }}
+  rows={rows}
+  columns={columns}
+  stickyHeader
+  virtualScroll
+  zebraStriped
+/>
+```
+
+<TableExampleZebraStriped />
+
+</MdxTabs>
+
+## Выделение строк
+
+Строки могут иметь состояние:
+
+- Наведение на строку – [`hover`](#наведение-на-строку),
+- Выбор строки - [`active`](#выбор-строки)
+
+<MdxInformer status="success">
+
+Чтобы не рендерить всю таблицу при каждом изменении данных в ячейке, используйте [стейт-менеджер](https://www.reatom.dev/blog/what-is-state-manager/) или [контекст](https://react.dev/reference/react/createContext).
+
+</MdxInformer>
+
+Пример с наведением и выбором строки:
+
+<MdxTabs>
+
+<TableExampleActiveRowWithNumbering />
+
+```tsx
+import { Example } from '@consta/stand';
+import { action, atom, AtomMut } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/npm-react';
+import React from 'react';
+
+import { DataCell } from '##/components/DataCell';
+import { DataNumberingCell } from '##/components/DataNumberingCell';
+import { Table, TableColumn, TableRenderCell } from '##/components/Table';
+
+// Types
+
+type ROW = {
+  id: number;
+  name: string;
+  profession: string;
+  status: string;
+  hover: AtomMut<boolean>;
+  active: AtomMut<boolean>;
+};
+
+// Atoms
+const rowsAtom = atom<AtomMut<ROW>[]>([
+  atom({
+    id: 1,
+    name: 'Антон Григорьев',
+    profession: 'Строитель, который построил дом',
+    status: 'недоступен',
+    hover: atom(false),
+    active: atom(false),
+  }),
+  atom({
+    id: 2,
+    name: 'Василий Пупкин',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+    hover: atom(false),
+    active: atom(false),
+  }),
+]);
+
+// Actions
+
+const onRowClickAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
+  const row = ctx.get(rowAtom);
+  row.active(ctx, !ctx.get(row.active));
+});
+
+const onRowMouseEnterAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
+  ctx.get(rowAtom).hover(ctx, true);
+});
+
+const onRowMouseLeaveAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
+  ctx.get(rowAtom).hover(ctx, false);
+});
+
+const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
+  const [row] = useAtom(props.row);
+  const [active] = useAtom(row.active);
+  const [hover] = useAtom(row.hover);
+
+  return (
+    <DataNumberingCell data-row-active={active} data-row-hover={hover}>
+      {row.id}
+    </DataNumberingCell>
+  );
+};
+
+const createDataCellOther = (
+  accessor: Exclude<keyof ROW, 'hover' | 'active'>,
+) => {
+  const Component: TableRenderCell<AtomMut<ROW>> = (props) => {
+    const [row] = useAtom(props.row);
+
+    return <DataCell>{row[accessor]}</DataCell>;
+  };
+
+  return Component;
+};
+
+const columns: TableColumn<AtomMut<ROW>>[] = [
+  {
+    title: '',
+    accessor: 'id',
+    width: 48,
+    maxWidth: 48,
+    minWidth: 48,
+    renderCell: DataCellName,
+  },
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 240,
+    renderCell: createDataCellOther('name'),
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+    renderCell: createDataCellOther('profession'),
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+    renderCell: createDataCellOther('status'),
+  },
+];
+
+export const TableExampleActiveRowWithNumbering = () => {
+  const onRowClick = useAction(onRowClickAction);
+  const onRowMouseEnter = useAction(onRowMouseEnterAction);
+  const onRowMouseLeave = useAction(onRowMouseLeaveAction);
+  const [rows] = useAtom(rowsAtom);
+
+  return (
+    <Example col={1}>
+      <Table
+        rows={rows}
+        columns={columns}
+        zebraStriped
+        onRowClick={onRowClick}
+        onRowMouseEnter={onRowMouseEnter}
+        onRowMouseLeave={onRowMouseLeave}
+      />
+    </Example>
+  );
+};
+```
+
+</MdxTabs>
+
+### Наведение на строку
+
+Есть 2 способа задать состояние `hover` строкам:
+
+- Автоматически, с помощью Свойства `rowHoverEffect`. В этом случае все строки будут подсвечиваться при наведении мыши.
+
+Пример автоматического способа:
+
+<MdxTabs>
+
+<TableExampleRowHoverEffect />
+
+```tsx
+import React from 'react';
+
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+  year: number;
+  date: string;
+  sport: string;
+  gold: number;
+  silver: number;
+  bronze: number;
+  total: number;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    width: 'auto',
+    accessor: 'athlete',
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    minWidth: 100,
+  },
+];
+
+export const TableExampleRowHoverEffect = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    rowHoverEffect
+  />
+);
+```
+
+</MdxTabs>
+
+- Подконтрольный. Для этого нужно у любой ячейки в строке указать атрибут `data-row-hover='true'`. В этом режиме вы можете выбирать, у каких строк включить этот эффект а у каких нет.
+
+Пример подконтрольного способа:
+
+<MdxTabs>
+
+<TableExampleHoveredControlled />
+
+```tsx
+import { action, atom } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/npm-react';
+import React from 'react';
+
+import { DataNumberingCell } from '@consta/table/DataNumberingCell';
+import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
+
+// Types
+
+type ROW = {
+  id: number;
+  name: string;
+  profession: string;
+  status: string;
+};
+
+const rows: ROW[] = [
+  {
+    id: 1,
+    name: 'Антон Григорьев',
+    profession: 'Строитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    id: 2,
+    name: 'Василий Пупкин',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+// Atoms
+
+const hoverIdAtom = atom<ROW['id'] | undefined>(undefined);
+
+// Actions
+
+const onRowMouseEnterAction = action<[ROW]>((ctx, row) =>
+  hoverIdAtom(ctx, row.id),
+);
+
+const onRowMouseLeaveAction = action<[ROW]>((ctx, row) => {
+  const hoverId = ctx.get(hoverIdAtom);
+  if (hoverId === row.id) {
+    hoverIdAtom(ctx, undefined);
+  }
+});
+
+const DataCellName: TableRenderCell<ROW> = (props) => {
+  const [hover] = useAtom((ctx) => {
+    const hoverId = ctx.spy(hoverIdAtom);
+    return hoverId === props.row.id;
+  });
+
+  return (
+    <DataNumberingCell data-row-hover={hover}>{props.row.id}</DataNumberingCell>
+  );
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: '',
+    accessor: 'id',
+    width: 48,
+    maxWidth: 48,
+    minWidth: 48,
+    renderCell: DataCellName,
+  },
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 240,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+  },
+];
+
+export const TableExampleHoveredControlled = () => {
+  const onRowMouseEnter = useAction(onRowMouseEnterAction);
+  const onRowMouseLeave = useAction(onRowMouseLeaveAction);
+
+  return (
+    <Table
+      rows={rows}
+      columns={columns}
+      zebraStriped
+      onRowMouseEnter={onRowMouseEnter}
+      onRowMouseLeave={onRowMouseLeave}
+      rowHoverEffect
+    />
+  );
+};
+```
+
+</MdxTabs>
+
+### Выбор строки
+
+Для выбора строки укажите в любой ячейке строки атрибут `data-row-active='true'`.
+
+Пример с использованием стейт-менеджера:
+
+<MdxTabs>
+
+<TableExampleActiveRow />
+
+```tsx
+import { Example } from '@consta/stand';
+import { Checkbox } from '@consta/uikit/Checkbox';
+import { atom, AtomMut } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/npm-react';
+import React from 'react';
+
+import { DataCell } from '##/components/DataCell';
+import { Table, TableColumn, TableRenderCell } from '##/components/Table';
+
+type ROW = {
+  id: number;
+  name: string;
+  profession: string;
+  status: string;
+};
+
+const activeIdsAtom = atom<Record<ROW['id'], AtomMut<boolean>>>({});
+
+const DataCellName: TableRenderCell<ROW> = (props) => {
+  const [active] = useAtom((ctx) => {
+    const activeAtom = ctx.spy(activeIdsAtom)[props.row.id];
+    return activeAtom ? ctx.spy(activeAtom) : false;
+  });
+
+  const onChange = useAction((ctx) => {
+    const activeIds = ctx.get(activeIdsAtom);
+    const activeAtom = ctx.get(activeIdsAtom)[props.row.id];
+
+    if (activeAtom) {
+      activeAtom(ctx, !ctx.get(activeAtom));
+    } else {
+      activeIdsAtom(ctx, { ...activeIds, [props.row.id]: atom(true) });
+    }
+  });
+
+  return (
+    <DataCell
+      data-row-active={active}
+      control={<Checkbox size="s" checked={active} onChange={onChange} />}
+    >
+      {props.row.name}
+    </DataCell>
+  );
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    accessor: 'name',
+    width: 240,
+    renderCell: DataCellName,
+  },
+  {
+    title: 'Профессия',
+    accessor: 'profession',
+    width: '1fr',
+  },
+  {
+    title: 'Статус',
+    accessor: 'status',
+    width: '1fr',
+    minWidth: 150,
+  },
+];
+
+const rows: ROW[] = [
+  {
+    id: 1,
+    name: 'Антон Григорьев',
+    profession: 'Строитель, который построил дом',
+    status: 'недоступен',
+  },
+  {
+    id: 2,
+    name: 'Василий Пупкин',
+    profession: 'Отвечает на вопросы, хотя его не спросили',
+    status: 'на связи',
+  },
+];
+
+export const TableExampleActiveRow = () => (
+  <Example col={1}>
+    <Table rows={rows} columns={columns} zebraStriped />
+  </Example>
+);
+```
+
+</MdxTabs>
+
+## Управление шириной столбцов
+
+Чтобы дать пользователю возможность управлять шириной столбцов, используйте свойство `resizable`. Уменьшение и увеличение будет в пределах `minWidth` и `maxWidth` у колонки.
+
+<MdxInformer status="success">
+
+Чтобы запретить изменение ширины у определенной колонки, установите у `minWidth` и `maxWidth` равное значение.
+
+</MdxInformer>
+
+Закрепленные колонки (`pinned`) не могут изменять размер.
+
+Есть 2 режима работы:
+
+- `inside`. При `resizable = 'inside'` таблица будет стараться уместить весь контент в ширину контейнера таблицы. То есть при увеличении ширины одного столбца будет уменьшаться ширина другого, и наоборот. Рекомендуется использовать этот режим, когда столбцов мало и они все помещаются в таблицу.
+
+<MdxTabs>
+
+<TableExampleResizableInside />
+
+```tsx
+import { Example } from '@consta/stand';
+import React from 'react';
+
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    width: 'auto',
+    accessor: 'athlete',
+    // Запретили менять ширину у колонки
+    minWidth: 200,
+    maxWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+    minWidth: 140,
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    width: 'auto',
+    minWidth: 100,
+  },
+];
+
+export const TableExampleResizable = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    resizable="inside"
+  />
+);
+```
+
+</MdxTabs>
+
+- `outside`. При `resizable = 'outside'` таблица будет расширятся при увеличении колонки. Рекомендуется использовать этот режим, когда столбцов много и они не помещаются в таблицу.
+
+<MdxTabs>
+
+<TableExampleResizableOutside />
+
+```tsx
+import { Example } from '@consta/stand';
+import React from 'react';
+
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    width: 'auto',
+    accessor: 'athlete',
+    minWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+    minWidth: 140,
+    pinned: 'left',
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    width: 'auto',
+    minWidth: 100,
+  },
+  {
+    title: 'Медали',
+    columns: [
+      {
+        title: 'Бронза',
+        accessor: 'bronze',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Серебро',
+        accessor: 'silver',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Золото',
+        accessor: 'gold',
+        width: 'auto',
+        minWidth: 100,
+      },
+      {
+        title: 'Всего',
+        accessor: 'total',
+        width: 'auto',
+        minWidth: 100,
+      },
+    ],
+  },
+  {
+    title: 'Год',
+    accessor: 'year',
+    width: 'auto',
+    minWidth: 140,
+    pinned: 'right',
+  },
+];
+
+export const TableExampleResizableOutside = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    resizable="outside"
+    zebraStriped
+  />
+);
+```
+
+</MdxTabs>
+
+## headerZIndex
+
+Свойство `headerZIndex` влияет на [`z-index`](https://developer.mozilla.org/ru/docs/Web/CSS/z-index) следующих элементов:
+
+- Шапка таблицы.
+- Ячейки в закрепленных колонках `z-index: calc(var(--table-header-z-index) - 1)`.
+- Ячейки в закрепленных колонках в шапке `z-index: calc(var(--table-header-z-index) + 1)`.
+- Ресайзеры колонок `z-index: calc(var(--table-header-z-index) + 10)`.
+
+<MdxInformer status="success">
+
+Если вы используете всплывающие окна (`Popover`, `Tooltip`), привязывайте их `z-index` к переменной `--table-header-z-index`.  
+Например: `z-index: calc(var(--table-header-z-index) + 1)`. Таким образом плавающий элемент будет находится под шапкой таблицы.
+
+</MdxInformer>
+
+## Вложенные строки
+
+Реализовать вложенные строки возможно через `renderCell` у колонки, взяв компонент [`DataCell`](##LIBS.LIB.STAND/lib:table/stand:components-datacell-stable) и назначив ему свойство `level`.
+
+<MdxTabs>
+
+<TableExampleNestedRows />
+
+```tsx
+import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
+import { IconArrowRight } from '@consta/icons/IconArrowRight';
+import { withAnimateSwitcherHOC } from '@consta/icons/withAnimateSwitcherHOC';
+import { Button } from '@consta/uikit/Button';
+import { useMutableRef } from '@consta/uikit/useMutableRef';
+import React, { useCallback, useMemo, useState } from 'react';
+
+import { DataCell } from '@consta/table/DataCell';
+import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
+import { range } from '##/utils/array';
+
+type ROW = {
+  idx: number;
+  col1: string;
+  col2: string;
+  col3: string;
+  parent: number | undefined;
+  level: number;
+};
+
+const IconArrow = withAnimateSwitcherHOC({
+  startIcon: IconArrowRight,
+  startDirection: 0,
+  endDirection: 90,
+});
+
+const getDataCell = (idx: number): ROW => {
+  const parent = Math.floor(idx / 10) * 10;
+
+  return {
+    idx,
+    col1: `Данные 1 - ${idx}`,
+    col2: `Данные 2 - ${idx}`,
+    col3: `Данные 3 - ${idx}`,
+    parent: parent === idx ? undefined : parent,
+    level: parent === idx ? 0 : 1,
+  };
+};
+
+const data = range(100000).map(getDataCell);
+
+const DataCellCol1 = (props: {
+  row: {
+    col1: string;
+    parent: number | undefined;
+    idx: number;
+    level: number;
+  };
+  opened: boolean | undefined;
+  toggle: (idx: number) => void;
+}) => {
+  const {
+    row: { col1, parent, idx, level },
+    opened,
+    toggle,
+  } = props;
+
+  return (
+    <AnimateIconSwitcherProvider active={opened}>
+      <DataCell
+        level={level}
+        control={
+          typeof parent === 'undefined' ? (
+            <Button
+              size="s"
+              view="clear"
+              iconLeft={IconArrow}
+              onlyIcon
+              onClick={() => toggle(idx)}
+            />
+          ) : undefined
+        }
+      >
+        {col1}
+      </DataCell>
+    </AnimateIconSwitcherProvider>
+  );
+};
+
+export const TableExampleNestedRows = () => {
+  const [openedList, setOpenedList] = useState<number[]>([]);
+
+  const openedListRef = useMutableRef(openedList);
+
+  const rows = useMemo(() => {
+    return data.filter(
+      (dataItem) =>
+        dataItem.parent === undefined ||
+        openedList.findIndex(
+          (openedListItem) => openedListItem === dataItem.parent,
+        ) !== -1,
+    );
+  }, [openedList]);
+
+  const toggle = useCallback((idx: number) => {
+    setOpenedList((state) => {
+      const open = state.findIndex((value) => value === idx) !== -1;
+      if (open) {
+        return state.filter((value) => value !== idx);
+      }
+      return [...state, idx];
+    });
+  }, []);
+
+  const renderCellCol1: TableRenderCell<ROW> = useCallback(
+    (props) => (
+      <DataCellCol1
+        {...props}
+        toggle={toggle}
+        opened={
+          openedListRef.current.findIndex((item) => item === props.row.idx) !==
+          -1
+        }
+      />
+    ),
+    [],
+  );
+
+  const columns: TableColumn<ROW>[] = useMemo(
+    () => [
+      {
+        title: 'Колонка - 1',
+        accessor: 'col1',
+        renderCell: renderCellCol1,
+      },
+      {
+        title: 'Колонка - 2',
+        accessor: 'col2',
+      },
+      {
+        title: 'Колонка - 3',
+        accessor: 'col3',
+      },
+    ],
+    [],
+  );
+
+  return (
+    <Table
+      style={{ maxHeight: 400 }}
+      rows={rows}
+      columns={columns}
+      stickyHeader
+      virtualScroll
+      getRowKey={(row) => row.idx}
+    />
+  );
+};
+```
 
 </MdxTabs>
 
@@ -1735,6 +1778,8 @@ export const TableExampleColSpan = () => {
 Чтобы вывести всю строку с собственным представлением, укажите у первого столбца `colSpan = () => 'end'`, и `renderCell`.
 
 <MdxTabs>
+
+<TableExampleRenderRow />
 
 ```tsx
 import { AnimateIconSwitcherProvider } from '@consta/icons/AnimateIconSwitcherProvider';
@@ -1987,15 +2032,17 @@ export const TableExampleRenderRow = () => {
 };
 ```
 
-<TableExampleRenderRow />
-
 </MdxTabs>
 
 ## Индикатор ячейки и подсказки
 
 Для отображения индикатора используйте свойство `indicator` у компонента `DataCell`. Для вывода подсказок используйте компонент `Popover`. В примере ниже реализована логика показа подсказок по наведению курсора.
 
+Пример со всплывающими подсказками:
+
 <MdxTabs>
+
+<TableExampleWithIndicator />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -2219,15 +2266,17 @@ export const TableExampleWithIndicator = () => {
 };
 ```
 
-<TableExampleWithIndicator />
-
 </MdxTabs>
 
 ## Ключ строки
 
 Чтобы оптимизировать рендеринг, укажите уникальный ключ строки в `getRowKey`.
 
-> Если не указывать ключ строки, компонент попытается взять `row.id`. В случае, если и там ничего нет — `index`. При этом ключи ячеек будут брать ключ строки и добавлять к нему `accessor`.
+<MdxInformer status="normal">
+
+Если не указывать ключ строки, компонент попытается взять `row.id`. В случае, если и там ничего нет — `index`. При этом ключи ячеек будут брать ключ строки и добавлять к нему `accessor`.
+
+</MdxInformer>
 
 ```tsx
 <Table columns={columns} rows={rows} getRowKey={(row) => row.uniqueKey} />
@@ -2238,6 +2287,8 @@ export const TableExampleWithIndicator = () => {
 Вы можете менять ширину колонок в зависимости от ширины самой таблицы.
 
 <MdxTabs>
+
+<TableExampleAdaptiveColumns />
 
 ```tsx
 import { Example } from '@consta/stand';
@@ -2377,8 +2428,6 @@ export const TableExampleAdaptiveColumns = () => {
 };
 ```
 
-<TableExampleAdaptiveColumns />
-
 </MdxTabs>
 
 ## Свойства
@@ -2429,20 +2478,19 @@ type TableRowMouseEvent<ROW> = (
 type GetRowKey<ROW> = (row: ROW) => string | number;
 ```
 
-| Свойство            | Тип                           | По умолчанию      | Описание                                                          |
-| ------------------- | ----------------------------- | ----------------- | ----------------------------------------------------------------- |
-| `columns?`          | `TableColumn[]`               | -                 | Колонки                                                           |
-| `rows?`             | `ROW[]`                       | -                 | Строки                                                            |
-| `getRowKey?`        | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index`      |
-| `onRowMouseEnter?`  | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                                  |
-| `onRowMouseLeave?`  | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                                  |
-| `onRowClick?`       | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                       |
-| `virtualScroll?`    | `boolean`                     | -                 | Включение виртуальной прокрутки                                   |
-| `stickyHeader?`     | `boolean`                     | -                 | Зафиксировать шапку сверху                                        |
-| `resizable?`        | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                     |
-| `zebraStriped?`     | `boolean`                     | -                 | Окрашивание строк через одну                                      |
-| `headerZIndex?`     | `number`                      | `1`               | `zIndex` шапки                                                    |
-| `rowHoverEffect?`   | `boolean`                     | -                 | Включает эффект наведения на строку                               |
-| `className?`        | `string`                      | -                 | Дополнительный CSS-класс                                          |
-| `onScrollToBottom?` | `(length: number) => void;`   | -                 | Событие сработает, когда пользователь проскроллит до конца списка |
-| `ref?`              | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                                    |
+| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
+| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
+| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
+| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
+| `rowHoverEffect?`  | `boolean`                     | -                 | Включает эффект наведения на строку                          |
+| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
+| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |

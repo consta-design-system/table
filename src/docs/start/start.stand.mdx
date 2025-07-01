@@ -1,16 +1,92 @@
-# Установите зависимости
+import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
-1. Установите зависимости с помощью команд `yarn add @consta/uikit` или `npm install @consta/uikit`.
-2. Установите `peerDependencies` из пакета `@consta/uikit`.
+<MdxMenu>
 
-# Подключите тему
+- [Установка пакетов и зависимостей](#установка-пакетов-и-зависимостей)
+- [Импорт компонентов](#импорт-компонентов)
+- [Полезные ссылки](#полезные-ссылки)
 
-Тему обязательно нужно подключать в корне приложения, так, чтобы все компоненты `@consta/uikit` были вложены в компонент [Theme](##LIBS.LIB.STAND/lib:uikit/stand:components-theme-stable).
+</MdxMenu>
 
-```tsx
+<MdxInformer status="normal">
+
+Для работы с Consta используйте библиотеку React. Если вы работаете с другими технологиями, вы можете создать дизайн на основе наших библиотек в [Figma](https://www.figma.com/@consta) и разработать компоненты самостоятельно.
+
+</MdxInformer>
+
+## Установка пакетов и зависимостей
+
+<MdxTabs labels = {['npm', 'yarn']} view = "clear">
+<>
+
+1. Установите [Node.js](https://nodejs.org/en).
+2. Создайте новый проект:
+
+```cli
+npx create-react-app my-app
+```
+
+3. Перейдите в директорию проекта:
+
+```cli
+cd my-app
+```
+
+4. Установите пакеты:
+
+```cli
+npm install @consta/uikit @consta/table
+```
+
+</>
+
+<>
+
+1. Установите [Node.js](https://nodejs.org/en).
+2. Установите пакетный менеджер Yarn:
+
+```cli
+npm install -g yarn
+```
+
+3. Создайте новый проект:
+
+```cli
+yarn create react-app my-app
+```
+
+4. Перейдите в директорию проекта:
+
+```cli
+ cd my-app
+```
+
+5. Установите Consta:
+
+```cli
+yarn add @consta/uikit @consta/table
+```
+
+</>
+</MdxTabs>
+
+Полный список доступных библиотек смотрите [здесь](https://github.com/orgs/consta-design-system/repositories?type=all).
+
+## Импорт компонентов
+
+1. Импортируйте в корневой файл:
+   - библиотеку React,
+   - компонент [Theme](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-theme-stable/tab:dev),
+   - [пресет](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-theme-stable/tab:dev/hash:пресеты),
+   - компоненты.
+2. Вложите компоненты в тему.
+
+Пример:
+
+```jsx
 import React from 'react';
 import { Theme, presetGpnDefault } from '@consta/uikit/Theme';
-import { Button } from '@consta/uikit/Button';
+import { Button } from '@consta/uikit/$компонент';
 
 const App = () => (
   <Theme preset={presetGpnDefault}>
@@ -18,3 +94,9 @@ const App = () => (
   </Theme>
 );
 ```
+
+# Полезные ссылки
+
+- [Что такое тематизация](##LIBS.LIB.STAND/lib:portal/stand:theme-themeabout)
+- [Theme](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-theme-stable/tab:dev)
+- [Figma для разработчиков](##LIBS.LIB.STAND/lib:portal/stand:guidelines-figmadev)

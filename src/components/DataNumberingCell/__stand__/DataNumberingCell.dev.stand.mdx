@@ -7,14 +7,23 @@ import { DataNumberingCell } from '@consta/table/DataNumberingCell';
 
 <MdxMenu>
 
-- [Пример](#пример)
 - [Свойства](#свойства)
+- [Пример](#пример)
 
 </MdxMenu>
 
-## Пример
+- Чтобы вывести нумерацию строк, используйте `renderCell` в первой колонке.
+- Чтобы вывести нумерацию столбцов, используйте `renderHeaderCell`.
 
-Чтобы вывести нумерацию строк, используйте `renderCell` в первой колонке. Для вывода нумерации столбцов используйте `renderHeaderCell`.
+## Свойства
+
+| Свойство     | Тип                         | По умолчанию | Описание                       |
+| ------------ | --------------------------- | ------------ | ------------------------------ |
+| `children?`  | `React.ReactNode`           | -            | Ребенок                        |
+| `className?` | `string`                    | -            | Дополнительный CSS-класс       |
+| `ref?`       | `React.Ref<HTMLDivElement>` | -            | Ссылка на корневой DOM-элемент |
+
+## Пример
 
 <MdxTabs>
 
@@ -108,11 +117,3 @@ export const DataNumberingCellExampleTable = () => (
 <DataNumberingCellExampleTable />
 
 </MdxTabs>
-
-## Свойства
-
-| Свойство     | Тип                         | По умолчанию | Описание                       |
-| ------------ | --------------------------- | ------------ | ------------------------------ |
-| `children?`  | `React.ReactNode`           | -            | Ребенок                        |
-| `className?` | `string`                    | -            | Дополнительный CSS-класс       |
-| `ref?`       | `React.Ref<HTMLDivElement>` | -            | Ссылка на корневой DOM-элемент |

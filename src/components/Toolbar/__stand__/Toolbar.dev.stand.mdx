@@ -7,12 +7,24 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
 
+- [Свойства](#свойства)
 - [Наполнение](#наполнение)
 - [Форма](#форма)
 - [Обводка](#обводка)
-- [Свойства](#свойства)
 
 </MdxMenu>
+
+## Свойства
+
+| Имя                      | Тип                                                              | По умолчанию | Описание                          |
+| ------------------------ | ---------------------------------------------------------------- | ------------ | --------------------------------- |
+| [leftSide](#наполнение)  | `ReactNode`                                                      | -            | Наполнение слева                  |
+| [rightSide](#наполнение) | `ReactNode`                                                      | -            | Наполнение справа                 |
+| itemsGap?                | `Space` \| `[Space, Space];`                                     | -            | Расстояние между между элементами |
+| [form](#форма)           | `'default'` \| `'brick'` \| `'brickDefault'` \| `'defaultBrick'` | `'default'`  | Форма компонента                  |
+| [border](#обводка)       | `string`                                                         | -            | Обводка компонента                |
+| className                | `string`                                                         | -            | Класс компонента                  |
+| ref                      | `React.Ref<HTMLDivElement>`                                      | -            | Ссылка на компонент               |
 
 ## Наполнение
 
@@ -167,15 +179,3 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 <ToolbarBorderExample />
 
 </MdxTabs>
-
-## Свойства
-
-| Имя        | Тип                                                              | По умолчанию | Описание                          |
-| ---------- | ---------------------------------------------------------------- | ------------ | --------------------------------- |
-| form?      | `'default'` \| `'brick'` \| `'brickDefault'` \| `'defaultBrick'` | `'default'`  | Форма компонента                  |
-| leftSide?  | `ReactNode`                                                      | -            | Наполнение слева                  |
-| rightSide? | `ReactNode`                                                      | -            | Наполнение справа                 |
-| itemsGap?  | `Space` \| `[Space, Space];`                                     | -            | Расстояние между между элементами |
-| space?     | `MixSpaceProps`                                                  | -            | Отступы компонента                |
-| className? | `string`                                                         | -            | Класс компонента                  |
-| ref?       | `React.Ref<HTMLDivElement>`                                      | -            | Ссылка на компонент               |

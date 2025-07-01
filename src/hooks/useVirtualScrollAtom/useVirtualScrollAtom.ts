@@ -55,8 +55,16 @@ export const useVirtualScrollAtom = <
     }
   });
 
-  const boundsFirstAtom = useCreateAtom((ctx) => ctx.spy(boundsAtom)[0][0]);
-  const sliceAtom = useCreateAtom((ctx) => ctx.spy(boundsAtom)[1]);
+  const sliceStartAtom = useCreateAtom((ctx) => ctx.spy(boundsAtom)[1][0]);
+  const sliceEndAtom = useCreateAtom((ctx) => {
+    const sliceEnd = ctx.spy(boundsAtom)[1][1];
+    return sliceEnd < 50 ? 50 : sliceEnd;
+  });
+  const sliceAtom = useCreateAtom<[number, number]>((ctx) => [
+    ctx.spy(sliceStartAtom),
+    ctx.spy(sliceEndAtom),
+  ]);
+
   const spaceTopAtom = useCreateAtom((ctx) => ctx.spy(boundsAtom)[0][0]);
 
   const listRefsAtom = useCreateAtom((ctx) => {
@@ -145,15 +153,14 @@ export const useVirtualScrollAtom = <
   );
 
   useUpdate(
-    (ctx, boundsFirst, isActive) => {
+    (ctx, slice) => {
       const length = ctx.get(lengthAtom);
       const onScrollToBottom = ctx.get(onScrollToBottomAtom);
-
-      if (isActive && onScrollToBottom && boundsFirst + 1 >= length) {
+      if (onScrollToBottom && slice >= length) {
         onScrollToBottom(length);
       }
     },
-    [boundsFirstAtom, isActiveAtom],
+    [sliceEndAtom],
   );
 
   useUpdate(

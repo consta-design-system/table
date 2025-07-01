@@ -89,6 +89,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     zebraStriped?: boolean;
     headerZIndex?: number;
     rowHoverEffect?: boolean;
+    onScrollToBottom?: (length: number) => void;
   },
   HTMLDivElement
 >;

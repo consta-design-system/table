@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.7.0 (01/08/2025)
+Самое главное:
+
+- В `Table` добавили событие `onScrollToBottom`, для отслеживания скрола до конца.
+- Добавили компонент `Collapse`, для сворачивания таблицы
+
+---
+
+- [feat(Collapse): add component (#30)](https://github.com/consta-design-system/table/commit/bcc7dcd387b7f13b98e0722cc90d9f92d14e6251) - [@gizeasy](https://github.com/gizeasy)
+- [docs: implementation of editorial policy (#26)](https://github.com/consta-design-system/table/commit/4489364a63f0ed13cced67cb5c3684ab589ab662) - [@alyonurchick1](https://github.com/alyonurchick1)
+- [feat(Table): add onScrollToBottom (#28)](https://github.com/consta-design-system/table/commit/2ace8d79828b6026c4a00d63b7321bff87bb2e72) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.6.1 (11/06/2025)
 - [feat: update react types (#27)](https://github.com/consta-design-system/table/commit/abdbeee8ef6c0c40629999396696f14b2ed20581) - [@gizeasy](https://github.com/gizeasy)
 - [docs(Toolbar): fix example (#25)](https://github.com/consta-design-system/table/commit/c3badb9c9c4183aac4ac1c85e8aed6556f392401) - [@gizeasy](https://github.com/gizeasy)

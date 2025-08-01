@@ -1,9 +1,22 @@
-import { Example } from '@consta/stand';
-import React from 'react';
+import './CollapseExampleFullscreenContainer.css';
 
+import { Example } from '@consta/stand';
+import React, { useRef } from 'react';
+
+import { Collapse } from '##/components/Collapse';
 import { DataCell } from '##/components/DataCell';
 import { Table, TableColumn } from '##/components/Table';
 import rows from '##/components/Table/__mocks__/olympic-winners.json';
+import { cn } from '##/utils/bem';
+
+const cnCollapseExampleFullscreenContainer = cn(
+  'CollapseExampleFullscreenContainer',
+);
+
+const Cell = (props: { title: string | number | null }) => {
+  const { title } = props;
+  return <DataCell truncate>{title}</DataCell>;
+};
 
 type ROW = {
   athlete: string;
@@ -17,12 +30,6 @@ type ROW = {
   bronze: number;
   total: number;
 };
-
-const Cell = (props: { title: string | number | null }) => {
-  const { title } = props;
-  return <DataCell truncate>{title}</DataCell>;
-};
-
 const columns: TableColumn<ROW>[] = [
   {
     title: 'Имя',
@@ -93,18 +100,30 @@ const columns: TableColumn<ROW>[] = [
   },
 ];
 
-export const TableExampleVirtualScroll = () => (
-  <Example col={1}>
-    <div style={{ maxHeight: 400, overflow: 'scroll' }}>
-      <div style={{ maxHeight: 200, overflow: 'scroll' }}>
-        <Table
-          style={{ maxHeight: '100%' }}
-          rows={rows}
-          columns={columns}
-          stickyHeader
-          virtualScroll
-        />
+export const CollapseExampleFullscreenContainer = () => {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Example col={1}>
+      <div className={cnCollapseExampleFullscreenContainer()} ref={gridRef}>
+        {new Array(4).fill(null).map((_, index) => (
+          <Collapse
+            key={index}
+            className={cnCollapseExampleFullscreenContainer('Item')}
+            leftSide={`Таблица ${index + 1}`}
+            fullscreenButton
+            expanded
+            fullscreenContainer={gridRef}
+          >
+            <Table
+              className={cnCollapseExampleFullscreenContainer('Table')}
+              rows={rows}
+              columns={columns}
+              virtualScroll
+            />
+          </Collapse>
+        ))}
       </div>
-    </div>
-  </Example>
-);
+    </Example>
+  );
+};

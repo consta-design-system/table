@@ -1,0 +1,31 @@
+.ct--CollapseFullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-default);
+
+  &_container {
+    position: absolute;
+  }
+
+  &-ToolbarWrapper {
+    height: var(--collapse-toolbar-height);
+  }
+  &-ChildrenWrapper {
+    height: calc(100% - var(--collapse-toolbar-height));
+  }
+  &-Toolbar.ct--Toolbar {
+    background: var(--color-bg-secondary);
+  }
+
+  &-Body {
+    overflow: hidden !important;
+    margin-right: var(--ct-collapse-fullscreen-body-scrollbar-width) !important;
+  }
+}
+
+.MixPopoverAnimate.ct--CollapseFullscreen {
+  --mix-dropdown-animate-space: calc(var(--space-s) * -1);
+}

@@ -1,9 +1,12 @@
-import { Example } from '@consta/stand';
+import { useBoolean, useText } from '@consta/stand';
+import { Button } from '@consta/uikit/Button';
 import React from 'react';
 
 import { DataCell } from '##/components/DataCell';
 import { Table, TableColumn } from '##/components/Table';
 import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+import { Collapse } from '../Collapse';
 
 type ROW = {
   athlete: string;
@@ -93,18 +96,39 @@ const columns: TableColumn<ROW>[] = [
   },
 ];
 
-export const TableExampleVirtualScroll = () => (
-  <Example col={1}>
-    <div style={{ maxHeight: 400, overflow: 'scroll' }}>
-      <div style={{ maxHeight: 200, overflow: 'scroll' }}>
+const Variants = () => {
+  const leftSide = useText('leftSide', 'Заголовок таблицы');
+  const rightSide = useBoolean('rightSide');
+  const expandButton = useBoolean('expandButton', true);
+  const fullscreenButton = useBoolean('fullscreenButton');
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        maxWidth: 800,
+      }}
+    >
+      <Collapse
+        expandButton={expandButton}
+        fullscreenButton={fullscreenButton}
+        leftSide={leftSide}
+        expandedMaxHeight={300}
+        rightSide={
+          rightSide ? (
+            <Button size="s" label="Кнопка" view="ghost" form="round" />
+          ) : undefined
+        }
+      >
         <Table
-          style={{ maxHeight: '100%' }}
+          style={{ maxHeight: '100%', width: '100%' }}
           rows={rows}
           columns={columns}
-          stickyHeader
           virtualScroll
         />
-      </div>
+      </Collapse>
     </div>
-  </Example>
-);
+  );
+};
+
+export default Variants;

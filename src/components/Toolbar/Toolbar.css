@@ -2,16 +2,12 @@
   --bar-default-border-radius: calc(var(--control-radius) * 2);
   --bar-default-border: var(--control-border-width) solid var(--color-bg-border);
 
-  padding: var(--space-s) var(--space-m);
   background: var(--color-bg-stripe);
   /* border: var(--control-border-width) solid var(--color-bg-border); */
 
   &_form {
     &_default {
       border-radius: var(--bar-default-border-radius);
-    }
-    &_brick {
-      border-radius: none;
     }
     &_defaultBrick {
       border-radius: var(--bar-default-border-radius)

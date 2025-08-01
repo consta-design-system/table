@@ -1,6 +1,8 @@
 import { ToolbarContentExample } from './examples/ToolbarContentExample/ToolbarContentExample';
 import { ToolbarFormExample } from './examples/ToolbarFormExample/ToolbarFormExample';
 import { ToolbarBorderExample } from './examples/ToolbarBorderExample/ToolbarBorderExample';
+import { ToolbarSpaceExample } from './examples/ToolbarSpaceExample/ToolbarSpaceExample';
+import { ToolbarGroupExample } from './examples/ToolbarGroupExample/ToolbarGroupExample';
 import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
@@ -14,14 +16,15 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 ## Свойства
 
-| Имя                      | Тип                                                              | По умолчанию | Описание            |
-| ------------------------ | ---------------------------------------------------------------- | ------------ | ------------------- |
-| [leftSide](#наполнение)  | `ReactNode`                                                      | -            | Наполнение слева    |
-| [rightSide](#наполнение) | `ReactNode`                                                      | -            | Наполнение справа   |
-| [form](#форма)           | `'default'` \| `'brick'` \| `'brickDefault'` \| `'defaultBrick'` | `'default'`  | Форма компонента    |
-| [border](#обводка)       | `string`                                                         | -            | Обводка компонента  |
-| className                | `string`                                                         | -            | Класс компонента    |
-| ref                      | `React.Ref<HTMLDivElement>`                                      | -            | Ссылка на компонент |
+| Имя                      | Тип                                                              | По умолчанию | Описание                          |
+| ------------------------ | ---------------------------------------------------------------- | ------------ | --------------------------------- |
+| [leftSide](#наполнение)  | `ReactNode`                                                      | -            | Наполнение слева                  |
+| [rightSide](#наполнение) | `ReactNode`                                                      | -            | Наполнение справа                 |
+| itemsGap?                | `Space` \| `[Space, Space];`                                     | -            | Расстояние между между элементами |
+| [form](#форма)           | `'default'` \| `'brick'` \| `'brickDefault'` \| `'defaultBrick'` | `'default'`  | Форма компонента                  |
+| [border](#обводка)       | `string`                                                         | -            | Обводка компонента                |
+| className                | `string`                                                         | -            | Класс компонента                  |
+| ref                      | `React.Ref<HTMLDivElement>`                                      | -            | Ссылка на компонент               |
 
 ## Наполнение
 
@@ -32,14 +35,100 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 ```tsx
 <Toolbar
   leftSide={[
-    <Button iconLeft={IconArrowLeft} view="ghost" />,
-    <Button iconLeft={IconArrowRight} view="ghost" />,
+    <TextField
+      size="s"
+      placeholder="Найти"
+      style={{ width: 150 }}
+      leftSide={IconSearchStroked}
+    />,
+    <Button iconLeft={IconFunnel} view="ghost" size="s" />,
   ]}
-  rightSide={<Button label="Применить" />}
+  rightSide={[
+    <Button iconLeft={IconKebab} size="s" view="clear" />,
+    <FieldGroup size="s">
+      <Button iconLeft={IconAdd} />
+      <Button iconLeft={IconSelect} />
+    </FieldGroup>,
+  ]}
 />
 ```
 
 <ToolbarContentExample />
+
+</MdxTabs>
+
+## Отступы
+
+За отступы отвечают свойства `space` типа [`MixSpaceProps`](##LIBS.LIB.STAND/lib:uikit/stand:mixs-mixspace-stable/hash:список-свойств), и `itemsGap` типа [`Space | [Space | Space]`](##LIBS.LIB.STAND/lib:uikit/stand:mixs-mixspace-stable/hash:список-свойств). Если передать в `itemsGap` массив то первый отступ будет применен к элементам в `leftSide` а второй к `rightSide`.
+
+<MdxTabs>
+
+```tsx
+<Toolbar
+  border
+  space={{ p: 'm' }}
+  itemsGap="m"
+  leftSide={[
+    <TextField
+      size="m"
+      placeholder="Найти"
+      style={{ width: 180 }}
+      leftSide={IconSearchStroked}
+    />,
+    <Button iconLeft={IconFunnel} view="ghost" size="m" />,
+  ]}
+  rightSide={[
+    <Button iconLeft={IconKebab} size="m" view="clear" />,
+    <FieldGroup size="m">
+      <Button iconLeft={IconAdd} />
+      <Button iconLeft={IconSelect} />
+    </FieldGroup>,
+  ]}
+/>
+```
+
+<ToolbarSpaceExample />
+
+</MdxTabs>
+
+## Группировка
+
+Для того чтобы визуально разделить элементы используйте `ToolbarDivider`.
+
+<MdxTabs>
+
+```tsx
+<Toolbar
+  itemsGap={['s', 0]}
+  leftSide={[
+    <TextField
+      size="s"
+      placeholder="Найти"
+      style={{ width: 180 }}
+      leftSide={IconSearchStroked}
+    />,
+    <Button iconLeft={IconFunnel} view="ghost" size="s" />,
+  ]}
+  rightSide={[
+    <Button iconLeft={IconEdit} size="s" view="clear" />,
+    <Button iconLeft={IconCopy} size="s" view="clear" />,
+    <Button iconLeft={IconTrash} size="s" view="clear" />,
+    <ToolbarDivider className={cnMixSpace({ mH: '2xs' })} />,
+    <Button iconLeft={IconCommentAddFilled} size="s" view="clear" />,
+    <Button iconLeft={IconCommentEditFilled} size="s" view="clear" />,
+    <Button iconLeft={IconCommentDeleteFilled} size="s" view="clear" />,
+    <ToolbarDivider className={cnMixSpace({ mH: '2xs' })} />,
+    <Button iconLeft={IconKebab} size="s" view="clear" />,
+    <div className={cnMixSpace({ mL: '2xs' })} />,
+    <FieldGroup size="s">
+      <Button iconLeft={IconAdd} />
+      <Button iconLeft={IconSelect} />
+    </FieldGroup>,
+  ]}
+/>
+```
+
+<ToolbarGroupExample />
 
 </MdxTabs>
 

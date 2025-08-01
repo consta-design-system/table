@@ -45,6 +45,7 @@
   &-VirtualScrollHelper {
     position: absolute;
     top: calc(var(--table-header-height) * -1);
+    pointer-events: none;
     width: 100%;
   }
 }

@@ -95,16 +95,14 @@ const columns: TableColumn<ROW>[] = [
 
 export const TableExampleVirtualScroll = () => (
   <Example col={1}>
-    <div style={{ maxHeight: 400, overflow: 'scroll' }}>
-      <div style={{ maxHeight: 200, overflow: 'scroll' }}>
-        <Table
-          style={{ maxHeight: '100%' }}
-          rows={rows}
-          columns={columns}
-          stickyHeader
-          virtualScroll
-        />
-      </div>
+    <div style={{ height: 400 }}>
+      <Table
+        style={{ maxHeight: '100%' }}
+        rows={rows}
+        columns={columns}
+        stickyHeader
+        virtualScroll
+      />
     </div>
   </Example>
 );

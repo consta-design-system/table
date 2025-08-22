@@ -1,0 +1,5 @@
+.ListItem.ct--FilterItemAll {
+  &:hover:not(.ListItem_active) {
+    background: transparent;
+  }
+}

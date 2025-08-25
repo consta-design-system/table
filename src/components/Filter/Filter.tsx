@@ -1,22 +1,24 @@
 import './Filter.css';
 
-import { IconSearchStroked } from '@consta/icons/IconSearchStroked';
 import {
   useSendToAtom,
   withCtx,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { isNotNil } from '@consta/uikit/__internal__/src/utils/type-guards';
 import { Checkbox } from '@consta/uikit/Checkbox';
+import { FieldInput } from '@consta/uikit/FieldComponents';
 import { ListItem } from '@consta/uikit/ListCanary';
 import { cnMixFlex } from '@consta/uikit/MixFlex';
 import { cnMixSpace } from '@consta/uikit/MixSpace';
 import { TextFieldTypeText } from '@consta/uikit/TextFieldCanary';
+import { useForkRef } from '@consta/uikit/useForkRef';
 import { useAction } from '@reatom/npm-react';
 import React, { forwardRef } from 'react';
 
 import { cn } from '##/utils/bem';
 
 import { withDefault } from './defaultProps';
+import { FilterControlLayout } from './FilterControlLayout';
 import { FilterList } from './FilterList';
 import {
   FilterComponent,
@@ -24,6 +26,7 @@ import {
   FilterItemDefault,
   FilterPropRenderItem,
   FilterProps,
+  RenderItemProps,
 } from './types';
 import { useFilter } from './useFilter';
 
@@ -49,7 +52,7 @@ const FilterRender = (p: FilterProps, ref: React.Ref<HTMLDivElement>) => {
 
     disabled,
     value,
-    renderValue,
+    // renderValue,
     isLoading,
     dropdownRef: dropdownRefProp,
 
@@ -77,7 +80,7 @@ const FilterRender = (p: FilterProps, ref: React.Ref<HTMLDivElement>) => {
     getItemLabel,
     items,
     onChange: onChangeProp,
-    dropdownClassName,
+    // dropdownClassName,
     onFocus,
     onBlur,
     onCreate: onCreateProp,
@@ -127,53 +130,112 @@ const FilterRender = (p: FilterProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const renderItemDefault: FilterPropRenderItem<FilterItemDefault> = useAction(
-    (ctx, { item, active, hovered, onClick, onMouseEnter, ref }) => {
+    (
+      ctx,
+      {
+        item,
+        active,
+        hovered,
+        onClick,
+        onMouseEnter,
+        ref,
+      }: RenderItemProps<FilterItemDefault>,
+    ) => {
       return (
         <ListItem
           {...otherProps}
           ref={ref}
           // className={cnSelectItem(null, [className])}
           aria-selected={active}
-          //   aria-disabled={disabled}
+          aria-disabled={getItemDisabled(item) || disabled}
           role="option"
-          label="sss"
+          label={getItemLabel(item)}
           //   size={size}
-          //   active={hovered}
-          //   checked={!multiple && active}
-          //   disabled={disabled}
-          //   onClick={onClick}
+          active={hovered}
+          checked={!multiple && active}
+          disabled={disabled}
+          onClick={onClick}
           leftSide={
-            <Checkbox
-              checked
-              //   disabled={disabled}
-              size="s"
-            />
+            multiple && (
+              <Checkbox
+                checked={active}
+                disabled={disabled}
+                size="s"
+                tabIndex={-1}
+              />
+            )
           }
-        >
-          sss
-        </ListItem>
+        />
       );
     },
-    [],
+    [getItemLabel, getItemDisabled, multiple, disabled],
   );
 
   return (
     <div {...otherProps} ref={ref} className={cnFilter(null, [className])}>
       <div className={cnFilter('Input', [cnMixSpace({ pV: '2xs', pH: 's' })])}>
-        <TextFieldTypeText
-          leftSide={IconSearchStroked}
-          clearButton
-          size="s"
-          onChange={handleInputChange}
-          view="clear"
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-        />
+        <FilterControlLayout
+          {...otherProps}
+          style={style}
+          form={form}
+          disabled={disabled}
+          separator
+          onClear={clearValue}
+          onDropdownButton={handleToggleDropdown}
+          openAtom={openAtom}
+          focusAtom={focusAtom}
+          //   view={view}
+          iconClear={iconClear}
+          clearButtonAtom={clearButtonAtom}
+          ref={useForkRef([ref, controlRef])}
+        >
+          <FieldInput
+            //   className={cnSelectInput('Input', { readOnly })}
+            //   readOnly={readOnly}
+            //   {...props}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            ref={useForkRef([inputRef, inputRefProp])}
+            onClick={handleInputClick}
+            onChange={handleInputChange}
+            value={inputValue}
+            defaultValue={inputDefaultValue}
+            disabled={disabled}
+            placeholder={placeholder}
+            // aria-label={ariaLabel}
+            // ref={inputRef}
+          />
+        </FilterControlLayout>
       </div>
       <FilterList
+        valueAtom={valueAtom}
+        getItemKeyAtom={getItemKeyAtom}
+        openAtom={openAtom}
+        // size={size}
+        controlRef={controlRef}
+        getOptionActions={getOptionActions}
+        // dropdownRef={useForkRef([dropdownRef, dropdownRefProp])}
+        // form={dropdownForm}
+        // className={dropdownClassName}
         renderItem={renderItem || renderItemDefault}
-        items={items}
-        value={value}
+        getGroupLabel={getGroupLabel}
+        visibleItemsAtom={visibleItemsAtom}
+        labelForCreate={labelForCreate}
+        isLoading={isLoading}
+        labelForEmptyItems={labelForEmptyItems}
+        itemsRefs={optionsRefs}
+        virtualScroll={virtualScroll}
+        onScrollToBottom={onScrollToBottom}
+        highlightedIndexAtom={highlightedIndexAtom}
+        highlightIndex={highlightIndex}
+        onChangeAll={onChangeAll}
+        onCreate={onCreate}
+        onChange={onChange}
+        inputValueAtom={inputValueAtom}
+        hasItemsAtom={hasItemsAtom}
+        groupsCounterAtom={groupsCounterAtom}
+        dropdownZIndexAtom={dropdownZIndexAtom}
+        selectAllLabel={selectAllLabel}
       />
       {footer && (
         <div

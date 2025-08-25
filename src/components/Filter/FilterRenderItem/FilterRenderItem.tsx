@@ -27,7 +27,7 @@ type SelectRenderItemComponent = <ITEM>(
   props: SelectRenderItemProps<ITEM>,
 ) => React.ReactNode;
 
-export const SelectRenderItem: SelectRenderItemComponent = (props) => {
+export const FilterRenderItem: SelectRenderItemComponent = (props) => {
   const {
     renderItem,
     item,

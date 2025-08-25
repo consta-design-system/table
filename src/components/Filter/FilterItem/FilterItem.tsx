@@ -1,4 +1,4 @@
-import './SelectItem.css';
+import './FilterItem.css';
 
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
 import { Checkbox, CheckboxPropSize } from '@consta/uikit/Checkbox';
@@ -44,6 +44,8 @@ export const SelectItem: React.FC<SelectItemProps> = forwardRef(
       onClick,
       ...otherProps
     } = props;
+
+    console.log('SelectItem');
 
     return (
       <ListItem

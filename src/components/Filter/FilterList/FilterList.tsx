@@ -1,4 +1,4 @@
-import './SelectDropdown.css';
+// import './FilterList.css';
 
 import { cnCanary as cn } from '@consta/uikit/__internal__/src/utils/bem';
 import { fabricIndex } from '@consta/uikit/__internal__/src/utils/fabricIndex';
@@ -23,7 +23,7 @@ import { FilterGroupLabel } from '../FilterGroupLabel/FilterGroupLabel';
 import { SelectItemAll } from '../FilterItemAll/FilterItemAll';
 import { SelectLoader } from '../FilterLoader/FilterLoader';
 // import { SelectPopover } from '../SelectPopover';
-import { SelectRenderItem } from '../SelectRenderItem';
+import { FilterRenderItem } from '../FilterRenderItem';
 import { CountedGroup } from '../types';
 import {
   GetOptionPropsResult,
@@ -34,9 +34,9 @@ import {
   OptionProps,
 } from '../useFilter';
 
-export const selectDropdownForm = ['default', 'brick', 'round'] as const;
-export type SelectDropdownPropForm = typeof selectDropdownForm[number];
-export const defaultSelectDropdownPropForm = selectDropdownForm[0];
+export const FilterListForm = ['default', 'brick', 'round'] as const;
+export type FilterListPropForm = typeof FilterListForm[number];
+export const defaultFilterListPropForm = FilterListForm[0];
 
 type RenderItemProps<ITEM> = {
   item: ITEM;
@@ -48,11 +48,11 @@ type RenderItemProps<ITEM> = {
 };
 
 type Props<ITEM, GROUP> = PropsWithJsxAttributes<{
-  size: FieldPropSize;
+  //   size: FieldPropSize;
   controlRef: React.MutableRefObject<HTMLDivElement | null>;
-  dropdownRef: React.Ref<HTMLDivElement>;
+  //   dropdownRef: React.Ref<HTMLDivElement>;
   getOptionActions(props: OptionProps<ITEM>): GetOptionPropsResult;
-  form: SelectDropdownPropForm;
+  //   form: FilterListPropForm;
   openAtom: AtomMut<boolean>;
   offset?: PopoverPropOffset | 'none';
   isLoading?: boolean;
@@ -82,11 +82,11 @@ type Props<ITEM, GROUP> = PropsWithJsxAttributes<{
   selectAllLabel: string;
 }>;
 
-type SelectDropdownComponent = <ITEM, GROUP>(
+type FilterListComponent = <ITEM, GROUP>(
   props: Props<ITEM, GROUP>,
 ) => React.ReactNode | null;
 
-const cnSelectDropdown = cn('SelectDropdown');
+const cnFilterList = cn('FilterList');
 
 const getLengthElements = <ITEM, GROUP>(
   elements: (
@@ -115,7 +115,7 @@ const isVisible = (slice: [number, number], index: number) => {
   return index >= slice[0] && index < slice[1];
 };
 
-export const SelectDropdown: SelectDropdownComponent = memo((props) => {
+export const FilterList: FilterListComponent = memo((props) => {
   const {
     controlRef,
     size,
@@ -128,7 +128,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
     hasItemsAtom,
     form,
     openAtom,
-    offset: offsetProp = 'none',
+    // offset: offsetProp = 'none',
     renderItem,
     visibleItemsAtom,
     isLoading,
@@ -154,7 +154,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
   const [visibleItems] = useAtom(visibleItemsAtom);
 
   const [hasItems] = useAtom(hasItemsAtom);
-  const [isListMount, setIsListMount] = useAtom(false);
+  //   const [isListMount, setIsListMount] = useAtom(false);
   const [getItemKey] = useAtom(getItemKeyAtom);
   const indent = form === 'round' ? 'increased' : 'normal';
 
@@ -168,7 +168,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
     );
   }, [visibleItems]);
 
-  const offset = offsetProp === 'none' ? undefined : offsetProp;
+  //   const offset = offsetProp === 'none' ? undefined : offsetProp;
 
   const lengthForVirtualScroll = useMemo(
     () => getLengthElements(visibleItems),
@@ -182,7 +182,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
     scrollElementRef,
   } = useVirtualScroll({
     length: lengthForVirtualScroll,
-    isActive: virtualScroll && isListMount,
+    isActive: virtualScroll,
     onScrollToBottom,
   });
 
@@ -193,7 +193,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
 
   const getIndex = fabricIndex();
   const getVirtualIndex = fabricIndex();
-  const [zIndex] = useAtom(dropdownZIndexAtom);
+  //   const [zIndex] = useAtom(dropdownZIndexAtom);
 
   return (
     <div
@@ -201,7 +201,7 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
       //   anchorRef={controlRef}
       //   offset={offset}
       //   role="listbox"
-      //   className={cnSelectDropdown()}
+      //   className={cnFilterList()}
       //   size={size}
       //   controlRef={controlRef}
       //   openAtom={openAtom}
@@ -209,133 +209,128 @@ export const SelectDropdown: SelectDropdownComponent = memo((props) => {
       //   onMount={setIsListMount}
       //   style={{ zIndex }}
     >
-      {isListMount && (
+      <div
+        className={cnFilterList('ScrollContainer', [
+          cnMixSpace({
+            // pV: mapVerticalSpace[size],
+          }),
+          cnMixScrollBar({ size: 'xs' }),
+        ])}
+        ref={scrollContainerRef}
+      >
+        {isLoading && !isListShowed && <SelectLoader />}
         <div
-          className={cnSelectDropdown('ScrollContainer', [
-            cnMixSpace({
-              pV: mapVerticalSpace[size],
-            }),
-            cnMixScrollBar({ size: 'xs' }),
-          ])}
-          ref={scrollContainerRef}
+          className={cnFilterList('List')}
+          key={cnFilterList('List')}
+          style={{ marginTop: spaceTop }}
         >
-          {isLoading && !isListShowed && <SelectLoader />}
-          <div
-            className={cnSelectDropdown('List')}
-            key={cnSelectDropdown('List')}
-            style={{ marginTop: spaceTop }}
-          >
-            {visibleItems.map((group) => {
-              if (isOptionForCreate(group)) {
-                const index = getIndex();
-                // return (
-                //   <SelectCreateButton
-                //     size={size}
-                //     key={cnSelectDropdown('List', { key: 'CreateButton' })}
-                //     labelForCreate={labelForCreate}
-                //     indent={indent}
-                //     ref={itemsRefs[index]}
-                //     onClick={onCreate}
-                //     highlightedIndexAtom={highlightedIndexAtom}
-                //     inputValueAtom={inputValueAtom}
-                //     highlightIndex={highlightIndex}
-                //     index={index}
-                //   />
-                // );
-              }
+          {visibleItems.map((group) => {
+            if (isOptionForCreate(group)) {
+              // const index = getIndex();
+              // return (
+              //   <SelectCreateButton
+              //     size={size}
+              //     key={cnFilterList('List', { key: 'CreateButton' })}
+              //     labelForCreate={labelForCreate}
+              //     indent={indent}
+              //     ref={itemsRefs[index]}
+              //     onClick={onCreate}
+              //     highlightedIndexAtom={highlightedIndexAtom}
+              //     inputValueAtom={inputValueAtom}
+              //     highlightIndex={highlightIndex}
+              //     index={index}
+              //   />
+              // );
+              return null;
+            }
 
-              const virtualIndex =
-                visibleItems.length > 1 ? getVirtualIndex() : 0;
+            const virtualIndex =
+              visibleItems.length > 1 ? getVirtualIndex() : 0;
 
-              return (
-                <Fragment key={group.key}>
-                  {group.group &&
-                    getGroupLabel &&
-                    isVisible(slice, virtualIndex) && (
-                      <FilterGroupLabel
-                        label={getGroupLabel(group.group)}
-                        size={size}
-                        indent={indent}
-                        ref={listRefs[virtualIndex]}
-                        key={`group-${group.key}-Label`}
-                      />
-                    )}
-                  {group.items.map((item) => {
-                    if (isOptionForSelectAll(item)) {
-                      const virtualIndex = getVirtualIndex();
-                      const index = getIndex();
+            return (
+              <Fragment key={group.key}>
+                {group.group &&
+                  getGroupLabel &&
+                  isVisible(slice, virtualIndex) && (
+                    <FilterGroupLabel
+                      label={getGroupLabel(group.group)}
+                      size={size}
+                      indent={indent}
+                      ref={listRefs[virtualIndex]}
+                      key={`group-${group.key}-Label`}
+                    />
+                  )}
+                {group.items.map((item) => {
+                  if (isOptionForSelectAll(item)) {
+                    const virtualIndex = getVirtualIndex();
+                    const index = getIndex();
 
-                      if (isVisible(slice, virtualIndex)) {
-                        return (
-                          <SelectItemAll
-                            label={selectAllLabel}
-                            groupId={group.key}
-                            highlightedIndexAtom={highlightedIndexAtom}
-                            groupsCounterAtom={groupsCounterAtom}
-                            key={cnSelectDropdown('SelectItemAll', {
-                              group: group.key,
-                            })}
-                            ref={forkRef([
-                              listRefs[virtualIndex],
-                              itemsRefs[index],
-                            ])}
-                            indent={indent}
-                            size={size}
-                            {...getOptionActions({
-                              index,
-                              item,
-                            })}
-                            index={index}
-                          />
-                        );
-                      }
-                    } else {
-                      const virtualIndex = getVirtualIndex();
-                      const index = getIndex();
-                      if (isVisible(slice, virtualIndex)) {
-                        return (
-                          <SelectRenderItem
-                            key={cnSelectDropdown('SelectRenderItem', {
-                              group: group.key,
-                              item: getItemKey(item),
-                            })}
-                            getItemKeyAtom={getItemKeyAtom}
-                            highlightedIndexAtom={highlightedIndexAtom}
-                            rootRef={forkRef([
-                              listRefs[virtualIndex],
-                              itemsRefs[index],
-                            ])}
-                            renderItem={renderItem}
-                            item={item}
-                            {...getOptionActions({
-                              index,
-                              item,
-                            })}
-                            index={index}
-                            valueAtom={valueAtom}
-                          />
-                        );
-                      }
+                    if (isVisible(slice, virtualIndex)) {
+                      return (
+                        <SelectItemAll
+                          label={selectAllLabel}
+                          groupId={group.key}
+                          highlightedIndexAtom={highlightedIndexAtom}
+                          groupsCounterAtom={groupsCounterAtom}
+                          key={cnFilterList('SelectItemAll', {
+                            group: group.key,
+                          })}
+                          ref={forkRef([
+                            listRefs[virtualIndex],
+                            itemsRefs[index],
+                          ])}
+                          indent={indent}
+                          size={size}
+                          {...getOptionActions({
+                            index,
+                            item,
+                          })}
+                          index={index}
+                        />
+                      );
                     }
-                  })}
-                </Fragment>
-              );
-            })}
-            {isLoading && isListShowed && (
-              <ListLoader size={size} innerOffset={indent} />
-            )}
-          </div>
-          {!isLoading && !hasItems && labelForEmptyItems && (
-            <ListItem
-              size={size}
-              label={labelForEmptyItems}
-              innerOffset={indent}
-            >
-              {labelForEmptyItems}
-            </ListItem>
+                  } else {
+                    const virtualIndex = getVirtualIndex();
+                    const index = getIndex();
+                    if (isVisible(slice, virtualIndex)) {
+                      return (
+                        <FilterRenderItem
+                          key={cnFilterList('SelectRenderItem', {
+                            group: group.key,
+                            item: getItemKey(item),
+                          })}
+                          getItemKeyAtom={getItemKeyAtom}
+                          highlightedIndexAtom={highlightedIndexAtom}
+                          rootRef={forkRef([
+                            listRefs[virtualIndex],
+                            itemsRefs[index],
+                          ])}
+                          renderItem={renderItem}
+                          item={item}
+                          {...getOptionActions({
+                            index,
+                            item,
+                          })}
+                          index={index}
+                          valueAtom={valueAtom}
+                        />
+                      );
+                    }
+                  }
+                })}
+              </Fragment>
+            );
+          })}
+          {isLoading && isListShowed && (
+            <ListLoader size={size} innerOffset={indent} />
           )}
         </div>
-      )}
+        {!isLoading && !hasItems && labelForEmptyItems && (
+          <ListItem size={size} label={labelForEmptyItems} innerOffset={indent}>
+            {labelForEmptyItems}
+          </ListItem>
+        )}
+      </div>
     </div>
   );
 });

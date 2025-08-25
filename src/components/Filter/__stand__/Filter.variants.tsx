@@ -8,7 +8,7 @@ import { Button } from '@consta/uikit/Button';
 import { FieldGroup } from '@consta/uikit/FieldGroup';
 import { Space } from '@consta/uikit/MixSpace';
 import { TextField } from '@consta/uikit/TextFieldCanary';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Filter } from '..';
 
@@ -23,16 +23,25 @@ const items: string[] = [
   'восьмой',
 ];
 
+const getItem = (item: string) => item;
+
 const Variants = () => {
+  const [value, setValue] = useState<string[] | null>([]);
+
   return (
     <div style={{ width: '100%' }}>
       <Filter
         items={items}
-        inputPlaceholder="Поиск"
+        getItemLabel={getItem}
+        getItemKey={getItem}
+        onChange={setValue}
+        placeholder="Поиск"
+        value={value}
         footer={[
           <Button label="Сбросить" size="xs" view="ghost" />,
           <Button label="Применить" size="xs" />,
         ]}
+        // multiple
       />
     </div>
   );

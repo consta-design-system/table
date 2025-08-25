@@ -1,4 +1,4 @@
-import './SelectLoader.css';
+import './FilterLoader.css';
 
 import { Loader } from '@consta/uikit/Loader';
 import React from 'react';

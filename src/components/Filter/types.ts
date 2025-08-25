@@ -84,48 +84,47 @@ export type FilterPropsInit<
   MULTIPLE extends boolean = false,
 > = PropsWithHTMLAttributesAndRef<
   {
-    'items': ITEM[];
-    'onChange': FilterPropOnChange<ITEM, MULTIPLE>;
-    'disabled'?: boolean;
-    'form'?: 'default' | 'brick' | 'round';
-    'placeholder'?: string;
-    'aria-Label'?: string;
-    'isLoading'?: boolean;
-    'dropdownClassName'?: string;
-    'dropdownRef'?: React.Ref<HTMLDivElement>;
-    'renderItem'?: FilterPropRenderItem<ITEM>;
-    'renderValue'?: FilterPropRenderValue<ITEM, MULTIPLE>;
-    'onFocus'?: React.FocusEventHandler<HTMLInputElement>;
-    'onBlur'?: React.FocusEventHandler<HTMLInputElement>;
-    'onCreate'?: FilterPropOnCreate;
-    'inputRef'?: React.Ref<HTMLInputElement>;
-    'input'?: boolean;
-    'inputValue'?: string;
-    'inputDefaultValue'?: string;
-    'onInput'?: (value: string) => void;
-    'labelForCreate'?:
+    items: ITEM[];
+    onChange: FilterPropOnChange<ITEM, MULTIPLE>;
+    disabled?: boolean;
+    form?: 'default' | 'brick' | 'round';
+    placeholder?: string;
+    // 'aria-Label'?: string;
+    isLoading?: boolean;
+    dropdownRef?: React.Ref<HTMLDivElement>;
+    renderItem?: FilterPropRenderItem<ITEM>;
+    // 'renderValue'?: FilterPropRenderValue<ITEM, MULTIPLE>;
+    onFocus?: React.FocusEventHandler<HTMLInputElement>;
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
+    onCreate?: FilterPropOnCreate;
+    inputRef?: React.Ref<HTMLInputElement>;
+    input?: boolean;
+    inputValue?: string;
+    inputDefaultValue?: string;
+    onInput?: (value: string) => void;
+    labelForCreate?:
       | ((label: string | undefined) => React.ReactNode)
       | React.ReactNode;
-    'labelForEmptyItems'?: string;
-    'multiple'?: MULTIPLE;
-    'value'?: FilterPropValue<ITEM, MULTIPLE>;
-    'groups'?: GROUP[];
-    'getItemLabel'?: FilterPropGetItemLabel<ITEM>;
-    'getItemKey'?: FilterPropGetItemKey<ITEM>;
-    'getItemGroupKey'?: FilterPropGetItemGroupKey<ITEM>;
-    'getItemDisabled'?: FilterPropGetItemDisabled<ITEM>;
-    'getGroupLabel'?: FilterPropGetGroupLabel<GROUP>;
-    'getGroupKey'?: FilterPropGetGroupKey<GROUP>;
-    'virtualScroll'?: boolean;
-    'onScrollToBottom'?: (length: number) => void;
-    'onDropdownOpen'?: (isOpen: boolean) => void;
-    'dropdownOpen'?: boolean;
-    'ignoreOutsideClicksRefs'?: ReadonlyArray<React.RefObject<HTMLElement>>;
-    'clearButton'?: boolean;
-    'iconClear'?: IconComponent;
-    'selectAll'?: MULTIPLE extends true ? boolean : never;
-    'selectAllLabel'?: string;
-    'footer': React.ReactNode;
+    labelForEmptyItems?: string;
+    multiple?: MULTIPLE;
+    value?: FilterPropValue<ITEM, MULTIPLE>;
+    groups?: GROUP[];
+    getItemLabel?: FilterPropGetItemLabel<ITEM>;
+    getItemKey?: FilterPropGetItemKey<ITEM>;
+    getItemGroupKey?: FilterPropGetItemGroupKey<ITEM>;
+    getItemDisabled?: FilterPropGetItemDisabled<ITEM>;
+    getGroupLabel?: FilterPropGetGroupLabel<GROUP>;
+    getGroupKey?: FilterPropGetGroupKey<GROUP>;
+    virtualScroll?: boolean;
+    onScrollToBottom?: (length: number) => void;
+    onDropdownOpen?: (isOpen: boolean) => void;
+    dropdownOpen?: boolean;
+    ignoreOutsideClicksRefs?: ReadonlyArray<React.RefObject<HTMLElement>>;
+    clearButton?: boolean;
+    iconClear?: IconComponent;
+    selectAll?: MULTIPLE extends true ? boolean : never;
+    selectAllLabel?: string;
+    footer: React.ReactNode;
   },
   HTMLDivElement
 >;

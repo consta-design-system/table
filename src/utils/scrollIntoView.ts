@@ -1,4 +1,4 @@
-import computeScrollIntoView from 'compute-scroll-into-view';
+import { compute as computeScrollIntoView } from 'compute-scroll-into-view';
 
 export function scrollIntoView(
   node: HTMLDivElement,

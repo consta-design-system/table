@@ -93,6 +93,23 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
       (el) => el?.scrollHeight || 0,
     );
 
+    const tableBodyHorizontalScrollHeightAtom = useResizeObservedAtom(
+      useMemo(() => [bodyRef], [bodyRef]),
+      (el) => {
+        const clientHeight = el?.clientHeight || 0;
+        const offsetHeight = el?.offsetHeight || 0;
+
+        return offsetHeight - clientHeight;
+      },
+    );
+
+    const tableBodyHorizontalScrollHeightStyleAtom = useCreateAtom(
+      (ctx) =>
+        `--table-body-horizontal-scroll-height: ${
+          ctx.spy(tableBodyHorizontalScrollHeightAtom)[0]
+        }px;`,
+    );
+
     const tableBodyHeightAtom = useCreateAtom(
       (ctx) => `--table-body-height: ${ctx.spy(bodySizeAtom)[0].height}px;`,
     );
@@ -162,6 +179,7 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
         <Styles
           className={randomClass}
           atoms={[
+            tableBodyHorizontalScrollHeightStyleAtom,
             bodyOffsetHeightAtom,
             tableBodyHeightAtom,
             tableBodyWidthAtom,

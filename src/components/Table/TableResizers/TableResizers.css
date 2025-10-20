@@ -18,7 +18,10 @@
     top: var(--resizer-top);
     right: 0;
     width: var(--resizer-width);
-    height: calc(var(--table-body-height) - var(--table-resizer-top-offset));
+    height: calc(
+      var(--table-body-height) - var(--table-resizer-top-offset) -
+        var(--table-body-horizontal-scroll-height) - 2px
+    );
     background-color: var(--color-bg-ghost);
     opacity: 0;
     cursor: col-resize;

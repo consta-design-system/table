@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.1 (20/10/2025)
+- [fix(Table): fixed scroll](https://github.com/consta-design-system/table/commit/bd21579a45d51afed625c2ca6ce4b323f949fb29) - [@gizeasy](https://github.com/gizeasy)
+- [docs(Table): fixed virtualScroll example](https://github.com/consta-design-system/table/commit/7d65ceaf22d454ab6c04b37f8142bc1d3f41ddf3) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.7.0 (01/08/2025)
 Самое главное:
 

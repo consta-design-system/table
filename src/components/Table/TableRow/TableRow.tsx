@@ -19,6 +19,8 @@ type TableRowProps = PropsWithHTMLAttributesAndRef<
     tableRef: React.RefObject<HTMLDivElement>;
     leftNoVisibleItemsAtom: AtomMut<number>;
     rightNoVisibleItemsAtom: AtomMut<number>;
+    borderBetweenColumns?: boolean;
+    borderBetweenRows?: boolean;
   },
   HTMLDivElement
 >;
@@ -55,6 +57,8 @@ export const TableRow: TableRowComponent = forwardRef((props, ref) => {
     tableRef,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
+    borderBetweenColumns,
+    borderBetweenRows,
     ...otherProps
   } = props;
   const [lowHeaders] = useAtom(lowHeadersAtom);
@@ -104,13 +108,21 @@ export const TableRow: TableRowComponent = forwardRef((props, ref) => {
       <TableRowCell
         key={cnTableRow('Cell', { key: accessor || columnIndex })}
         borderLeft={
-          columnIndex !== 0 &&
-          !(pinned !== 'left' && lowHeaders[columnIndex - 1]?.pinned === 'left')
+          borderBetweenColumns
+            ? columnIndex !== 0 &&
+              !(
+                pinned !== 'left' &&
+                lowHeaders[columnIndex - 1]?.pinned === 'left'
+              )
+            : false
         }
         borderRight={
-          pinned === 'left' && lowHeaders[columnIndex + 1]?.pinned !== 'left'
+          borderBetweenColumns
+            ? pinned === 'left' &&
+              lowHeaders[columnIndex + 1]?.pinned !== 'left'
+            : false
         }
-        borderTop={!isSeparator && rowIndex !== 0}
+        borderTop={borderBetweenRows ? !isSeparator && rowIndex !== 0 : false}
         ref={columnIndex === 0 ? ref : undefined}
         row={row}
         rowIndex={rowIndex}

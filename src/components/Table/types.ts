@@ -90,6 +90,8 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     headerZIndex?: number;
     rowHoverEffect?: boolean;
     onScrollToBottom?: (length: number) => void;
+    borderBetweenColumns?: boolean;
+    borderBetweenRows?: boolean;
   },
   HTMLDivElement
 >;
@@ -108,6 +110,8 @@ export type TableHeaderProps<ROW = TableDefaultRow> =
       headerCellsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
       bordersAtom: AtomMut<[boolean, boolean, boolean][]>;
       tableRef: React.RefObject<HTMLDivElement>;
+      borderBetweenColumns?: boolean;
+      borderBetweenRows?: boolean;
     },
     HTMLDivElement
   >;
@@ -169,6 +173,8 @@ export type TableDataProps<ROW = TableDefaultRow> =
       rowHoverEffect?: boolean;
       leftNoVisibleItemsAtom: AtomMut<number>;
       rightNoVisibleItemsAtom: AtomMut<number>;
+      borderBetweenColumns?: boolean;
+      borderBetweenRows?: boolean;
     },
     HTMLDivElement
   > & {

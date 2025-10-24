@@ -58,6 +58,8 @@ const TableDataRender = (
     rowHoverEffect,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
+    borderBetweenColumns,
+    borderBetweenRows,
     ...otherProps
   } = props;
 
@@ -88,6 +90,8 @@ const TableDataRender = (
             ref={rowsRefs[rowIndex]}
             leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
             rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+            borderBetweenColumns={borderBetweenColumns}
+            borderBetweenRows={borderBetweenRows}
           />
         );
       })}

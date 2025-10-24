@@ -155,22 +155,24 @@ type TableRowMouseEvent<ROW> = (
 type GetRowKey<ROW> = (row: ROW) => string | number;
 ```
 
-| Свойство           | Тип                           | По умолчанию      | Описание                                                     |
-| ------------------ | ----------------------------- | ----------------- | ------------------------------------------------------------ |
-| `columns?`         | `TableColumn[]`               | -                 | Колонки                                                      |
-| `rows?`            | `ROW[]`                       | -                 | Строки                                                       |
-| `getRowKey?`       | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
-| `onRowMouseEnter?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
-| `onRowMouseLeave?` | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
-| `onRowClick?`      | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
-| `virtualScroll?`   | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
-| `stickyHeader?`    | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
-| `resizable?`       | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
-| `zebraStriped?`    | `boolean`                     | -                 | Окрашивание строк через одну                                 |
-| `headerZIndex?`    | `number`                      | `1`               | `zIndex` шапки                                               |
-| `rowHoverEffect?`  | `boolean`                     | -                 | Включает эффект наведения на строку                          |
-| `className?`       | `string`                      | -                 | Дополнительный CSS-класс                                     |
-| `ref?`             | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |
+| Свойство             | Тип                           | По умолчанию      | Описание                                                     |
+| -------------------- | ----------------------------- | ----------------- | ------------------------------------------------------------ |
+| `columns?`           | `TableColumn[]`               | -                 | Колонки                                                      |
+| `rows?`              | `ROW[]`                       | -                 | Строки                                                       |
+| `getRowKey?`         | `GetRowKey<ROW>`              | `(row) => row.id` | Функция получения ключа, если ключ не найден берется `index` |
+| `onRowMouseEnter?`   | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseEnter` на строке                             |
+| `onRowMouseLeave?`   | `TableRowMouseEvent<ROW>`     | -                 | Событие `onMouseLeave` на строке                             |
+| `onRowClick?`        | `TableRowMouseEvent<ROW>`     | -                 | Событие `onClick` на строке                                  |
+| `virtualScroll?`     | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
+| `stickyHeader?`      | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
+| `resizable?`         | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
+| `zebraStriped?`      | `boolean`                     | -                 | Окрашивание строк через одну                                 |
+| `headerZIndex?`      | `number`                      | `1`               | `zIndex` шапки                                               |
+| `rowHoverEffect?`    | `boolean`                     | -                 | Включает эффект наведения на строку                          |
+| `className?`         | `string`                      | -                 | Дополнительный CSS-класс                                     |
+| `ref?`               | `React.Ref<HTMLDivElement>`   | -                 | Ссылка на корневой DOM-элемент                               |
+| `borderBetweenColumns?` | `boolean`                     | true              | Отображение границ между колонками                           |
+| `borderBetweenRows?`    | `boolean`                     | true              | Отображение границ между строками                            |
 
 ## Колонка
 
@@ -2041,7 +2043,7 @@ export const TableExampleRenderRow = () => {
 
 ## Состояние загрузки
 
-Загрузку можно отобразить двумя видами с помощью `Loader` или `Skeleton.
+Загрузку можно отобразить двумя видами с помощью `Loader` или `Skeleton`.
 
 **Пример загрузки данных всей таблицы с помощью `Loader`:**
 

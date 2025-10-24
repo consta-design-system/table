@@ -39,6 +39,8 @@ export const TableRender = (
     getRowKey,
     rowHoverEffect,
     onScrollToBottom,
+    borderBetweenColumns = true,
+    borderBetweenRows = true,
     ...otherProps
   } = props;
 
@@ -95,6 +97,8 @@ export const TableRender = (
           stickyRightOffsetsAtom={stickyRightOffsetsAtom}
           bordersAtom={bordersFlattenedHeadersAtom}
           tableRef={scrollElementRef}
+          borderBetweenColumns={borderBetweenColumns}
+          borderBetweenRows={borderBetweenRows}
         />
       }
       body={
@@ -112,6 +116,8 @@ export const TableRender = (
           rowHoverEffect={rowHoverEffect}
           leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
           rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+          borderBetweenColumns={borderBetweenColumns}
+          borderBetweenRows={borderBetweenRows}
         />
       }
     />

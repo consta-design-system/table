@@ -136,6 +136,8 @@ const Variants = () => {
   const resizable = useSelect('resizable', ['outside', 'inside']);
   const withRenderCell = useBoolean('withRenderCell');
   const withRenderHeaderCell = useBoolean('withRenderHeaderCell');
+  const borderBetweenColumns = useBoolean('borderBetweenColumns', true);
+  const borderBetweenRows = useBoolean('borderBetweenRows', true);
 
   const virtualScrollProp = virtualScroll
     ? virtualScrollMap[virtualScroll]
@@ -328,6 +330,8 @@ const Variants = () => {
         stickyHeader={stickyHeader}
         virtualScroll={virtualScrollProp}
         style={{ maxHeight: '100%' }}
+        borderBetweenColumns={borderBetweenColumns}
+        borderBetweenRows={borderBetweenRows}
       />
     </div>
   );

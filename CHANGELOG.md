@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.2 (06/11/2025)
+Самое важное:
+- Добавили примеры с фильтрацией таблицы
+- Добавили примеры с состоянием загрузки
+
+---
+
+- [docs(Table): filter (#32)](https://github.com/consta-design-system/table/commit/0ba1d50213c65bf623446708d84c634b3c0fdd73) - [@gizeasy](https://github.com/gizeasy)
+- [docs(Table): added loading state examples (#31)](https://github.com/consta-design-system/table/commit/402e0414f2ee4fc8e66ab05ddbb8d49e3f01df8b) - [@gizeasy](https://github.com/gizeasy)
+
+--------------------
+
 ## v0.7.1 (20/10/2025)
 - [fix(Table): fixed scroll](https://github.com/consta-design-system/table/commit/bd21579a45d51afed625c2ca6ce4b323f949fb29) - [@gizeasy](https://github.com/gizeasy)
 - [docs(Table): fixed virtualScroll example](https://github.com/consta-design-system/table/commit/7d65ceaf22d454ab6c04b37f8142bc1d3f41ddf3) - [@gizeasy](https://github.com/gizeasy)

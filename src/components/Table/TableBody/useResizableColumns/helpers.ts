@@ -33,7 +33,9 @@ export const sizesEq = (
 
 const getContainerWidth = (el?: HTMLElement | null) =>
   el
-    ? el.clientWidth - (el.offsetWidth - el.getBoundingClientRect().width)
+    ? Math.floor(
+        el.clientWidth - (el.offsetWidth - el.getBoundingClientRect().width),
+      )
     : undefined;
 
 export const getRefsSizes = (
@@ -47,7 +49,8 @@ export const getRefsSizes = (
       (typeof width === 'number' ? minMax(minWidth, maxWidth, width) : width);
 
     if (typeof value === 'number') {
-      const roundValue = Math.round(value + gap);
+      const roundValue = Math.floor(value + gap);
+
       gap += value - roundValue;
 
       return roundValue;
@@ -92,10 +95,7 @@ export const isSizesCalculate = (
     (item) => typeof item === 'string' || typeof item === 'undefined',
   );
 
-export const getSizesSum = (sizes: number[]) =>
-  sizes.reduce((a, b) => {
-    return a + b;
-  });
+export const getSizesSum = (sizes: number[]) => sizes.reduce((a, b) => a + b);
 
 const getValidValues = (
   value: number,
@@ -146,11 +146,14 @@ const getValidValues = (
 
   const sizesSum = getSizesSum(addResult(results, newSizes));
 
-  if (
-    (resizable === 'inside' && sizesSum !== containerWidth) ||
-    (resizable === 'outside' && sizesSum < containerWidth)
-  ) {
+  if (resizable === 'inside' && sizesSum !== containerWidth) {
     return [];
+  }
+
+  if (resizable === 'outside' && sizesSum < containerWidth) {
+    newSizes.splice(index, 1, 0);
+
+    return [[index, containerWidth - getSizesSum(newSizes)]];
   }
 
   return results;
@@ -172,7 +175,7 @@ export const getCalculatedSizes = (
     const scrollLeft = container.current?.scrollLeft || 0;
     const trackPosition = getTargetBlockPosition(sizes, index);
 
-    const value = Math.round(
+    const value = Math.floor(
       position + scrollLeft - containerLeft - trackPosition,
     );
 

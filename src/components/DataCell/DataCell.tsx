@@ -21,6 +21,7 @@ export type DataCellProps = {
   size?: 'm' | 's';
   indicator?: 'alert' | 'warning';
   truncate?: boolean;
+  lineClamp?: number;
 } & JSX.IntrinsicElements['div'];
 
 const renderContentSlot = (
@@ -47,16 +48,20 @@ const renderChildren = (
   view: DataCellProps['view'],
   size: 'm' | 's',
   truncate: boolean,
+  lineClamp?: number,
 ) => {
   if (isString(children) || isNumber(children)) {
     return renderContentSlot(
       <Text
-        className={cnMixSpace({
-          pV: cellVerticalSpaceMap[size],
-        })}
+        className={cnDataCell('Text', { lineClamp: !!lineClamp }, [
+          cnMixSpace({
+            mV: cellVerticalSpaceMap[size],
+          }),
+        ])}
         view={view}
         size={size}
         truncate={truncate}
+        lineHeight="m"
       >
         {children}
       </Text>,
@@ -79,6 +84,7 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
       indicator,
       style,
       truncate = false,
+      lineClamp,
       ...otherProps
     } = props;
     const level = levelProp < 0 ? 0 : levelProp;
@@ -98,8 +104,10 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
     const childrenSlots = children
       ? [
           ...(Array.isArray(children)
-            ? children.map((item) => renderChildren(item, view, size, truncate))
-            : [renderChildren(children, view, size, truncate)]),
+            ? children.map((item) =>
+                renderChildren(item, view, size, truncate, lineClamp),
+              )
+            : [renderChildren(children, view, size, truncate, lineClamp)]),
         ]
       : [];
 
@@ -122,6 +130,7 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
           ['--table-data-cell-indicator-color' as string]: indicator
             ? `var(--color-bg-${indicator})`
             : undefined,
+          ['--table-data-cell-line-clamp' as string]: lineClamp || undefined,
         }}
         ref={ref}
       >

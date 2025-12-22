@@ -48,4 +48,9 @@
   &_up {
     z-index: 1;
   }
+
+  &:has([data-cell-edit-mode='true']) {
+    box-shadow: 1px 1px 0px 0px var(--color-control-bg-border-focus) inset,
+      -1px -1px 0px 0px var(--color-control-bg-border-focus) inset;
+  }
 }

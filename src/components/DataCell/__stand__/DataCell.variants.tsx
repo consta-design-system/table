@@ -23,6 +23,7 @@ const Variants = () => {
 
   const text = useText('text', 'Значение ячейки');
   const size = useSelect('size', ['m', 's'], 'm');
+  const lineClamp = useNumber('lineClamp', 0);
   const view = useSelect(
     'view',
     ['primary', 'alert', 'success', 'warning'],
@@ -82,6 +83,7 @@ const Variants = () => {
         icon={widthIcon ? IconPhone : undefined}
         control={controlMap[control || 'without control']}
         indicator={indicator}
+        lineClamp={lineClamp}
       >
         {children}
       </DataCell>

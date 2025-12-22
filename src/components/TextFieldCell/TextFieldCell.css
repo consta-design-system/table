@@ -1,0 +1,41 @@
+.ct--TextFieldCell {
+  width: 100%;
+  min-height: 100%;
+
+  &[data-cell-edit-mode='true'] {
+    --table-cell-edit-grid-column-index: var(--table-cell-grid-column-index);
+    --table-cell-edit-grid-row-index: var(--table-cell-grid-row-index);
+  }
+
+  &-Field {
+    width: 100%;
+    flex: 1;
+    &_size {
+      &_s {
+        --text-filed-cell-vertical-margin: 0.5px;
+      }
+      &_m {
+        --text-filed-cell-vertical-margin: 3px;
+      }
+    }
+    margin-top: var(--text-filed-cell-vertical-margin);
+    margin-bottom: var(--text-filed-cell-vertical-margin);
+    line-height: 1.5em;
+  }
+
+  &_editMode {
+    & .ct--DataCell-Slots {
+      flex: 1;
+    }
+
+    & .ct--DataCell-ContentSlot {
+      flex: 1;
+    }
+  }
+
+  & .TextFieldTypeTextArea-TextArea {
+    line-height: var(--line-height-text-m);
+  }
+
+  /* box-shadow: 12px 12px 2px 1px rgb(0 0 255 / 0.2); */
+}

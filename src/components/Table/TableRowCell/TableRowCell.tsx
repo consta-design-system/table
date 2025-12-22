@@ -102,6 +102,8 @@ const TableRowCellRender = (
             ? `var(--table-column-sticky-right-offset-${index})`
             : undefined,
         gridColumn: `${index + 1} / span ${miss > 0 ? miss + 1 : 1}`,
+        ['--table-cell-grid-column-index' as string]: index,
+        ['--table-cell-grid-row-index' as string]: rowIndex,
       }}
     >
       {isNotNil(RenderCell) ? (

@@ -59,6 +59,16 @@
       overflow: hidden;
     }
   }
+
+  &-Text {
+    &_lineClamp {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: var(--table-data-cell-line-clamp);
+      -webkit-box-orient: vertical;
+    }
+  }
 }
 
 .MixFlex.ct--DataCell {

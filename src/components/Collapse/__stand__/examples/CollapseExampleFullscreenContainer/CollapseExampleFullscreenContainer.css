@@ -6,14 +6,16 @@
 
   &-Item {
     height: 360px;
+
     .ct--Collapse-Content {
-      height: calc(
-        100% -
+      height:
+        calc(
+          100% -
           calc(
             var(--control-height-s) + var(--control-border-width) +
-              var(--space-xs) * 2
+            var(--space-xs) * 2
           )
-      );
+        );
     }
   }
 

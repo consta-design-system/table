@@ -11,17 +11,19 @@
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-    --resizer-top: calc(
-      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
-    );
+    --resizer-top:
+      calc(
+        (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
+      );
     position: absolute;
     top: var(--resizer-top);
     right: 0;
     width: var(--resizer-width);
-    height: calc(
-      var(--table-body-height) - var(--table-resizer-top-offset) -
+    height:
+      calc(
+        var(--table-body-height) - var(--table-resizer-top-offset) -
         var(--table-body-horizontal-scroll-height) - 2px
-    );
+      );
     background-color: var(--color-bg-ghost);
     opacity: 0;
     cursor: col-resize;
@@ -45,10 +47,11 @@
       opacity: 1;
     }
   }
+
   &-VirtualScrollHelper {
     position: absolute;
     top: calc(var(--table-header-height) * -1);
-    pointer-events: none;
     width: 100%;
+    pointer-events: none;
   }
 }

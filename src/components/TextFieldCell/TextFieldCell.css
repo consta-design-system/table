@@ -1,41 +1,46 @@
 .ct--TextFieldCell {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  min-height: var(--text-filed-cell-min-height);
+
+  &_size {
+    &_s {
+      --text-filed-cell-min-height: var(--space-3xl);
+    }
+
+    &_m {
+      --text-filed-cell-min-height: var(--space-4xl);
+    }
+  }
 
   &[data-cell-edit-mode='true'] {
-    --table-cell-edit-grid-column-index: var(--table-cell-grid-column-index);
-    --table-cell-edit-grid-row-index: var(--table-cell-grid-row-index);
-  }
-
-  &-Field {
-    width: 100%;
-    flex: 1;
-    &_size {
-      &_s {
-        --text-filed-cell-vertical-margin: 0.5px;
-      }
-      &_m {
-        --text-filed-cell-vertical-margin: 3px;
-      }
-    }
-    margin-top: var(--text-filed-cell-vertical-margin);
-    margin-bottom: var(--text-filed-cell-vertical-margin);
-    line-height: 1.5em;
-  }
-
-  &_editMode {
     & .ct--DataCell-Slots {
+      overflow: hidden;
       flex: 1;
     }
 
     & .ct--DataCell-ContentSlot {
+      overflow: hidden;
       flex: 1;
     }
+  }
+
+  &-Field {
+    flex: 1;
+
+    /* flex-grow: strache; */
+    align-items: stretch;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.5em;
   }
 
   & .TextFieldTypeTextArea-TextArea {
     line-height: var(--line-height-text-m);
   }
 
-  /* box-shadow: 12px 12px 2px 1px rgb(0 0 255 / 0.2); */
+  & .FieldControlLayout-Children {
+    width: var(--field-control-layout-children-width);
+  }
 }

@@ -1,6 +1,6 @@
 .ct--TableData {
-  display: contents;
   --table-data-cell-bg: var(--color-bg-default);
+  display: contents;
 
   &-Cell {
     grid-column: span var(--table-cell-col-span, 1);
@@ -16,41 +16,45 @@
     display: contents;
 
     &_zebraStriped {
-      --table-data-cell-bg: color-mix(
-        in srgb,
-        rgb(from var(--color-bg-stripe) r g b / 1) 5%,
-        var(--color-bg-default)
-      );
+      --table-data-cell-bg:
+        color-mix(
+          in srgb,
+          rgb(from var(--color-bg-stripe) r g b / 1) 5%,
+          var(--color-bg-default)
+        );
     }
 
     &:has(> * > [data-row-active='true']) {
-      --table-data-cell-bg: color-mix(
-        in srgb,
-        rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
-        var(--color-bg-default)
-      );
-    }
-
-    &:has(> * > [data-row-hover='true']),
-    .ct--TableData_rowHoverEffect &:hover {
-      --table-data-cell-bg: color-mix(
-        in srgb,
-        rgb(from var(--color-control-typo-ghost-hover) r g b / 1) 9%,
-        var(--color-bg-default)
-      );
-    }
-
-    &:has(> * > [data-row-hover='true'][data-row-active='true']),
-    .ct--TableData_rowHoverEffect &:hover:has(> * > [data-row-active='true']) {
-      --table-data-cell-bg: color-mix(
-        in srgb,
-        rgb(from var(--color-control-typo-ghost-hover) r g b / 1) 3%,
+      --table-data-cell-bg:
         color-mix(
           in srgb,
           rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
           var(--color-bg-default)
-        )
-      );
+        );
+    }
+
+    &:has(> * > [data-row-hover='true']),
+    .ct--TableData_rowHoverEffect &:hover {
+      --table-data-cell-bg:
+        color-mix(
+          in srgb,
+          rgb(from var(--color-control-typo-ghost-hover) r g b / 1) 9%,
+          var(--color-bg-default)
+        );
+    }
+
+    &:has(> * > [data-row-hover='true'][data-row-active='true']),
+    .ct--TableData_rowHoverEffect &:hover:has(> * > [data-row-active='true']) {
+      --table-data-cell-bg:
+        color-mix(
+          in srgb,
+          rgb(from var(--color-control-typo-ghost-hover) r g b / 1) 3%,
+          color-mix(
+            in srgb,
+            rgb(from var(--color-control-bg-primary) r g b / 1) 15%,
+            var(--color-bg-default)
+          )
+        );
     }
   }
 }

@@ -1,8 +1,8 @@
 .ct--CollapseFullscreen {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
+  left: 0;
   bottom: 0;
   background-color: var(--color-bg-default);
 
@@ -13,9 +13,11 @@
   &-ToolbarWrapper {
     height: var(--collapse-toolbar-height);
   }
+
   &-ChildrenWrapper {
     height: calc(100% - var(--collapse-toolbar-height));
   }
+
   &-Toolbar.ct--Toolbar {
     background: var(--color-bg-secondary);
   }

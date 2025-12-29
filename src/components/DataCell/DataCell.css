@@ -1,16 +1,18 @@
 /* --table-data-cell-level - задается в компоненте */
 .ct--DataCell {
   padding-right: var(--space-s);
-  padding-left: calc(
-    var(--space-s) + (var(--table-data-cell-slot-width) + var(--space-2xs)) *
+  padding-left:
+    calc(
+      var(--space-s) + (var(--table-data-cell-slot-width) + var(--space-2xs)) *
       var(--table-data-cell-level, 0) +
       var(--table-data-cell-additional-space, calc(0 * 1px))
-  );
+    );
 
   &_alignmentIndent {
-    --table-data-cell-additional-space: calc(
-      var(--table-data-cell-gap) - var(--space-2xs)
-    );
+    --table-data-cell-additional-space:
+      calc(
+        var(--table-data-cell-gap) - var(--space-2xs)
+      );
   }
 
   &_size {
@@ -37,7 +39,8 @@
       right: 0;
       border: var(--space-2xs) solid transparent;
       border-top: var(--space-2xs) solid var(--table-data-cell-indicator-color);
-      border-right: var(--space-2xs) solid
+      border-right:
+        var(--space-2xs) solid
         var(--table-data-cell-indicator-color);
     }
   }
@@ -55,16 +58,20 @@
 
   &-ContentSlot {
     min-height: var(--table-data-cell-slot-height);
+
     &_truncate {
       overflow: hidden;
     }
   }
 
   &-Text {
+    white-space: pre-wrap;
+    word-break: break-word;
+
     &_lineClamp {
+      display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: -webkit-box;
       -webkit-line-clamp: var(--table-data-cell-line-clamp);
       -webkit-box-orient: vertical;
     }

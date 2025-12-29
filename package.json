@@ -13,8 +13,8 @@
     }
   ],
   "peerDependencies": {
-    "@consta/icons": "^1.1.1",
-    "@consta/uikit": "^5.26.0",
+    "@consta/icons": "^1.5.0",
+    "@consta/uikit": "^5.28.5",
     "@reatom/core": "3.10.1",
     "@reatom/npm-react": "3.10.6"
   },

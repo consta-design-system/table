@@ -22,6 +22,7 @@ const cnTextFieldCell = cn('TextFieldCell');
 // замечены проблемы в textarea resize=auto, появляется полоска скролла, а она не нужна
 // в textarea resize=auto сделать возможным менять высоту контейнера вручную, при этом будет отключен авто режим
 // всегда ли поведение двойного нужно для компонента? или дать переключение режимов на откуп пользователям?
+// Уголок textarea resize=true не прибит к краю ячейки, возможно потребуется доработка text-field для возможности проброса дополнительных отступов.
 
 export type TextFieldCellProps<TYPE extends string> = Omit<
   TextFieldProps<TYPE>,

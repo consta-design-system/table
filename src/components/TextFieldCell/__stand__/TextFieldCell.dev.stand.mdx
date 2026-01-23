@@ -3,7 +3,7 @@ import { MdxTabs } from '@consta/stand';
 
 # Обзор
 
-`TextFieldCell` позволяет вводить текст, числа или массивы строк. Компонент базируется на [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary) и подготовлен для использования в таблицах. Основные свойства компонента идентичны [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary), на этой странице сосредоточимся на свойствах, которые специфичны для `TextFieldCell`.
+`TextFieldCell` позволяет вводить текст, числа или массивы строк. Компонент базируется на [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary) и подготовлен для использования в таблицах. Основные свойства компонента идентичны [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary).
 
 # Тип
 
@@ -166,47 +166,42 @@ export const TextFieldCellExampleTypes = () => (
 
 # Свойства
 
-| Свойство         | Тип                                                             | По умолчанию | Описание                                         |
-| ---------------- | --------------------------------------------------------------- | ------------ | ------------------------------------------------ |
-| size             | `'s' \| 'm'`                                                    | `'m'`        | Размер ячейки                                    |
-| lineClamp        | `number`                                                        | -            | Ограничение количества строк текста              |
-| readModeRender   | `(value?: TextFieldPropValue<TYPE>) => React.ReactNode `        | -            | Функция для отображения значения в режиме чтения |
-| level            | `number`                                                        | -            | Уровень вложенности ячейки                       |
-| indicator        | `'alert' \| 'warning'`                                          | -            | Индикатор состояния                              |
-| truncate         | `boolean`                                                       | -            | Обрезка текста многоточием                       |
-| value            | `TextFieldPropValue<TYPE>`                                      | -            | Значение поля ввода                              |
-| onChange         | `TextFieldPropOnChange<TYPE>`                                   | -            | Обработчик изменения значения                    |
-| defaultValue     | `TextFieldPropValue<TYPE>`                                      | -            | Значение по умолчанию                            |
-| id               | `string`                                                        | -            | Идентификатор поля                               |
-| name             | `string`                                                        | -            | Имя поля                                         |
-| disabled         | `boolean`                                                       | -            | Флаг отключения поля                             |
-| maxLength        | `number`                                                        | -            | Максимальная длина текста                        |
-| minLength        | `number`                                                        | -            | Минимальная длина текста                         |
-| onFocus          | `React.FocusEventHandler`                                       | -            | Обработчик фокуса                                |
-| onBlur           | `React.FocusEventHandler`                                       | -            | Обработчик потери фокуса                         |
-| placeholder      | `string`                                                        | -            | Подсказка для ввода                              |
-| leftSide         | `React.ReactNode`                                               | -            | Элемент слева внутри поля                        |
-| rightSide        | `React.ReactNode`                                               | -            | Элемент справа внутри поля                       |
-| clearButton      | `boolean`                                                       | -            | Флаг отображения кнопки очистки                  |
-| iconClear        | `IconComponent`                                                 | -            | Иконка для кнопки очистки                        |
-| autoComplete     | `string`                                                        | -            | Значение атрибута autocomplete                   |
-| readOnly         | `boolean`                                                       | -            | Флаг только для чтения                           |
-| tabIndex         | `number`                                                        | -            | Порядок получения фокуса                         |
-| ariaLabel        | `string`                                                        | -            | Метка для доступности                            |
-| iconSize         | `'s' \| 'm'`                                                    | -            | Размер иконок                                    |
-| onClear          | `React.MouseEventHandler<HTMLButtonElement>`                    | -            | Обработчик очистки поля                          |
-| inputRef         | `React.Ref`                                                     | -            | Ссылка на DOM-элемент input                      |
-| type             | `'text' \| 'textarea' \| 'textarray' \| 'password' \| 'number'` | `'text'`     | Тип поля ввода                                   |
-| max              | `number`                                                        | -            | Максимальное значение                            |
-| min              | `number`                                                        | -            | Минимальное значение                             |
-| step             | `number`                                                        | -            | Шаг изменения значения                           |
-| incrementButtons | `boolean`                                                       | -            | Флаг отображения кнопок инкремента               |
-| iconShowPassword | `IconComponent`                                                 | -            | Иконка показа пароля                             |
-| iconHidePassword | `IconComponent`                                                 | -            | Иконка скрытия пароля                            |
-| resize           | `boolean \| 'auto'`                                             | -            | Возможность изменения размера                    |
-| minRows          | `number`                                                        | -            | Минимальное количество строк                     |
-| maxRows          | `number`                                                        | -            | Максимальное количество строк                    |
-| rows             | `number`                                                        | -            | Количество строк                                 |
-| renderValueItem  | `(item: string) => React.ReactNode`                             | -            | Функция отображения элемента массива             |
-| inputValue       | `string \| null`                                                | -            | Значение поля ввода для массива                  |
-| onInputChange    | `((value: string \| null) => void)`                             | -            | Обработчик изменения значения ввода              |
+| Свойство                                                                                                                | Тип                                                             | По умолчанию | Описание                                         |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [`size?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:размер)                         | `'s' \| 'm'`                                                    | `'m'`        | Размер ячейки                                    |
+| `lineClamp?`                                                                                                            | `number`                                                        | -            | Ограничение количества строк текста              |
+| `readModeRender?`                                                                                                       | `(value?: TextFieldPropValue<TYPE>) => React.ReactNode`         | -            | Функция для отображения значения в режиме чтения |
+| [`level?`](##LIBS.LIB.STAND.TAB/lib:table/stand:components-datacell-stable/tab:dev/hash:уровень-вложенности)            | `number`                                                        | -            | Уровень вложенности ячейки                       |
+| [`indicator?`](##LIBS.LIB.STAND.TAB/lib:table/stand:components-datacell-stable/tab:dev/hash:индикатор)                  | `'alert' \| 'warning'`                                          | -            | Индикатор состояния                              |
+| `truncate?`                                                                                                             | `boolean`                                                       | -            | Обрезка текста многоточием                       |
+| [`value?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:значение)                      | `TextFieldPropValue<TYPE>`                                      | -            | Значение поля ввода                              |
+| `onChange?`                                                                                                             | `TextFieldPropOnChange<TYPE>`                                   | -            | Обработчик изменения значения                    |
+| `defaultValue?`                                                                                                         | `TextFieldPropValue<TYPE>`                                      | -            | Значение по умолчанию                            |
+| `id?`                                                                                                                   | `string`                                                        | -            | Идентификатор поля                               |
+| `name?`                                                                                                                 | `string`                                                        | -            | Имя поля                                         |
+| `disabled?`                                                                                                             | `boolean`                                                       | -            | Флаг отключения поля                             |
+| `maxLength?`                                                                                                            | `number`                                                        | -            | Максимальная длина текста                        |
+| `minLength?`                                                                                                            | `number`                                                        | -            | Минимальная длина текста                         |
+| [`placeholder?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:подсказка)               | `string`                                                        | -            | Подсказка для ввода                              |
+| [`leftSide?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:дополнительная-информация)  | `React.ReactNode`                                               | -            | Элемент слева внутри поля                        |
+| [`rightSide?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:дополнительная-информация) | `React.ReactNode`                                               | -            | Элемент справа внутри поля                       |
+| [`clearButton?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:кнопка-для-очистки-поля) | `boolean`                                                       | -            | Флаг отображения кнопки очистки                  |
+| `iconClear?`                                                                                                            | `IconComponent`                                                 | -            | Иконка для кнопки очистки                        |
+| `iconSize?`                                                                                                             | `'s' \| 'm'`                                                    | -            | Размер иконок                                    |
+| `onClear?`                                                                                                              | `React.MouseEventHandler`                                       | -            | Обработчик очистки поля                          |
+| `inputRef?`                                                                                                             | `React.Ref`                                                     | -            | Ссылка на DOM-элемент input                      |
+| [`type?`](#тип)                                                                                                         | `'text' \| 'textarea' \| 'textarray' \| 'password' \| 'number'` | `'text'`     | Тип поля ввода                                   |
+| `max?`                                                                                                                  | `number`                                                        | -            | Максимальное значение                            |
+| `min?`                                                                                                                  | `number`                                                        | -            | Минимальное значение                             |
+| [`step?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:шаг--значения-и-диапазон)       | `number`                                                        | -            | Шаг изменения значения                           |
+| `incrementButtons?`                                                                                                     | `boolean`                                                       | -            | Флаг отображения кнопок инкремента               |
+| `iconShowPassword?`                                                                                                     | `IconComponent`                                                 | -            | Иконка показа пароля                             |
+| `iconHidePassword?`                                                                                                     | `IconComponent`                                                 | -            | Иконка скрытия пароля                            |
+| [`resize?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:изменение-высоты)             | `boolean \| 'auto'`                                             | -            | Возможность изменения размера                    |
+| [`minRows?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:автоматическая-высота)       | `number`                                                        | -            | Минимальное количество строк                     |
+| [`maxRows?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:автоматическая-высота)       | `number`                                                        | -            | Максимальное количество строк                    |
+| [`rows?`](##LIBS.LIB.STAND.TAB/lib:uikit/stand:components-textfield-canary/tab:dev/hash:поле-в-несколько-строк)         | `number`                                                        | -            | Количество строк                                 |
+| `renderValueItem?`                                                                                                      | `(item: string) => React.ReactNode`                             | -            | Функция отображения элемента массива             |
+| `inputValue?`                                                                                                           | `string \| null`                                                | -            | Значение поля ввода для массива                  |
+| `onInputChange?`                                                                                                        | `((value: string \| null) => void)`                             | -            | Обработчик изменения значения ввода              |
+| `className?`                                                                                                            | `string`                                                        | -            | Дополнительный CSS-класс.                        |

@@ -1,9 +1,212 @@
 import { TextFieldCellExampleTypes } from './examples/TextFieldCellExampleTypes/TextFieldCellExampleTypes';
+import { MdxTabs } from '@consta/stand';
 
 # Обзор
 
-TextFieldCell позволяет вводить текст, числа или массивы строк. Компонент базируется на [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary) и подготовлен для использования в таблицах. Основные свойства компонента идентичны [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary), на этой странице сосредоточимся на свойствах, которые специфичны для `TextFieldCell`.
+`TextFieldCell` позволяет вводить текст, числа или массивы строк. Компонент базируется на [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary) и подготовлен для использования в таблицах. Основные свойства компонента идентичны [`TextField`](##LIBS.LIB.STAND/lib:uikit/stand:components-textfield-canary), на этой странице сосредоточимся на свойствах, которые специфичны для `TextFieldCell`.
 
-# Пример ячеек в таблице
+# Тип
+
+Доступные типы компонента:
+
+- `text` - текст
+- `textarea` - многострочный текст
+- `number` - число
+- `textarray` - массив строк
+
+<MdxTabs>
 
 <TextFieldCellExampleTypes />
+
+```tsx
+import React, { useCallback, useState } from 'react';
+
+import { Table, TableColumn, TableRenderCell } from '@consta/table/Table';
+import { TextFieldCell } from '@consta/table/TextFieldCell';
+
+type Row = {
+  text: string;
+  textarea: string;
+  textareaAutosize: string;
+  number: string;
+  textArray: string[];
+};
+
+const rows: Row[] = [
+  {
+    text: 'value1',
+    textarea: 'value2',
+    textareaAutosize: 'value3',
+    number: 'value4',
+    textArray: ['value5', 'value6'],
+  },
+];
+
+const CellTypeText: TableRenderCell<Row> = (row) => {
+  const [value, setValue] = useState<string | null>(row.row.text);
+
+  return (
+    <TextFieldCell type="text" value={value} onChange={setValue} size="m" />
+  );
+};
+
+const CellTypeTextArea: TableRenderCell<Row> = (row) => {
+  const [value, setValue] = useState<string | null>(row.row.textarea);
+
+  return (
+    <TextFieldCell
+      type="textarea"
+      value={value}
+      onChange={setValue}
+      size="m"
+      rows={3}
+      lineClamp={6}
+      resize
+      clearButton
+    />
+  );
+};
+
+const CellTypeTextAreaAutosize: TableRenderCell<Row> = (row) => {
+  const [value, setValue] = useState<string | null>(row.row.textareaAutosize);
+
+  return (
+    <TextFieldCell
+      type="textarea"
+      value={value}
+      resize="auto"
+      maxRows={6}
+      lineClamp={6}
+      onChange={setValue}
+      size="m"
+      clearButton
+    />
+  );
+};
+
+const CellTypeNumber: TableRenderCell<Row> = (row) => {
+  const [value, setValue] = useState<string | null>(row.row.number);
+
+  return (
+    <TextFieldCell
+      type="number"
+      value={value}
+      incrementButtons
+      clearButton
+      onChange={setValue}
+      size="m"
+    />
+  );
+};
+
+const CellTypeTextArray: TableRenderCell<Row> = (row) => {
+  const [value, setValue] = useState<string[] | null>(row.row.textArray);
+
+  const [inputValue, setInputValue] = useState<string | null>(null);
+  const onChangeValueArray = useCallback((value: string[] | null) => {
+    setValue(value);
+    setInputValue(null);
+  }, []);
+
+  return (
+    <TextFieldCell
+      type="textarray"
+      value={value}
+      clearButton
+      onChange={onChangeValueArray}
+      inputValue={inputValue}
+      onInputChange={setInputValue}
+      readModeRender={(value) => value?.join(', ')}
+      size="m"
+    />
+  );
+};
+
+const columns: TableColumn<Row>[] = [
+  {
+    title: 'TextArray',
+    accessor: 'textArray',
+    renderCell: CellTypeTextArray,
+    minWidth: 200,
+  },
+  {
+    title: 'Text',
+    accessor: 'text',
+    renderCell: CellTypeText,
+    minWidth: 200,
+  },
+
+  {
+    title: 'Textarea',
+    accessor: 'textarea',
+    renderCell: CellTypeTextArea,
+    minWidth: 200,
+  },
+  {
+    title: 'Textarea autosize',
+    accessor: 'textareaAutosize',
+    renderCell: CellTypeTextAreaAutosize,
+    minWidth: 200,
+  },
+
+  {
+    title: 'Number',
+    accessor: 'number',
+    renderCell: CellTypeNumber,
+    minWidth: 200,
+  },
+];
+
+export const TextFieldCellExampleTypes = () => (
+  <Table rows={rows} columns={columns} />
+);
+```
+
+</MdxTabs>
+
+# Свойства
+
+| Свойство         | Тип                                                             | По умолчанию | Описание                                         |
+| ---------------- | --------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| size             | `'s' \| 'm'`                                                    | `'m'`        | Размер ячейки                                    |
+| lineClamp        | `number`                                                        | -            | Ограничение количества строк текста              |
+| readModeRender   | `(value?: TextFieldPropValue<TYPE>) => React.ReactNode `        | -            | Функция для отображения значения в режиме чтения |
+| level            | `number`                                                        | -            | Уровень вложенности ячейки                       |
+| indicator        | `'alert' \| 'warning'`                                          | -            | Индикатор состояния                              |
+| truncate         | `boolean`                                                       | -            | Обрезка текста многоточием                       |
+| value            | `TextFieldPropValue<TYPE>`                                      | -            | Значение поля ввода                              |
+| onChange         | `TextFieldPropOnChange<TYPE>`                                   | -            | Обработчик изменения значения                    |
+| defaultValue     | `TextFieldPropValue<TYPE>`                                      | -            | Значение по умолчанию                            |
+| id               | `string`                                                        | -            | Идентификатор поля                               |
+| name             | `string`                                                        | -            | Имя поля                                         |
+| disabled         | `boolean`                                                       | -            | Флаг отключения поля                             |
+| maxLength        | `number`                                                        | -            | Максимальная длина текста                        |
+| minLength        | `number`                                                        | -            | Минимальная длина текста                         |
+| onFocus          | `React.FocusEventHandler`                                       | -            | Обработчик фокуса                                |
+| onBlur           | `React.FocusEventHandler`                                       | -            | Обработчик потери фокуса                         |
+| placeholder      | `string`                                                        | -            | Подсказка для ввода                              |
+| leftSide         | `React.ReactNode`                                               | -            | Элемент слева внутри поля                        |
+| rightSide        | `React.ReactNode`                                               | -            | Элемент справа внутри поля                       |
+| clearButton      | `boolean`                                                       | -            | Флаг отображения кнопки очистки                  |
+| iconClear        | `IconComponent`                                                 | -            | Иконка для кнопки очистки                        |
+| autoComplete     | `string`                                                        | -            | Значение атрибута autocomplete                   |
+| readOnly         | `boolean`                                                       | -            | Флаг только для чтения                           |
+| tabIndex         | `number`                                                        | -            | Порядок получения фокуса                         |
+| ariaLabel        | `string`                                                        | -            | Метка для доступности                            |
+| iconSize         | `'s' \| 'm'`                                                    | -            | Размер иконок                                    |
+| onClear          | `React.MouseEventHandler<HTMLButtonElement>`                    | -            | Обработчик очистки поля                          |
+| inputRef         | `React.Ref`                                                     | -            | Ссылка на DOM-элемент input                      |
+| type             | `'text' \| 'textarea' \| 'textarray' \| 'password' \| 'number'` | `'text'`     | Тип поля ввода                                   |
+| max              | `number`                                                        | -            | Максимальное значение                            |
+| min              | `number`                                                        | -            | Минимальное значение                             |
+| step             | `number`                                                        | -            | Шаг изменения значения                           |
+| incrementButtons | `boolean`                                                       | -            | Флаг отображения кнопок инкремента               |
+| iconShowPassword | `IconComponent`                                                 | -            | Иконка показа пароля                             |
+| iconHidePassword | `IconComponent`                                                 | -            | Иконка скрытия пароля                            |
+| resize           | `boolean \| 'auto'`                                             | -            | Возможность изменения размера                    |
+| minRows          | `number`                                                        | -            | Минимальное количество строк                     |
+| maxRows          | `number`                                                        | -            | Максимальное количество строк                    |
+| rows             | `number`                                                        | -            | Количество строк                                 |
+| renderValueItem  | `(item: string) => React.ReactNode`                             | -            | Функция отображения элемента массива             |
+| inputValue       | `string \| null`                                                | -            | Значение поля ввода для массива                  |
+| onInputChange    | `((value: string \| null) => void)`                             | -            | Обработчик изменения значения ввода              |

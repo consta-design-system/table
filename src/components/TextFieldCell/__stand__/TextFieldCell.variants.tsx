@@ -41,6 +41,8 @@ const RenderCell: TableRenderCell<Row> = (row) => {
     setInputValue(null);
   }, []);
 
+  const size = useSelect('size', ['m', 's'], 'm');
+
   const type = useSelect(
     'type',
     ['text', 'number', 'password', 'textarea', 'textarray'],
@@ -54,10 +56,9 @@ const RenderCell: TableRenderCell<Row> = (row) => {
       type === 'textarea',
     ) || 'false';
 
-  const size = useSelect('size', ['s', 'm'], 'm') || 'm';
   const placeholder = useText('placeholder', 'placeholder');
-
   const rows = useNumber('rows', 3, type === 'textarea' && resize !== 'auto');
+  const lineClamp = useNumber('lineClamp', 0);
   const minRows = useNumber(
     'minRows',
     1,
@@ -87,6 +88,7 @@ const RenderCell: TableRenderCell<Row> = (row) => {
   const leftSideText = useText('leftSideText', 'from');
   const rightSideType = useSelect('rightSideType', ['icon', 'text']);
   const rightSideText = useText('rightSideText', 'm²');
+  const level = useNumber('level', 0);
 
   const leftSideSelect = {
     text: leftSideText,
@@ -101,6 +103,8 @@ const RenderCell: TableRenderCell<Row> = (row) => {
   const leftSide = leftSideType && leftSideSelect[leftSideType];
   const rightSide = rightSideType && rightSideSelect[rightSideType];
 
+  const indicator = useSelect('indicator', ['alert', 'warning']);
+
   const props = {
     size,
     placeholder,
@@ -110,6 +114,9 @@ const RenderCell: TableRenderCell<Row> = (row) => {
     maxLength,
     leftSide,
     rightSide,
+    level,
+    lineClamp,
+    indicator,
   };
 
   if (type === 'textarray') {

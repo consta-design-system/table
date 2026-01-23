@@ -16,14 +16,6 @@ import { cn } from '##/utils/bem';
 
 const cnTextFieldCell = cn('TextFieldCell');
 
-// readonly вид, не понятно какую ячейку можно редактировать а какую нет
-// у textarea вертикальные отступы отличаются от input и Text, по этому происходят прыжки текста при смене режима "просмотр/редактирование"
-// также у textarea меняется межстрочный интервал в зависимсоти от размера(возможно только в коде)
-// замечены проблемы в textarea resize=auto, появляется полоска скролла, а она не нужна
-// в textarea resize=auto сделать возможным менять высоту контейнера вручную, при этом будет отключен авто режим
-// всегда ли поведение двойного нужно для компонента? или дать переключение режимов на откуп пользователям?
-// Уголок textarea resize=true не прибит к краю ячейки, возможно потребуется доработка text-field для возможности проброса дополнительных отступов.
-
 export type TextFieldCellProps<TYPE extends string> = Omit<
   TextFieldProps<TYPE>,
   'view' | 'size' | 'form' | 'status'
@@ -190,8 +182,6 @@ const TextFieldCellRender = (
     onWheel,
     size,
   } as const;
-
-  //
 
   return (
     <DataCell

@@ -40,6 +40,7 @@ const CellTypeTextArea: TableRenderCell<Row> = (row) => {
       onChange={setValue}
       size="m"
       rows={3}
+      lineClamp={6}
       resize
       clearButton
     />
@@ -54,6 +55,8 @@ const CellTypeTextAreaAutosize: TableRenderCell<Row> = (row) => {
       type="textarea"
       value={value}
       resize="auto"
+      maxRows={6}
+      lineClamp={6}
       onChange={setValue}
       size="m"
       clearButton

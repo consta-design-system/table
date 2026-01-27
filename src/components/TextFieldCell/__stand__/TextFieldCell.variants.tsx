@@ -168,17 +168,7 @@ const RenderCell: TableRenderCell<Row> = (row) => {
   }
 
   return (
-    <TextFieldCell
-      {...props}
-      value={value}
-      readModeRender={(value) => [
-        <Loader size="s" view="clear" type="circle" />,
-        value,
-        <Badge label="Бейджик" />,
-      ]}
-      type={type}
-      onChange={setValue}
-    />
+    <TextFieldCell {...props} value={value} type={type} onChange={setValue} />
   );
 };
 

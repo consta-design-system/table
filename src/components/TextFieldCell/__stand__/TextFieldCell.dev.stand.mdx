@@ -1,4 +1,5 @@
 import { TextFieldCellExampleTypes } from './examples/TextFieldCellExampleTypes/TextFieldCellExampleTypes';
+import { TextFieldCellExampleAlertMessage } from './examples/TextFieldCellExampleAlertMessage/TextFieldCellExampleAlertMessage';
 import { MdxTabs } from '@consta/stand';
 
 # Обзор
@@ -163,6 +164,17 @@ export const TextFieldCellExampleTypes = () => (
 ```
 
 </MdxTabs>
+
+# Обработка ошибок
+
+В компоненте есть 2 свойства для отображения ошибок.
+
+`indicator` - отображает уголок в правом верхнем углу ячейки, в режиме чтения.
+`status` - отображает обводку поля в режиме редактирования.
+
+Для вывода ошибки можете использовать [`Popover`](##LIBS.LIB.STAND/lib:uikit/stand:components-popover-stable) и [`Informer`](##LIBS.LIB.STAND/lib:uikit/stand:components-informer-stable)
+
+<TextFieldCellExampleAlertMessage />
 
 # Свойства
 

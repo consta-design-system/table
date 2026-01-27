@@ -27,6 +27,7 @@ export type TextFieldCellProps<TYPE extends string> = Omit<
   truncate?: boolean;
   status?: 'alert' | 'warning';
   indicator?: 'alert' | 'warning';
+  readonly?: boolean;
 };
 
 type SplitProps = TextFieldCellProps<'textarea'> &
@@ -103,13 +104,14 @@ const TextFieldCellRender = (
     onInputChange,
     status,
     indicator,
+    readonly,
     ...restProps
   } = props;
   const refRoot = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const inputRefForked = useForkRef([inputRef, inputRefProp]);
 
-  const [editMode, setEditMode] = useFlag(false);
+  const [editMode, setEditMode] = useFlag();
 
   useClickOutside({
     isActive: editMode,
@@ -190,7 +192,7 @@ const TextFieldCellRender = (
       {...restProps}
       className={cnTextFieldCell({ size }, [className])}
       ref={useForkRef([refRoot, ref])}
-      onDoubleClick={setEditMode.on}
+      onDoubleClick={readonly ? undefined : setEditMode.on}
       size={size}
       lineClamp={lineClamp}
       indicator={!editMode ? indicator : undefined}

@@ -1,5 +1,8 @@
+import { IconAlert } from '@consta/icons/IconAlert';
 import { IconPhoto } from '@consta/icons/IconPhoto';
 import { useBoolean, useNumber, useSelect, useText } from '@consta/stand';
+import { Badge } from '@consta/uikit/Badge';
+import { Loader } from '@consta/uikit/Loader';
 import React, { useCallback, useState } from 'react';
 
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
@@ -89,6 +92,7 @@ const RenderCell: TableRenderCell<Row> = (row) => {
   const rightSideType = useSelect('rightSideType', ['icon', 'text']);
   const rightSideText = useText('rightSideText', 'm²');
   const level = useNumber('level', 0);
+  const status = useSelect('status', ['alert', 'warning']);
 
   const leftSideSelect = {
     text: leftSideText,
@@ -116,6 +120,7 @@ const RenderCell: TableRenderCell<Row> = (row) => {
     rightSide,
     level,
     lineClamp,
+    status,
     indicator,
   };
 
@@ -141,7 +146,6 @@ const RenderCell: TableRenderCell<Row> = (row) => {
         type={type}
         onChange={setValue}
         resize={resizeMap[resize]}
-        maxRows={resize === 'auto' ? maxRows : undefined}
         minRows={resize === 'auto' ? minRows : undefined}
         rows={resize !== 'auto' ? rows : undefined}
       />
@@ -164,7 +168,17 @@ const RenderCell: TableRenderCell<Row> = (row) => {
   }
 
   return (
-    <TextFieldCell {...props} value={value} type={type} onChange={setValue} />
+    <TextFieldCell
+      {...props}
+      value={value}
+      readModeRender={(value) => [
+        <Loader size="s" view="clear" type="circle" />,
+        value,
+        <Badge label="Бейджик" />,
+      ]}
+      type={type}
+      onChange={setValue}
+    />
   );
 };
 

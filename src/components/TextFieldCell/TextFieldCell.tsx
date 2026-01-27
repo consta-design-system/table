@@ -24,8 +24,9 @@ export type TextFieldCellProps<TYPE extends string> = Omit<
   lineClamp?: number;
   readModeRender?: (value?: TextFieldPropValue<TYPE>) => React.ReactNode;
   level?: number;
-  indicator?: 'alert' | 'warning';
   truncate?: boolean;
+  status?: 'alert' | 'warning';
+  indicator?: 'alert' | 'warning';
 };
 
 type SplitProps = TextFieldCellProps<'textarea'> &
@@ -53,7 +54,6 @@ const TextFieldCellRender = (
     type,
     value,
     readModeRender = readModeRenderDefault,
-    indicator,
     level,
     truncate,
     defaultValue,
@@ -101,6 +101,8 @@ const TextFieldCellRender = (
     renderValueItem,
     inputValue,
     onInputChange,
+    status,
+    indicator,
     ...restProps
   } = props;
   const refRoot = useRef<HTMLDivElement>(null);
@@ -191,10 +193,11 @@ const TextFieldCellRender = (
       onDoubleClick={setEditMode.on}
       size={size}
       lineClamp={lineClamp}
-      indicator={indicator}
+      indicator={!editMode ? indicator : undefined}
       level={level}
       truncate={truncate}
       data-cell-edit-mode={editMode}
+      data-cell-status={editMode ? status : undefined}
     >
       {editMode ? <TextField {...textFiledProps} /> : readModeRender(value)}
     </DataCell>

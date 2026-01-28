@@ -11,6 +11,7 @@ import { Transition } from 'react-transition-group';
 
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
 import { TextFieldCell } from '##/components/TextFieldCell';
+import { useHoverWithDelay } from '##/hooks/useHoverWithDelay';
 
 type Row = {
   col: string;
@@ -48,10 +49,18 @@ const CellTypeTextArray: TableRenderCell<Row> = (row) => {
     }
   }, [error]);
 
-  useClickOutside({
-    isActive: open,
-    handler: () => setOpen(false),
-    ignoreClicksInsideRefs: [popoverRef, cellRef],
+  // useClickOutside({
+  //   isActive: open,
+  //   handler: () => setOpen(false),
+  //   ignoreClicksInsideRefs: [popoverRef, cellRef],
+  // });
+
+  useHoverWithDelay({
+    isActive: true,
+    refs: [popoverRef, cellRef],
+    onHover: () => setOpen(true),
+    onBlur: () => setOpen(false),
+    delay: 1000,
   });
 
   return (

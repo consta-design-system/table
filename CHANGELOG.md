@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.8.0 (30/01/2026)
+Самое важное:
+- Добавили `TextFieldCell` - компонет редактирования текста в ячейках.
+
+---
+
+- [feat(TextFieldCell): add component (#37)](https://github.com/consta-design-system/table/commit/a3c777c6ccab975516eed61219586a86e1a59941) - [@gizeasy](https://github.com/gizeasy)
+- [chore(deps): remove unused deps `eslint-plugin-id-match`, `react-test-renderer`, `typescript-eslint-parser` (#38)](https://github.com/consta-design-system/table/commit/90f3f0ecd1adc777c8daa9011a9ca5facd370a7c) - [@baevm](https://github.com/baevm)
+
+--------------------
+
 ## v0.7.3 (04/12/2025)
 Самое важное:
 Исправили некорректный расчет ширины колонок, из-за которого на некоторых системах могла появляться полоса прокрутки шириной 1 пиксель.

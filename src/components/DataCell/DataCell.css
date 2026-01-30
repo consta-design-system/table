@@ -1,11 +1,14 @@
 /* --table-data-cell-level - задается в компоненте */
 .ct--DataCell {
-  padding-right: var(--space-s);
-  padding-left: calc(
+  --table-data-cell-padding-right: var(--space-s);
+  --table-data-cell-padding-left: calc(
     var(--space-s) + (var(--table-data-cell-slot-width) + var(--space-2xs)) *
       var(--table-data-cell-level, 0) +
       var(--table-data-cell-additional-space, calc(0 * 1px))
   );
+
+  padding-right: var(--table-data-cell-padding-right);
+  padding-left: var(--table-data-cell-padding-left);
 
   &_alignmentIndent {
     --table-data-cell-additional-space: calc(
@@ -55,8 +58,22 @@
 
   &-ContentSlot {
     min-height: var(--table-data-cell-slot-height);
+
     &_truncate {
       overflow: hidden;
+    }
+  }
+
+  &-Text {
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    &_lineClamp {
+      display: -webkit-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: var(--table-data-cell-line-clamp);
+      -webkit-box-orient: vertical;
     }
   }
 }

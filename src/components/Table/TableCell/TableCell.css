@@ -1,4 +1,5 @@
 .ct--TableCell {
+  --table-cell-edit-mode-border-color: var(--color-control-bg-border-focus);
   --table-cell-border-top: 0;
   --table-cell-border-bottom: 0;
   --table-cell-border-left: 0;
@@ -47,5 +48,18 @@
 
   &_up {
     z-index: 1;
+  }
+
+  &:has([data-cell-edit-mode='true']) {
+    box-shadow: 1px 1px 0 0 var(--table-cell-edit-mode-border-color) inset,
+      -1px -1px 0 0 var(--table-cell-edit-mode-border-color) inset;
+  }
+
+  &:has([data-cell-status='alert']) {
+    --table-cell-edit-mode-border-color: var(--color-bg-alert);
+  }
+
+  &:has([data-cell-status='warning']) {
+    --table-cell-edit-mode-border-color: var(--color-bg-warning);
   }
 }

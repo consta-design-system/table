@@ -1,0 +1,72 @@
+.ct--TextFieldCell {
+  width: 100%;
+  height: 100%;
+  min-height: var(--text-filed-cell-min-height);
+  padding-left: var(
+    --text-filed-cell-padding-left,
+    var(--table-data-cell-padding-left)
+  );
+  padding-right: var(
+    --text-filed-cell-padding-right,
+    var(--table-data-cell-padding-right)
+  );
+
+  &_size {
+    &_s {
+      --text-filed-cell-min-height: var(--space-3xl);
+    }
+
+    &_m {
+      --text-filed-cell-min-height: var(--space-4xl);
+    }
+  }
+
+  &[data-cell-edit-mode='true'] {
+    &.ct--DataCell {
+      --text-filed-cell-padding-left: calc(
+        var(--table-data-cell-padding-right) - var(--space-s)
+      );
+      --text-filed-cell-padding-right: calc(
+        var(--table-data-cell-padding-right) - var(--space-s)
+      );
+      --field-control-layout-additional-padding-left: var(--space-s);
+      --field-control-layout-additional-padding-right: var(--space-s);
+    }
+
+    & .ct--DataCell-Slots,
+    & .ct--DataCell-ContentSlot {
+      overflow: hidden;
+      flex: 1;
+    }
+  }
+
+  &-Field {
+    flex: 1;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  & .TextFieldTypeTextArea-TextArea {
+    line-height: var(--line-height-text-m);
+  }
+
+  & .FieldControlLayout-Children {
+    width: var(--field-control-layout-children-width);
+  }
+
+  & .ct--DataCell-Slots:has(.TextFieldTypeTextArea_resize),
+  & .ct--DataCell-ContentSlot:has(.TextFieldTypeTextArea_resize),
+  & .TextFieldTypeTextArea_resize,
+  & .TextFieldTypeTextArea_resize .FieldControlLayout-Container,
+  & .TextFieldTypeTextArea_resize .FieldControlLayout-Children,
+  & .TextFieldTypeTextArea_resize .TextFieldTypeTextArea-TextArea {
+    min-height: 100%;
+    height: 100%;
+  }
+
+  & .TextAreaAutoSize {
+    display: initial;
+  }
+}

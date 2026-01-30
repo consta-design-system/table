@@ -6,12 +6,13 @@ import {
 } from '@consta/uikit/MixPopoverAnimate';
 import { Popover } from '@consta/uikit/Popover';
 import { useClickOutside } from '@consta/uikit/useClickOutside';
+import { useFlag } from '@consta/uikit/useFlag';
+import { useHover } from '@consta/uikit/useHover';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition } from 'react-transition-group';
 
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
 import { TextFieldCell } from '##/components/TextFieldCell';
-import { useHoverWithDelay } from '##/hooks/useHoverWithDelay';
 
 type Row = {
   col: string;
@@ -22,45 +23,43 @@ type Row = {
 const rows: Row[] = [
   {
     col: 'value1',
-    textArray: ['value5', 'value6'],
+    textArray: Array.from({ length: 11 }, (_, i) => `элемент-${i + 1}`),
     col2: 'value2',
   },
 ];
 
 const CellTypeTextArray: TableRenderCell<Row> = (row) => {
-  const [value, setValue] = useState<string[] | null>(row.row.textArray);
-  const [open, setOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const cellRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const [inputValue, setInputValue] = useState<string | null>(null);
-  const onChangeValueArray = useCallback((value: string[] | null) => {
+  const [value, setValue] = useState<string[] | null>(row.row.textArray);
+  const [open, setOpen] = useFlag();
+
+  const onChangeValue = useCallback((value: string[] | null) => {
     setValue(value);
-    setInputValue(null);
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   }, []);
 
   const error = !!(value && value.length > 10);
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const cellRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (error) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }, [error]);
+  useEffect(() => setOpen.set(error), [error]);
 
-  // useClickOutside({
-  //   isActive: open,
-  //   handler: () => setOpen(false),
-  //   ignoreClicksInsideRefs: [popoverRef, cellRef],
-  // });
-
-  useHoverWithDelay({
-    isActive: true,
+  useHover({
+    isActive: error,
     refs: [popoverRef, cellRef],
-    onHover: () => setOpen(true),
-    onBlur: () => setOpen(false),
-    delay: 1000,
+    onHover: setOpen.on,
+    onBlur: setOpen.off,
+    hoverDelay: 500,
+    blurDelay: 300,
+  });
+
+  useClickOutside({
+    isActive: open,
+    handler: setOpen.off,
+    ignoreClicksInsideRefs: [popoverRef, cellRef],
   });
 
   return (
@@ -69,19 +68,17 @@ const CellTypeTextArray: TableRenderCell<Row> = (row) => {
         type="textarray"
         value={value}
         clearButton
-        onChange={onChangeValueArray}
-        inputValue={inputValue}
-        onInputChange={setInputValue}
+        onChange={onChangeValue}
         readModeRender={(value) => value?.join(', ')}
         size="m"
         status={error ? 'alert' : undefined}
         indicator={error ? 'alert' : undefined}
         ref={cellRef}
-        onMouseEnter={() => setOpen(true)}
+        inputRef={inputRef}
       />
 
       <Transition
-        in={error && open}
+        in={open}
         unmountOnExit
         timeout={animateTimeout}
         nodeRef={popoverRef}
@@ -89,11 +86,19 @@ const CellTypeTextArray: TableRenderCell<Row> = (row) => {
         {(animate) => {
           return (
             <Popover
+              style={{ width: 200, zIndex: 100 }}
               className={cnMixPopoverAnimate({ animate })}
-              offset="xs"
+              offset="2xs"
               anchorRef={cellRef}
               ref={popoverRef}
               direction="rightStartUp"
+              possibleDirections={[
+                'rightStartUp',
+                'rightStartDown',
+                'downStartRight',
+                'upStartRight',
+              ]}
+              spareDirection="downStartRight"
             >
               <Informer
                 status="alert"
@@ -112,6 +117,7 @@ const columns: TableColumn<Row>[] = [
   {
     title: 'Колонка',
     accessor: 'col',
+    minWidth: 150,
   },
   {
     title: 'Редактируемый массив',
@@ -122,6 +128,7 @@ const columns: TableColumn<Row>[] = [
   {
     title: 'Колонка',
     accessor: 'col2',
+    minWidth: 150,
   },
 ];
 

@@ -1,8 +1,5 @@
-import { IconAlert } from '@consta/icons/IconAlert';
 import { IconPhoto } from '@consta/icons/IconPhoto';
 import { useBoolean, useNumber, useSelect, useText } from '@consta/stand';
-import { Badge } from '@consta/uikit/Badge';
-import { Loader } from '@consta/uikit/Loader';
 import React, { useCallback, useState } from 'react';
 
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
@@ -147,6 +144,7 @@ const RenderCell: TableRenderCell<Row> = (row) => {
         onChange={setValue}
         resize={resizeMap[resize]}
         minRows={resize === 'auto' ? minRows : undefined}
+        maxRows={resize === 'auto' ? maxRows : undefined}
         rows={resize !== 'auto' ? rows : undefined}
       />
     );

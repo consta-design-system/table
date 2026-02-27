@@ -1,4 +1,13 @@
 .ct--TableBody {
+  --table-body-space-top: attr(data-body-space-top px);
+  --table-header-height: attr(data-header-height px);
+  --table-body-width: attr(data-body-width px);
+  --table-body-offset-height: attr(data-body-offset-height px);
+  --table-body-height: attr(data-body-height px);
+  --table-body-horizontal-scroll-height: attr(
+    data-body-horizontal-scroll-height 'px'
+  );
+
   --table-body-separator-height: 1px;
   display: grid;
   overflow: auto;

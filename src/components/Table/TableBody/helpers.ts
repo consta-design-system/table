@@ -16,12 +16,28 @@ export const getStyleByArray = <T extends number | string | undefined>(
   cssVarName: string,
   print: string | ((value: T, index: number, array: T[]) => string) = 'px',
 ) => {
-  let result = '';
+  const result: Record<string, string> = {};
 
   for (let index = 0; index < array.length; index++) {
-    result += `${cssVarName}-${index}: ${
-      isString(print) ? array[index] + print : print(array[index], index, array)
-    }; `;
+    result[`${cssVarName}-${index}`] = isString(print)
+      ? array[index] + print
+      : print(array[index], index, array);
+  }
+
+  return result as React.CSSProperties;
+};
+
+export const getAttrByArray = <T extends number | string | undefined>(
+  array: T[],
+  cssVarName: string,
+  print: string | ((value: T, index: number, array: T[]) => string) = '',
+) => {
+  const result: Record<string, string> = {};
+
+  for (let index = 0; index < array.length; index++) {
+    result[`data-${cssVarName}-${index}`] = isString(print)
+      ? array[index] + print
+      : print(array[index], index, array);
   }
 
   return result;

@@ -9,6 +9,7 @@ import { getElementSize } from '@consta/uikit/useResizeObserved';
 import { AtomMut } from '@reatom/core';
 import { useAction, useAtom } from '@reatom/npm-react';
 import React, { forwardRef, memo, useMemo, useRef } from 'react';
+import { renderToString } from 'react-dom/server';
 
 import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';
 import { cn } from '##/utils/bem';
@@ -24,6 +25,7 @@ import { TableSeparatorTitles } from '../TableSeparatorTitles';
 import { TableVirtualScrollSpaceTop } from '../TableVirtualScrollSpaceTop';
 import { TableBodyComponent, TableBodyRootComponent } from '../types';
 import {
+  getAttrByArray,
   getGridTemplate,
   getStyleByArray,
   getStyleLeftOffsetsForStickyColumns,
@@ -46,11 +48,7 @@ const Style = ({
   atom: AtomMut<string>;
   className: string;
 }) => {
-  return (
-    <style>
-      {`.${className} {`} {useAtom(atom)[0]} {`}`}
-    </style>
-  );
+  return useAtom(atom)[0];
 };
 
 const Styles = memo(
@@ -64,6 +62,32 @@ const Styles = memo(
   () => true,
 );
 
+const StylesT = memo(
+  ({ styleAtoms }: { styleAtoms: Record<string, AtomMut<string>> }) => {
+    const keys = Object.keys(styleAtoms);
+    return (
+      <>
+        {keys.map((atom, index) => (
+          <Style key={index} atom={styleAtoms[atom]} className={className} />
+        ))}
+      </>
+    );
+  },
+  () => true,
+);
+
+const getStyleLinkAttribute = (length: number, name: string, ext?: string) => {
+  let i = length;
+  const result: Record<string, string> = {};
+  while (i > 0) {
+    result[`--table-${name}-${i - 1}`] = `attr(data-${name}-${i - 1}${`${
+      ext ? ` ${ext}` : ''
+    }`})`;
+    i--;
+  }
+  return result as React.CSSProperties;
+};
+
 const TableBodyRoot: TableBodyRootComponent = forwardRef(
   (
     {
@@ -76,13 +100,11 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
+      style,
       ...otherProps
     },
     ref,
   ) => {
-    const [randomClass] = useAtom(
-      cnTableBody({ instance: getRandomHash() }).split(' ')[1],
-    );
     const bodyRef = useRef<HTMLDivElement>(null);
     const bodySizeAtom = useResizeObservedAtom(
       useMemo(() => [bodyRef], [bodyRef]),
@@ -103,43 +125,31 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
       },
     );
 
-    const tableBodyHorizontalScrollHeightStyleAtom = useCreateAtom(
-      (ctx) =>
-        `--table-body-horizontal-scroll-height: ${
-          ctx.spy(tableBodyHorizontalScrollHeightAtom)[0]
-        }px;`,
+    const stickyTopOffsetsLengthAtom = useCreateAtom(
+      (ctx) => ctx.spy(stickyTopOffsetsAtom).length,
     );
+    const topOffsetsLengthAtom = useCreateAtom(
+      (ctx) => ctx.spy(topOffsetsAtom).length,
+    );
+    const sizesLength = useCreateAtom((ctx) => ctx.spy(sizesAtom).length);
 
     const tableBodyHeightAtom = useCreateAtom(
-      (ctx) => `--table-body-height: ${ctx.spy(bodySizeAtom)[0].height}px;`,
+      (ctx) => `${ctx.spy(bodySizeAtom)[0].height}`,
     );
 
     const bodyOffsetHeightAtom = useCreateAtom(
-      (ctx) =>
-        `--table-body-offset-height: ${ctx.spy(bodyOffsetHeightSizeAtom)}px;`,
+      (ctx) => `${ctx.spy(bodyOffsetHeightSizeAtom)}`,
     );
 
     const tableBodyWidthAtom = useCreateAtom(
-      (ctx) => `--table-body-width: ${ctx.spy(bodySizeAtom)[0].width}px;`,
+      (ctx) => `${ctx.spy(bodySizeAtom)[0].width}`,
     );
-    const tableHeaderHeightAtom = useCreateAtom(
-      (ctx) => `--table-header-height: ${ctx.spy(headerHeightAtom)}px;`,
-    );
-    const tableBodySpaceTopAtom = useCreateAtom(
-      (ctx) => `--table-body-space-top: ${ctx.spy(spaceTopAtom)}px;`,
-    );
-    const sizesLength = useCreateAtom((ctx) => ctx.spy(sizesAtom).length);
+
     const tableGrigColumnsLengthAtom = useCreateAtom(
-      (ctx) => `--table-grid-columns-length: ${ctx.spy(sizesLength)};`,
+      (ctx) => `${ctx.spy(sizesLength)};`,
     );
     const tableGridTemplateColumnsAtom = useCreateAtom(
-      (ctx) =>
-        `--table-grid-template-columns: ${getGridTemplate(
-          ctx.spy(sizesLength),
-        )};`,
-    );
-    const tableColumnSizesAtom = useCreateAtom((ctx) =>
-      getStyleByArray(ctx.spy(sizesAtom), '--table-column-size', printSize),
+      (ctx) => `${getGridTemplate(ctx.spy(sizesLength))}`,
     );
     const tableColumnLeftOffsetsAtom = useCreateAtom((ctx) =>
       getStyleLeftOffsetsForStickyColumns(ctx.spy(sizesLength)),
@@ -147,56 +157,84 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
     const tableColumnRightOffsetsAtom = useCreateAtom((ctx) =>
       getStyleRightOffsetsForStickyColumns(ctx.spy(sizesLength)),
     );
-    const tableResizerTopOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleByArray(ctx.spy(topOffsetsAtom), '--table-resizer-top-offset'),
+
+    const tableColumnSizesAttrAtom = useCreateAtom((ctx) =>
+      getAttrByArray(ctx.spy(sizesAtom), 'column-size'),
     );
-    const tableResizerStickyTopOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleByArray(
-        ctx.spy(stickyTopOffsetsAtom),
-        '--table-column-sticky-top-offset',
+    const tableColumnSizesLinksAtom = useCreateAtom((ctx) =>
+      getStyleLinkAttribute(ctx.spy(sizesLength), 'column-size', 'px'),
+    );
+    const tableResizerTopOffsetsAttrAtom = useCreateAtom((ctx) =>
+      getAttrByArray(ctx.spy(topOffsetsAtom), 'resizer-top-offset'),
+    );
+    const tableResizerTopOffsetsLinksAtom = useCreateAtom((ctx) =>
+      getStyleLinkAttribute(
+        ctx.spy(topOffsetsLengthAtom),
+        'resizer-top-offset',
+        'px',
+      ),
+    );
+
+    const tableResizerStickyTopOffsetsAttrAtom = useCreateAtom((ctx) =>
+      getAttrByArray(ctx.spy(stickyTopOffsetsAtom), 'column-sticky-top-offset'),
+    );
+    const tableResizerStickyTopOffsetsLinksAtom = useCreateAtom((ctx) =>
+      getStyleLinkAttribute(
+        ctx.spy(stickyTopOffsetsLengthAtom),
+        'column-sticky-top-offset',
+        'px',
       ),
     );
     const tableRowGridColumn = useCreateAtom(
-      (ctx) => `--table-row-grid-column: span ${ctx.spy(sizesLength)}`,
+      (ctx) => `span ${ctx.spy(sizesLength)}`,
     );
+
     const tableOverScrollDisplayAtom = useCreateAtom((ctx) =>
-      ctx.spy(resizingAtom) ? '--table-over-scroll-display: block' : '',
+      ctx.spy(resizingAtom) ? 'block' : undefined,
     );
     const tableHeaderZIndexAtom = useCreateAtom(
-      (ctx) => `--table-header-z-index: ${ctx.spy(headerZIndexAtom)};`,
+      (ctx) => `${ctx.spy(headerZIndexAtom)};`,
     );
 
     return (
       <div
         {...otherProps}
-        className={cnTableBody(null, [
-          cnMixScrollBar(),
-          randomClass,
-          className,
-        ])}
+        style={{
+          ...style,
+          [`--table-header-z-index` as string]: useAtom(headerZIndexAtom)[0],
+          [`--table-grid-columns-length` as string]: useAtom(
+            tableGrigColumnsLengthAtom,
+          )[0],
+          [`--table-grid-template-columns` as string]: useAtom(
+            tableGridTemplateColumnsAtom,
+          )[0],
+          [`--table-row-grid-column` as string]: useAtom(tableRowGridColumn)[0],
+          [`--table-over-scroll-display` as string]: useAtom(
+            tableOverScrollDisplayAtom,
+          )[0],
+          [`--table-header-z-index` as string]: useAtom(
+            tableHeaderZIndexAtom,
+          )[0],
+          ...useAtom(tableColumnSizesLinksAtom)[0],
+          ...useAtom(tableColumnLeftOffsetsAtom)[0],
+          ...useAtom(tableColumnRightOffsetsAtom)[0],
+          ...useAtom(tableResizerTopOffsetsLinksAtom)[0],
+          ...useAtom(tableResizerStickyTopOffsetsLinksAtom)[0],
+        }}
+        {...useAtom(tableResizerStickyTopOffsetsAttrAtom)[0]}
+        {...useAtom(tableResizerTopOffsetsAttrAtom)[0]}
+        {...useAtom(tableColumnSizesAttrAtom)[0]}
+        data-body-space-top={useAtom(spaceTopAtom)[0]}
+        data-header-height={useAtom(headerHeightAtom)[0]}
+        data-body-width={useAtom(tableBodyWidthAtom)[0]}
+        data-body-offset-height={useAtom(bodyOffsetHeightAtom)[0]}
+        data-body-height={useAtom(tableBodyHeightAtom)[0]}
+        data-body-horizontal-scroll-height={
+          useAtom(tableBodyHorizontalScrollHeightAtom)[0]
+        }
+        className={cnTableBody(null, [cnMixScrollBar(), className])}
         ref={useForkRef([ref, bodyRef])}
       >
-        <Styles
-          className={randomClass}
-          atoms={[
-            tableBodyHorizontalScrollHeightStyleAtom,
-            bodyOffsetHeightAtom,
-            tableBodyHeightAtom,
-            tableBodyWidthAtom,
-            tableHeaderHeightAtom,
-            tableBodySpaceTopAtom,
-            tableGrigColumnsLengthAtom,
-            tableGridTemplateColumnsAtom,
-            tableRowGridColumn,
-            tableOverScrollDisplayAtom,
-            tableHeaderZIndexAtom,
-            tableColumnSizesAtom,
-            tableColumnLeftOffsetsAtom,
-            tableColumnRightOffsetsAtom,
-            tableResizerTopOffsetsAtom,
-            tableResizerStickyTopOffsetsAtom,
-          ]}
-        />
         {children}
       </div>
     );

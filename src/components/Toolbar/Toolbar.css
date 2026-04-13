@@ -10,14 +10,12 @@
     }
 
     &_defaultBrick {
-      border-radius:
-        var(--bar-default-border-radius)
+      border-radius: var(--bar-default-border-radius)
         var(--bar-default-border-radius) 0 0;
     }
 
     &_brickDefault {
-      border-radius:
-        0 0 var(--bar-default-border-radius)
+      border-radius: 0 0 var(--bar-default-border-radius)
         var(--bar-default-border-radius);
     }
   }

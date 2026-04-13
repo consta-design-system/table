@@ -7,7 +7,7 @@ export const isNotNil = <T>(p: T): p is Exclude<T, undefined | null> =>
 export const isNumber = (value: unknown): value is number =>
   typeof value === 'number';
 
-export const isFunction = <T>(value: unknown): value is Function =>
+export const isFunction = (value: unknown): value is Function =>
   typeof value === 'function';
 
 export const isString = (value: unknown): value is string =>

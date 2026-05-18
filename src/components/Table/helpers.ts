@@ -228,6 +228,7 @@ export const transformColumns = <T>(
           topHeaderGridIndex,
           gridIndex,
           level,
+          isFirst: gridIndex === 0,
         },
       };
 
@@ -278,19 +279,6 @@ export const getMaxLevel = <T>(columns: TableColumn<T>[]) => {
   traverse(columns);
 
   return count;
-};
-
-const getIsFirst = <T>(columns: Header<T>[], column: Header<T>): boolean => {
-  // TODO: нужно проверить с renderCell
-  const { colId, parentId, position, accessor } = column;
-  if (position.level === 0) {
-    return colId === 0;
-  }
-  const parent = columns.find((el) => el.colId === parentId);
-  return !!(
-    parent?.columns?.[0]?.accessor === accessor &&
-    (parent ? getIsFirst(columns, parent) : false)
-  );
 };
 
 export type HeaderData<T> = {
@@ -412,7 +400,6 @@ export const useHeaderData = <T>(
       ...column,
       position: {
         ...column.position,
-        isFirst: getIsFirst(array, column),
         width: column.width || 'auto',
       },
     

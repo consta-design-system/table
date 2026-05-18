@@ -178,7 +178,6 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
   const pinnedLeftColumns: TableColumnWidthKey<T>[] = [];
   const pinnedRightColumns: TableColumnWidthKey<T>[] = [];
   const otherColumns: TableColumnWidthKey<T>[] = [];
-  const notPinnedColumns: TableColumnWidthKey<T>[] = [];
 
   mapColumns<TableColumn<T>>(columns, (item, index) => {
     if (!item.columns?.length && item.pinned === 'left') {
@@ -189,18 +188,12 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
       pushByIndex(index, columns, pinnedRightColumns, 'right');
       return;
     }
-    if (item.columns?.length || item.isSeparator || item.accessor) {
+    if (!item.columns?.length) {
       pushByIndex(index, columns, otherColumns);
+      return;
     }
   });
-
-  mapColumns<TableColumnWidthKey<T>>(otherColumns, (item) => {
-    if (item.columns?.length || item.isSeparator || item.accessor) {
-      pushByKey(item, notPinnedColumns);
-    }
-  });
-
-  return [...pinnedLeftColumns, ...notPinnedColumns, ...pinnedRightColumns];
+  return [...pinnedLeftColumns, ...otherColumns, ...pinnedRightColumns];
 };
 
 export const transformColumns = <T>(
@@ -415,15 +408,19 @@ export const useHeaderData = <T>(
 
   const flattenedHeadersAtom = useCreateAtom((ctx) => {
     const headers = ctx.spy(headersAtom);
-    return headers.flat().map((column, index, array) => ({
+    const res = headers.flat().map((column, index, array) => ({
       ...column,
       position: {
         ...column.position,
         isFirst: getIsFirst(array, column),
         width: column.width || 'auto',
       },
+    
     })) as Header<T>[];
+    console.warn("flatten ", res);
+    return res
   });
+  
 
   const flattenedHeadersLengthAtom = useCreateAtom(
     (ctx) => ctx.spy(flattenedHeadersAtom).length,

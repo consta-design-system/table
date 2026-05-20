@@ -190,7 +190,6 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
     }
     if (!item.columns?.length) {
       pushByIndex(index, columns, otherColumns);
-      return;
     }
   });
   return [...pinnedLeftColumns, ...otherColumns, ...pinnedRightColumns];
@@ -200,7 +199,9 @@ export const transformColumns = <T>(
   columns: TableColumn<T>[],
   maxLevel: number,
 ): Array<Header<T>>[] => {
-  const stack = [{ columns, index: 0, parentIsFirst: true, parentIsLastPinnedLeft: false}];
+  const stack = [
+    { columns, index: 0, parentIsFirst: true, parentIsLastPinnedLeft: false },
+  ];
   const headersArr: Array<Header<T>>[] = [];
   let col = 0;
 
@@ -215,16 +216,19 @@ export const transformColumns = <T>(
       const gridIndex = prevItem
         ? prevItem.position.gridIndex + (prevItem.position.colSpan || 1)
         : 0;
-      const mainId = level === 0 ? col++ : item.colId ?? 0;
+
+      const mainId = level === 0 ? col++ : (item.colId ?? 0);
       const isFirst = gridIndex === 0 && node.parentIsFirst;
       let isLastPinnedLeft = false;
       if (level === 0) {
         const nextItem = node.columns[node.index + 1];
-        isLastPinnedLeft = item.pinned === 'left' && nextItem && nextItem.pinned !== 'left';
+        isLastPinnedLeft =
+          item.pinned === 'left' && nextItem && nextItem.pinned !== 'left';
       } else {
         const isLastChild = node.index === node.columns.length - 1;
         isLastPinnedLeft = node.parentIsLastPinnedLeft && isLastChild;
       }
+
       const handledItem: Header<T> & {
         position: Position;
         colId?: number;
@@ -412,11 +416,9 @@ export const useHeaderData = <T>(
         ...column.position,
         width: column.width || 'auto',
       },
-    
     })) as Header<T>[];
-    return res
+    return res;
   });
-  
 
   const flattenedHeadersLengthAtom = useCreateAtom(
     (ctx) => ctx.spy(flattenedHeadersAtom).length,

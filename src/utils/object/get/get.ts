@@ -219,8 +219,8 @@ function baseSet(object, path, value, customizer) {
         newValue = isObject(objValue)
           ? objValue
           : isIndex(path[index + 1])
-          ? []
-          : {};
+            ? []
+            : {};
       }
     }
     assignValue(nested, key, newValue);

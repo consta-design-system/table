@@ -78,8 +78,8 @@ export const Pagination = withCtx(
 
     const refs = useMutableRef([onStepChange, total, onChange] as const);
 
-    const [stepValue, setStepValue, stepValueAtom] = useAtom(step);
-    const [offsetValue, setOffsetValue, offsetValueAtom] = useAtom(
+    const [stepValue, , stepValueAtom] = useAtom(step);
+    const [offsetValue, , offsetValueAtom] = useAtom(
       guardOffset(offset, total),
     );
 

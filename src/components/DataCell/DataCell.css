@@ -6,7 +6,6 @@
       var(--table-data-cell-level, 0) +
       var(--table-data-cell-additional-space, calc(0 * 1px))
   );
-
   padding-right: var(--table-data-cell-padding-right);
   padding-left: var(--table-data-cell-padding-left);
 
@@ -66,6 +65,7 @@
 
   &-Text {
     white-space: pre-wrap;
+    /* stylelint-disable-next-line declaration-property-value-keyword-no-deprecated -- TODO: найти замену deprecated break-word и проверить */
     word-break: break-word;
 
     &_lineClamp {

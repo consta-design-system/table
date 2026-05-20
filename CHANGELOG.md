@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.1 (20/05/2026)
+- [fix(Table): table pinned (#41)](https://github.com/consta-design-system/table/commit/265e0c3fe7f26ec0023ec3e79eccb2716c5e9e5e) - [@ShavrinAleksei](https://github.com/ShavrinAleksei)
+- [chore(linters): update stylelint, enable linters in github actions (#39)](https://github.com/consta-design-system/table/commit/37c142edcc6373e143d0ae8208faaedcd0f8edc8) - [@baevm](https://github.com/baevm)
+
+--------------------
+
 ## v0.8.0 (30/01/2026)
 Самое важное:
 - Добавили `TextFieldCell` - компонет редактирования текста в ячейках.

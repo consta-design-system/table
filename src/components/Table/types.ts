@@ -62,6 +62,7 @@ export type Position = {
   level: number;
   gridIndex: number;
   isFirst?: boolean;
+  isLastPinnedLeft?: boolean;
   topHeaderGridIndex: number;
   smallTextSize?: boolean;
   height?: number;

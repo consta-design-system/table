@@ -51,7 +51,8 @@
   }
 
   &:has([data-cell-edit-mode='true']) {
-    box-shadow: 1px 1px 0 0 var(--table-cell-edit-mode-border-color) inset,
+    box-shadow:
+      1px 1px 0 0 var(--table-cell-edit-mode-border-color) inset,
       -1px -1px 0 0 var(--table-cell-edit-mode-border-color) inset;
   }
 

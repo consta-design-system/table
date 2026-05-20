@@ -223,7 +223,7 @@ export const transformColumns = <T>(
       const gridIndex = prevItem
         ? prevItem.position.gridIndex + (prevItem.position.colSpan || 1)
         : 0;
-      const mainId = level === 0 ? col++ : item.colId ?? 0;
+      const mainId = level === 0 ? col++ : (item.colId ?? 0);
 
       const handledItem: Header<T> & {
         position: Position;

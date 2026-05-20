@@ -178,7 +178,6 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
   const pinnedLeftColumns: TableColumnWidthKey<T>[] = [];
   const pinnedRightColumns: TableColumnWidthKey<T>[] = [];
   const otherColumns: TableColumnWidthKey<T>[] = [];
-  const notPinnedColumns: TableColumnWidthKey<T>[] = [];
 
   mapColumns<TableColumn<T>>(columns, (item, index) => {
     if (!item.columns?.length && item.pinned === 'left') {
@@ -189,25 +188,20 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
       pushByIndex(index, columns, pinnedRightColumns, 'right');
       return;
     }
-    if (item.columns?.length || item.isSeparator || item.accessor) {
+    if (!item.columns?.length) {
       pushByIndex(index, columns, otherColumns);
     }
   });
-
-  mapColumns<TableColumnWidthKey<T>>(otherColumns, (item) => {
-    if (item.columns?.length || item.isSeparator || item.accessor) {
-      pushByKey(item, notPinnedColumns);
-    }
-  });
-
-  return [...pinnedLeftColumns, ...notPinnedColumns, ...pinnedRightColumns];
+  return [...pinnedLeftColumns, ...otherColumns, ...pinnedRightColumns];
 };
 
 export const transformColumns = <T>(
   columns: TableColumn<T>[],
   maxLevel: number,
 ): Array<Header<T>>[] => {
-  const stack = [{ columns, index: 0 }];
+  const stack = [
+    { columns, index: 0, parentIsFirst: true, parentIsLastPinnedLeft: false },
+  ];
   const headersArr: Array<Header<T>>[] = [];
   let col = 0;
 
@@ -215,7 +209,6 @@ export const transformColumns = <T>(
     const level = stack.length - 1;
     const node = stack[level];
     const item = node.columns[node.index] as Header<T>;
-
     if (item) {
       if (!headersArr[level]) headersArr[level] = [];
       const topHeaderGridIndex = stack[0].index;
@@ -223,7 +216,18 @@ export const transformColumns = <T>(
       const gridIndex = prevItem
         ? prevItem.position.gridIndex + (prevItem.position.colSpan || 1)
         : 0;
+
       const mainId = level === 0 ? col++ : (item.colId ?? 0);
+      const isFirst = gridIndex === 0 && node.parentIsFirst;
+      let isLastPinnedLeft = false;
+      if (level === 0) {
+        const nextItem = node.columns[node.index + 1];
+        isLastPinnedLeft =
+          item.pinned === 'left' && nextItem && nextItem.pinned !== 'left';
+      } else {
+        const isLastChild = node.index === node.columns.length - 1;
+        isLastPinnedLeft = node.parentIsLastPinnedLeft && isLastChild;
+      }
 
       const handledItem: Header<T> & {
         position: Position;
@@ -235,6 +239,8 @@ export const transformColumns = <T>(
           topHeaderGridIndex,
           gridIndex,
           level,
+          isFirst,
+          isLastPinnedLeft,
         },
       };
 
@@ -259,6 +265,8 @@ export const transformColumns = <T>(
             parentId: mainId,
           })),
           index: 0,
+          parentIsFirst: isFirst,
+          parentIsLastPinnedLeft: isLastPinnedLeft,
         });
       }
     } else {
@@ -285,19 +293,6 @@ export const getMaxLevel = <T>(columns: TableColumn<T>[]) => {
   traverse(columns);
 
   return count;
-};
-
-const getIsFirst = <T>(columns: Header<T>[], column: Header<T>): boolean => {
-  // TODO: нужно проверить с renderCell
-  const { colId, parentId, position, accessor } = column;
-  if (position.level === 0) {
-    return colId === 0;
-  }
-  const parent = columns.find((el) => el.colId === parentId);
-  return !!(
-    parent?.columns?.[0]?.accessor === accessor &&
-    (parent ? getIsFirst(columns, parent) : false)
-  );
 };
 
 export type HeaderData<T> = {
@@ -415,14 +410,14 @@ export const useHeaderData = <T>(
 
   const flattenedHeadersAtom = useCreateAtom((ctx) => {
     const headers = ctx.spy(headersAtom);
-    return headers.flat().map((column, index, array) => ({
+    const res = headers.flat().map((column, index, array) => ({
       ...column,
       position: {
         ...column.position,
-        isFirst: getIsFirst(array, column),
         width: column.width || 'auto',
       },
     })) as Header<T>[];
+    return res;
   });
 
   const flattenedHeadersLengthAtom = useCreateAtom(
@@ -539,15 +534,13 @@ export const useHeaderData = <T>(
       );
 
       const lowIndex = lowHeaders.findIndex((col) => col.key === prevLowKey);
-
       return [
         !flattenedHeadersColumn.position.isFirst &&
           !(
             flattenedHeadersColumn.pinned !== 'left' &&
             lowHeaders[lowIndex - 1]?.pinned === 'left'
           ),
-        flattenedHeadersColumn.pinned === 'left' &&
-          flattenedHeaders[index + 1]?.pinned !== 'left',
+        flattenedHeadersColumn.position.isLastPinnedLeft,
         flattenedHeadersColumn.position.level !== 0,
       ];
     }) as [boolean, boolean, boolean][];

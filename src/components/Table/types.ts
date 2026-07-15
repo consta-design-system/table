@@ -75,6 +75,13 @@ export type TableRowMouseEvent<ROW> = (
 ) => void;
 export type TableDefaultRow = Record<string, unknown>;
 
+export type TableColumnResizeResult = {
+  accessor: string;
+  width: number;
+};
+
+export type TableResizeEvent = (columns: TableColumnResizeResult[]) => void;
+
 export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
   {
     columns: TableColumn<ROW>[];
@@ -91,6 +98,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     headerZIndex?: number;
     rowHoverEffect?: boolean;
     onScrollToBottom?: (length: number) => void;
+    onResize?: TableResizeEvent;
   },
   HTMLDivElement
 >;
@@ -130,6 +138,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
     stickyHeader?: boolean;
     headerZIndex: number;
     intersectingColumnsAtom: AtomMut<boolean[]>;
+    onResize?: TableResizeEvent;
   },
   HTMLDivElement
 > & {

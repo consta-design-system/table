@@ -1,5 +1,5 @@
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { AtomMut } from '@reatom/core';
+import { AtomLike } from '@reatom/core';
 import React from 'react';
 
 export type ValueOf<T> = T[keyof T];
@@ -102,12 +102,12 @@ export type TableComponent = <ROW = TableDefaultRow>(
 export type TableHeaderProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
     {
-      headersAtom: AtomMut<Header<ROW>[]>;
+      headersAtom: AtomLike<Header<ROW>[]>;
       stickyHeader?: boolean;
-      stickyLeftOffsetsAtom: AtomMut<number[]>;
-      stickyRightOffsetsAtom: AtomMut<number[]>;
-      headerCellsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
-      bordersAtom: AtomMut<[boolean, boolean, boolean][]>;
+      stickyLeftOffsetsAtom: AtomLike<number[]>;
+      stickyRightOffsetsAtom: AtomLike<number[]>;
+      headerCellsRefsAtom: AtomLike<React.RefObject<HTMLDivElement>[]>;
+      bordersAtom: AtomLike<[boolean, boolean, boolean][]>;
       tableRef: React.RefObject<HTMLDivElement>;
     },
     HTMLDivElement
@@ -119,21 +119,21 @@ export type TableHeaderComponent = <ROW = TableDefaultRow>(
 
 export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
-    topOffsetsAtom: AtomMut<number[]>;
-    spaceTopAtom: AtomMut<number>;
-    headerHeightAtom: AtomMut<number>;
-    resizersRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
+    topOffsetsAtom: AtomLike<number[]>;
+    spaceTopAtom: AtomLike<number>;
+    headerHeightAtom: AtomLike<number>;
+    resizersElementsAtom: AtomLike<AtomLike<HTMLDivElement | null>[]>;
     header: React.ReactNode;
     body: React.ReactNode;
     resizable?: 'inside' | 'outside';
-    stickyTopOffsetsAtom: AtomMut<number[]>;
+    stickyTopOffsetsAtom: AtomLike<number[]>;
     stickyHeader?: boolean;
     headerZIndex: number;
-    intersectingColumnsAtom: AtomMut<boolean[]>;
+    intersectingColumnsAtom: AtomLike<boolean[]>;
   },
   HTMLDivElement
 > & {
-  lowHeadersAtom: AtomMut<TableColumn<ROW>[]>;
+  lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
 };
 
 export type TableBodyComponent = <ROW>(
@@ -142,13 +142,13 @@ export type TableBodyComponent = <ROW>(
 
 type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
   {
-    headerHeightAtom: AtomMut<number>;
-    spaceTopAtom: AtomMut<number>;
-    sizesAtom: AtomMut<(string | number | undefined)[]>;
-    topOffsetsAtom: AtomMut<number[]>;
-    stickyTopOffsetsAtom: AtomMut<number[]>;
-    headerZIndexAtom: AtomMut<number>;
-    resizingAtom: AtomMut<boolean>;
+    headerHeightAtom: AtomLike<number>;
+    spaceTopAtom: AtomLike<number>;
+    sizesAtom: AtomLike<(string | number | undefined)[]>;
+    topOffsetsAtom: AtomLike<number[]>;
+    stickyTopOffsetsAtom: AtomLike<number[]>;
+    headerZIndexAtom: AtomLike<number>;
+    resizingAtom: AtomLike<boolean>;
   },
   HTMLDivElement
 >;
@@ -160,20 +160,20 @@ export type TableBodyRootComponent = (
 export type TableDataProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
     {
-      rowsRefsAtom: AtomMut<React.RefObject<HTMLDivElement>[]>;
-      sliceAtom: AtomMut<[number, number]>;
+      rowsRefsAtom: AtomLike<React.RefObject<HTMLDivElement>[]>;
+      sliceAtom: AtomLike<[number, number]>;
       onRowMouseEnter?: TableRowMouseEvent<ROW>;
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
       getRowKey?: (row: ROW) => string | number;
       tableRef: React.RefObject<HTMLDivElement>;
       rowHoverEffect?: boolean;
-      leftNoVisibleItemsAtom: AtomMut<number>;
-      rightNoVisibleItemsAtom: AtomMut<number>;
+      leftNoVisibleItemsAtom: AtomLike<number>;
+      rightNoVisibleItemsAtom: AtomLike<number>;
     },
     HTMLDivElement
   > & {
-    lowHeadersAtom: AtomMut<TableColumn<ROW>[]>;
+    lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
     rows: ROW[];
     zebraStriped?: boolean;
   };

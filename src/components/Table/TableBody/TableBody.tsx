@@ -218,7 +218,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     stickyHeader,
     headerZIndex,
     intersectingColumnsAtom,
-    onResize,
+    onAfterResize,
 
     ...otherProps
   } = props;
@@ -263,7 +263,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
       resizable,
       container: bodyRef,
       blocks,
-      onResize,
+      onAfterResize,
     });
 
   return (

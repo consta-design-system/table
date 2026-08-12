@@ -52,8 +52,8 @@ export const useResizableColumns = (props: UseResizableColumnsProps) => {
     const activeIndex = ctx.get(activeIndexAtom);
 
     if (typeof activeIndex === 'number') {
-      const { blocks, onResize } = ctx.get(propsAtom);
-      onResize?.(getResizeResult(blocks, ctx.get(sizesAtom)));
+      const { blocks, onAfterResize } = ctx.get(propsAtom);
+      onAfterResize?.(getResizeResult(blocks, ctx.get(sizesAtom)));
     }
 
     activeIndexAtom(ctx, null);

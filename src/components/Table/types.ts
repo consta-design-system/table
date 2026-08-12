@@ -98,7 +98,7 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     headerZIndex?: number;
     rowHoverEffect?: boolean;
     onScrollToBottom?: (length: number) => void;
-    onResize?: TableResizeEvent;
+    onAfterResize?: TableResizeEvent;
   },
   HTMLDivElement
 >;
@@ -138,7 +138,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
     stickyHeader?: boolean;
     headerZIndex: number;
     intersectingColumnsAtom: AtomMut<boolean[]>;
-    onResize?: TableResizeEvent;
+    onAfterResize?: TableResizeEvent;
   },
   HTMLDivElement
 > & {

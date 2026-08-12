@@ -59,13 +59,13 @@ const applyWidths = (
     return width ? { ...column, width } : column;
   });
 
-export const TableExampleOnResize = () => {
+export const TableExampleOnAfterResize = () => {
   const [widths, setWidths] = useState<Record<string, number>>({});
 
   const rows = useMemo(() => data.slice(0, 60), []);
   const columns = useMemo(() => applyWidths(baseColumns, widths), [widths]);
 
-  const handleResize = useCallback((result: TableColumnResizeResult[]) => {
+  const handleAfterResize = useCallback((result: TableColumnResizeResult[]) => {
     setWidths((state) => ({
       ...state,
       ...Object.fromEntries(
@@ -89,7 +89,7 @@ export const TableExampleOnResize = () => {
         virtualScroll
         resizable="inside"
         zebraStriped
-        onResize={handleResize}
+        onAfterResize={handleAfterResize}
       />
     </Example>
   );

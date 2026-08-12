@@ -14,7 +14,7 @@ export type UseResizableColumnsProps = {
   blocks: Array<UseResizableColumnsBlock>;
   container: React.RefObject<HTMLElement>;
   resizable?: 'inside' | 'outside';
-  onResize?: TableResizeEvent;
+  onAfterResize?: TableResizeEvent;
 };
 
 export type UseResizableColumnsSize = number | string | undefined;

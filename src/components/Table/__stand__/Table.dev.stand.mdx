@@ -28,7 +28,7 @@ import {
   TableExampleResizableOutside,
 } from './examples/TableExampleResizable/TableExampleResizable';
 import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
-import { TableExampleOnResize } from './examples/TableExampleOnResize/TableExampleOnResize';
+import { TableExampleOnAfterResize } from './examples/TableExampleOnAfterResize/TableExampleOnAfterResize';
 import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
 
 <MdxMenu>
@@ -50,7 +50,7 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Закрепление шапки](#закрепление-шапки)
   - [Таблица в полоску](#таблица-в-полоску)
   - [Управление шириной столбцов](#управление-шириной-столбцов)
-  - [onResize](#onresize)
+  - [onAfterResize](#onafterresize)
   - [headerZIndex](#headerzindex)
   - [Вложенные строки](#вложенные-строки)
   - [Рендер строки](#рендер-строки)
@@ -90,7 +90,7 @@ import { Table, TableColumn } from '@consta/table/Table';
 | [`virtualScroll?`](#виртуальный-скролл)      | `boolean`                     | -                 | Включение виртуальной прокрутки                              |
 | [`stickyHeader?`](#закрепление-шапки)        | `boolean`                     | -                 | Зафиксировать шапку сверху                                   |
 | [`resizable?`](#управление-шириной-столбцов) | `'inside'` &#124; `'outside'` | -                 | Включение возможности изменять ширину колонок                |
-| [`onResize?`](#onresize)                     | `TableResizeEvent`            | -                 | Событие завершения изменения ширины колонки (`pointerup`)    |
+| [`onAfterResize?`](#onafterresize)           | `TableResizeEvent`            | -                 | Событие завершения изменения ширины колонки (`pointerup`)    |
 | [`zebraStriped?`](#таблица-в-полоску)        | `boolean`                     | -                 | Окрашивание строк через одну                                 |
 | [`headerZIndex?`](#headerzindex)             | `number`                      | `1`               | `zIndex` шапки                                               |
 | [`rowHoverEffect?`](#выделение-строк)        | `boolean`                     | -                 | Включает эффект наведения на строку                          |
@@ -1128,9 +1128,9 @@ export const TableExampleResizableOutside = () => (
 
 </MdxTabs>
 
-### onResize
+### onAfterResize
 
-Свойство `onResize` позволяет узнать финальную ширину колонок после того, как пользователь закончил перетаскивание ручки изменения размера (`pointerup`/`touchend`). Полезно, чтобы сохранить пользовательскую раскладку колонок (например, в `localStorage` или на бэкенде) и восстановить её при следующем открытии таблицы.
+Свойство `onAfterResize` позволяет узнать финальную ширину колонок после того, как пользователь закончил перетаскивание ручки изменения размера (`pointerup`/`touchend`). Полезно, чтобы сохранить пользовательскую раскладку колонок (например, в `localStorage` или на бэкенде) и восстановить её при следующем открытии таблицы.
 
 ```ts
 export type TableColumnResizeResult = {
@@ -1141,17 +1141,17 @@ export type TableColumnResizeResult = {
 export type TableResizeEvent = (columns: TableColumnResizeResult[]) => void;
 ```
 
-В обработчик передаётся массив со всеми колонками, у которых есть `accessor` и измеримая ширина, — не только той, которую двигал пользователь. Это важно в режиме `resizable="inside"`: при изменении одной колонки таблица может пропорционально изменить ширину соседних, чтобы вписаться в контейнер, поэтому в `onResize` попадает актуальное состояние всех колонок целиком.
+В обработчик передаётся массив со всеми колонками, у которых есть `accessor` и измеримая ширина, — не только той, которую двигал пользователь. Это важно в режиме `resizable="inside"`: при изменении одной колонки таблица может пропорционально изменить ширину соседних, чтобы вписаться в контейнер, поэтому в `onAfterResize` попадает актуальное состояние всех колонок целиком.
 
 <MdxInformer status="normal">
 
-`onResize` не вызывается во время самого перетаскивания (на каждый `pointermove`), а только один раз — по его завершении. Это осознанное решение: применять новую ширину колонки к `columns` "на лету" (при каждом `pointermove`) не нужно и не имеет смысла, так как обновлённое значение будет применено таблицей автоматически без явной синхронизации с внешним состоянием.
+`onAfterResize` не вызывается во время самого перетаскивания (на каждый `pointermove`), а только один раз — по его завершении. Это осознанное решение: применять новую ширину колонки к `columns` "на лету" (при каждом `pointermove`) не нужно и не имеет смысла, так как обновлённое значение будет применено таблицей автоматически без явной синхронизации с внешним состоянием.
 
 </MdxInformer>
 
 <MdxTabs>
 
-<TableExampleOnResize />
+<TableExampleOnAfterResize />
 
 ```tsx
 import React, { useCallback, useMemo, useState } from 'react';
@@ -1184,13 +1184,13 @@ const applyWidths = (
     return width ? { ...column, width } : column;
   });
 
-export const TableExampleOnResize = () => {
+export const TableExampleOnAfterResize = () => {
   // Сохранённая ширина колонок, например, полученная из localStorage/бэкенда
   const [widths, setWidths] = useState<Record<string, number>>({});
 
   const columns = useMemo(() => applyWidths(baseColumns, widths), [widths]);
 
-  const handleResize = useCallback((result: TableColumnResizeResult[]) => {
+  const handleAfterResize = useCallback((result: TableColumnResizeResult[]) => {
     setWidths((state) => ({
       ...state,
       ...Object.fromEntries(
@@ -1208,7 +1208,7 @@ export const TableExampleOnResize = () => {
       columns={columns}
       stickyHeader
       resizable="inside"
-      onResize={handleResize}
+      onAfterResize={handleAfterResize}
     />
   );
 };

@@ -262,7 +262,10 @@ export const TableBody: TableBodyComponent = factoryComponent(
       const lowHeaders = lowHeadersAtom();
       const resizersElements = resizersElementsAtom();
       return lowHeaders.map(
-        ({ isSeparator, width, minWidth, maxWidth, title }, index) => {
+        (
+          { isSeparator, width, minWidth, maxWidth, title, accessor },
+          index,
+        ) => {
           const currentSeparatorWidth = title
             ? separatorLargeWidth
             : separatorWidth;
@@ -279,6 +282,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
                 minWidth: minWidth || columnDefaultMinWidth,
                 maxWidth,
                 width,
+                accessor,
               };
         },
       );
@@ -289,6 +293,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
         resizable,
         container: bodyRef,
         blocks,
+        onAfterResize,
       });
 
     return ({

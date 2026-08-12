@@ -30,6 +30,7 @@ import {
   TableBodyComponent,
   TableBodyRootComponent,
   TableBodyRootProps,
+  TableResizeEvent,
 } from '../types';
 import {
   getGridTemplate,
@@ -290,10 +291,12 @@ export const TableBody: TableBodyComponent = factoryComponent(
 
     const { handlersAtom, sizesAtom, activeIndexAtom, resizingAtom } =
       useResizableColumns({
-        resizable,
-        container: bodyRef,
-        blocks,
-        onAfterResize,
+        resizable: resizableAtom,
+        container: bodyElementAtom,
+        blocks: blocksAtom,
+        onAfterResize: action<TableResizeEvent>((...args) => {
+          propsAtom().onAfterResize?.(...args);
+        }),
       });
 
     return ({

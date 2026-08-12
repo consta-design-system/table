@@ -7,6 +7,7 @@ import {
   addResult,
   getCalculatedSizes,
   getRefsSizes,
+  getResizeResult,
   sizesEq,
   useResizeContainer,
 } from './helpers';
@@ -48,6 +49,13 @@ export const useResizableColumns = (props: UseResizableColumnsProps) => {
   });
 
   const handleRelease = useAction((ctx) => {
+    const activeIndex = ctx.get(activeIndexAtom);
+
+    if (typeof activeIndex === 'number') {
+      const { blocks, onAfterResize } = ctx.get(propsAtom);
+      onAfterResize?.(getResizeResult(blocks, ctx.get(sizesAtom)));
+    }
+
     activeIndexAtom(ctx, null);
     controlListeners('remove');
   });

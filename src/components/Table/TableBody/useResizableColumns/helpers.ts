@@ -5,6 +5,7 @@ import { AtomMut } from '@reatom/core';
 import { useAction, useAtom } from '@reatom/npm-react';
 import React, { useMemo } from 'react';
 
+import { TableColumnResizeResult } from '../../types';
 import { UseResizableColumnsBlock, UseResizableColumnsSize } from './types';
 
 const minMax = (min?: number, max?: number, value?: number) => {
@@ -96,6 +97,20 @@ export const isSizesCalculate = (
   );
 
 export const getSizesSum = (sizes: number[]) => sizes.reduce((a, b) => a + b);
+
+export const getResizeResult = (
+  blocks: UseResizableColumnsBlock[],
+  sizes: UseResizableColumnsSize[],
+): TableColumnResizeResult[] =>
+  blocks.reduce<TableColumnResizeResult[]>((result, block, index) => {
+    const width = sizes[index];
+
+    if (block.accessor && typeof width === 'number') {
+      result.push({ accessor: block.accessor, width });
+    }
+
+    return result;
+  }, []);
 
 const getValidValues = (
   value: number,

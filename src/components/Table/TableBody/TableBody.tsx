@@ -218,6 +218,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     stickyHeader,
     headerZIndex,
     intersectingColumnsAtom,
+    onAfterResize,
 
     ...otherProps
   } = props;
@@ -234,7 +235,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
     const lowHeaders = ctx.spy(lowHeadersAtom);
     const resizersRefs = ctx.spy(resizersRefsAtom);
     return lowHeaders.map(
-      ({ isSeparator, width, minWidth, maxWidth, title }, index) => {
+      ({ isSeparator, width, minWidth, maxWidth, title, accessor }, index) => {
         const currentSeparatorWidth = title
           ? separatorLargeWidth
           : separatorWidth;
@@ -251,6 +252,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
               minWidth: minWidth || columnDefaultMinWidth,
               maxWidth,
               width,
+              accessor,
             };
       },
     );
@@ -261,6 +263,7 @@ export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
       resizable,
       container: bodyRef,
       blocks,
+      onAfterResize,
     });
 
   return (

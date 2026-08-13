@@ -5,15 +5,11 @@ import {
   factoryComponent,
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
-import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
-import { usePropAtom } from '@consta/uikit/__internal__/src/utils/state/usePickAtom';
-import { useSendToAtom } from '@consta/uikit/__internal__/src/utils/state/useSendToAtom';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
-import { useForkRef } from '@consta/uikit/useForkRef';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed } from '@reatom/core';
-import { reatomFactoryComponent, useAction, useAtom } from '@reatom/react';
-import React, { forwardRef, memo, useRef } from 'react';
+import { action, atom, AtomLike, computed, peek } from '@reatom/core';
+import { reatomFactoryComponent } from '@reatom/react';
+import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 
@@ -29,7 +25,6 @@ import { TableVirtualScrollSpaceTop } from '../TableVirtualScrollSpaceTop';
 import {
   TableBodyComponent,
   TableBodyRootComponent,
-  TableBodyRootProps,
   TableResizeEvent,
 } from '../types';
 import {
@@ -39,7 +34,7 @@ import {
   getStyleRightOffsetsForStickyColumns,
   printSize,
 } from './helpers';
-import { useResizableColumns } from './useResizableColumns';
+import { resizableColumns } from './model';
 
 export const cnTableBody = cn('TableBody');
 
@@ -232,23 +227,8 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
 );
 
 export const TableBody: TableBodyComponent = factoryComponent(
-  (props, propsAtom) => {
-    const {
-      children,
-      spaceTopAtom,
-      topOffsetsAtom,
-      headerHeightAtom,
-      lowHeadersAtom,
-      resizersElementsAtom,
-      header,
-      body,
-      resizable,
-      stickyTopOffsetsAtom,
-      stickyHeader,
-      headerZIndex,
-      intersectingColumnsAtom,
-      ...otherProps
-    } = props;
+  (initProps, propsAtom) => {
+    const { lowHeadersAtom, resizersElementsAtom } = initProps;
 
     const headerZIndexAtom = computed(() => propsAtom().headerZIndex);
     const resizableAtom = computed(() => propsAtom().resizable);
@@ -273,13 +253,13 @@ export const TableBody: TableBodyComponent = factoryComponent(
 
           return isSeparator
             ? {
-                ref: resizersElements[index].set,
+                element: peek(resizersElements[index]),
                 maxWidth: currentSeparatorWidth,
                 minWidth: currentSeparatorWidth,
                 width: currentSeparatorWidth,
               }
             : {
-                ref: resizersElements[index].set,
+                element: peek(resizersElements[index]),
                 minWidth: minWidth || columnDefaultMinWidth,
                 maxWidth,
                 width,
@@ -290,14 +270,14 @@ export const TableBody: TableBodyComponent = factoryComponent(
     });
 
     const { handlersAtom, sizesAtom, activeIndexAtom, resizingAtom } =
-      useResizableColumns({
-        resizable: resizableAtom,
-        container: bodyElementAtom,
-        blocks: blocksAtom,
-        onAfterResize: action<TableResizeEvent>((...args) => {
+      resizableColumns(
+        blocksAtom,
+        bodyElementAtom,
+        resizableAtom,
+        action<TableResizeEvent>((...args) => {
           propsAtom().onAfterResize?.(...args);
         }),
-      });
+      );
 
     return ({
       children,
@@ -317,7 +297,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
     }) => (
       <TableBodyRoot
         {...otherProps}
-        ref={useForkRef([ref, bodyRef, setBodyEl])}
+        ref={ref}
         headerHeightAtom={headerHeightAtom}
         spaceTopAtom={spaceTopAtom}
         sizesAtom={sizesAtom}
@@ -335,9 +315,9 @@ export const TableBody: TableBodyComponent = factoryComponent(
         />
         <TableSeparatorTitles lowHeadersAtom={lowHeadersAtom} />
         <TableResizers
-          bodyElAtom={bodyElAtom}
           lowHeadersAtom={lowHeadersAtom}
-          resizersRefsAtom={resizersRefsAtom}
+          bodyElementAtom={bodyElementAtom}
+          resizersElementsAtom={resizersElementsAtom}
           handlersAtom={handlersAtom}
           resizableAtom={resizableAtom}
           activeIndexAtom={activeIndexAtom}

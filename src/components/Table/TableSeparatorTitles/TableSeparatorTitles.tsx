@@ -1,8 +1,8 @@
 import './TableSeparatorTitles.css';
 
 import { Text } from '@consta/uikit/Text';
-import { AtomMut } from '@reatom/core';
-import { useAtom } from '@reatom/npm-react';
+import { AtomLike } from '@reatom/core';
+import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -10,7 +10,7 @@ import { cn } from '##/utils/bem';
 import { TableColumn } from '../types';
 
 type Props<T> = {
-  lowHeadersAtom: AtomMut<TableColumn<T>[]>;
+  lowHeadersAtom: AtomLike<TableColumn<T>[]>;
 };
 
 type TableSeparatorTitlesComponent = <T>(
@@ -20,8 +20,9 @@ type TableSeparatorTitlesComponent = <T>(
 const cnTableSeparatorTitles = cn('TableSeparatorTitles');
 
 export const TableSeparatorTitles: TableSeparatorTitlesComponent = memo(
-  ({ lowHeadersAtom }) => {
-    const [lowHeaders] = useAtom(lowHeadersAtom);
+  reatomFactoryComponent(() => ({ lowHeadersAtom }) => {
+    const lowHeaders = lowHeadersAtom();
+
     if (
       lowHeaders.findIndex((column) => column.title && column.isSeparator) ===
       -1
@@ -46,6 +47,6 @@ export const TableSeparatorTitles: TableSeparatorTitlesComponent = memo(
         ))}
       </div>
     );
-  },
+  }),
   () => true,
 );

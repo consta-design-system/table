@@ -1,5 +1,5 @@
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { AtomLike } from '@reatom/core';
+import { Atom, AtomLike, Computed } from '@reatom/core';
 import React from 'react';
 
 export type ValueOf<T> = T[keyof T];
@@ -130,7 +130,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
     topOffsetsAtom: AtomLike<number[]>;
     spaceTopAtom: AtomLike<number>;
     headerHeightAtom: AtomLike<number>;
-    resizersElementsAtom: AtomLike<AtomLike<HTMLDivElement | null>[]>;
+    resizersElementsAtom: AtomLike<Atom<HTMLDivElement | null>[]>;
     header: React.ReactNode;
     body: React.ReactNode;
     resizable?: 'inside' | 'outside';
@@ -142,7 +142,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
   },
   HTMLDivElement
 > & {
-  lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
+  lowHeadersAtom: Computed<TableColumn<ROW>[]>;
 };
 
 export type TableBodyComponent = <ROW>(

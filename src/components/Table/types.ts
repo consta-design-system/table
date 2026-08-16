@@ -114,9 +114,9 @@ export type TableHeaderProps<ROW = TableDefaultRow> =
       stickyHeader?: boolean;
       stickyLeftOffsetsAtom: AtomLike<number[]>;
       stickyRightOffsetsAtom: AtomLike<number[]>;
-      headerCellsRefsAtom: AtomLike<React.RefObject<HTMLDivElement>[]>;
+      headerCellsElementsAtom: AtomLike<Atom<HTMLDivElement | null>[]>;
       bordersAtom: AtomLike<[boolean, boolean, boolean][]>;
-      tableRef: React.RefObject<HTMLDivElement>;
+      tableElementAtom: AtomLike<HTMLDivElement | null>;
     },
     HTMLDivElement
   >;
@@ -169,13 +169,13 @@ export type TableBodyRootComponent = (
 export type TableDataProps<ROW = TableDefaultRow> =
   PropsWithHTMLAttributesAndRef<
     {
-      rowsRefsAtom: AtomLike<React.RefObject<HTMLDivElement>[]>;
+      rowsElementsAtom: AtomLike<Atom<HTMLDivElement | null>[]>;
       sliceAtom: AtomLike<[number, number]>;
       onRowMouseEnter?: TableRowMouseEvent<ROW>;
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
       getRowKey?: (row: ROW) => string | number;
-      tableRef: React.RefObject<HTMLDivElement>;
+      tableElementAtom: AtomLike<HTMLDivElement | null>;
       rowHoverEffect?: boolean;
       leftNoVisibleItemsAtom: AtomLike<number>;
       rightNoVisibleItemsAtom: AtomLike<number>;

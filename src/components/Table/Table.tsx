@@ -94,26 +94,26 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
         header={
           <MemoTableHeader
             headersAtom={flattenedHeadersAtom}
-            headerCellsRefsAtom={headerCellsRefsAtom}
+            headerCellsElementsAtom={headerCellsElementsAtom}
             stickyHeader={stickyHeader}
             stickyLeftOffsetsAtom={stickyLeftOffsetsAtom}
             stickyRightOffsetsAtom={stickyRightOffsetsAtom}
             bordersAtom={bordersFlattenedHeadersAtom}
-            tableRef={scrollElementRef}
+            tableElementAtom={scrollElementAtom}
           />
         }
         body={
           <MemoTableData
             lowHeadersAtom={lowHeadersAtom}
             rows={rows}
-            rowsRefsAtom={listRefsAtom}
+            rowsElementsAtom={listElementsAtom}
             sliceAtom={sliceAtom}
             zebraStriped={zebraStriped}
             onRowMouseEnter={onRowMouseEnter}
             onRowMouseLeave={onRowMouseLeave}
             onRowClick={onRowClick}
             getRowKey={getRowKey}
-            tableRef={scrollElementRef}
+            tableElementAtom={scrollElementAtom}
             rowHoverEffect={rowHoverEffect}
             leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
             rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}

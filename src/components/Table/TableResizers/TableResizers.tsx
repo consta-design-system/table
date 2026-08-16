@@ -5,9 +5,8 @@ import {
   rangeAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { useRefs } from '@consta/uikit/useRefs';
 import { Atom, atom, AtomLike, Computed, computed } from '@reatom/core';
-import React, { forwardRef, memo } from 'react';
+import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 
@@ -25,7 +24,7 @@ type TableResizersProps<T> = {
   >;
   resizableAtom: AtomLike<'inside' | 'outside' | undefined>;
   activeIndexAtom: AtomLike<number | null>;
-  intersectingColumnsAtom: AtomLike<boolean[]>;
+  intersectingColumnsAtom: Atom<boolean[]>;
   bodyElementAtom: AtomLike<HTMLDivElement | null>;
 };
 

@@ -1,98 +1,89 @@
 import './TableData.css';
 
-import { useAtom } from '@reatom/npm-react';
-import React, { forwardRef } from 'react';
+import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
+import React from 'react';
 
 import { cn } from '##/utils/bem';
 import { isNotNil } from '##/utils/type-guards';
 
 import { TableRow } from '../TableRow';
-import {
-  TableDataComponent,
-  TableDataProps,
-  TableDefaultRow,
-  TableRowMouseEvent,
-} from '../types';
+import { TableDataComponent, TableRowMouseEvent } from '../types';
 
 export const cnTableData = cn('TableData');
 
-const getRowMouseEvent = (
-  row: TableDefaultRow,
-  fn?: TableRowMouseEvent<TableDefaultRow>,
-) =>
+const getRowMouseEvent = <ROW,>(row: ROW, fn?: TableRowMouseEvent<ROW>) =>
   fn
     ? (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => fn(row, { e })
     : undefined;
 
-const getKey = (
-  row: TableDefaultRow,
-  getRowKey: ((row: TableDefaultRow) => string | number) | undefined,
+const getKey = <ROW,>(
+  row: ROW,
+  getRowKey: ((row: ROW) => string | number) | undefined,
   rowIndex: number,
 ) => {
   const key = getRowKey?.(row);
   if (isNotNil(key)) {
     return key;
   }
-  if (typeof row.id === 'string' || typeof row.id === 'number') {
+  if (
+    typeof row === 'object' &&
+    isNotNil(row) &&
+    'id' in row &&
+    (typeof row.id === 'string' || typeof row.id === 'number')
+  ) {
     return row.id;
   }
   return rowIndex;
 };
 
-const TableDataRender = (
-  props: TableDataProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
-  const {
+export const TableData: TableDataComponent = factoryComponent(() => {
+  return ({
     className,
     rows,
     lowHeadersAtom,
-    rowsRefsAtom,
+    rowsElementsAtom,
     sliceAtom,
     zebraStriped = false,
     onRowMouseEnter,
     onRowMouseLeave,
     onRowClick,
     getRowKey,
-    tableRef,
+    tableElementAtom,
     rowHoverEffect,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
     ...otherProps
-  } = props;
+  }) => {
+    const rowsElements = rowsElementsAtom();
+    const slice = sliceAtom();
 
-  const [rowsRefs] = useAtom(rowsRefsAtom);
-  const [slice] = useAtom(sliceAtom);
+    return (
+      <div
+        {...otherProps}
+        className={cnTableData({ rowHoverEffect }, [className])}
+      >
+        {rows.slice(...slice).map((row, index) => {
+          const rowIndex = index + slice[0];
+          const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
 
-  return (
-    <div
-      {...otherProps}
-      ref={ref}
-      className={cnTableData({ rowHoverEffect }, [className])}
-    >
-      {rows.slice(...slice).map((row, index) => {
-        const rowIndex = index + slice[0];
-        const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
-
-        return (
-          <TableRow
-            key={getKey(row, getRowKey, rowIndex)}
-            row={row}
-            index={rowIndex}
-            lowHeadersAtom={lowHeadersAtom}
-            zebraStriped={rowZebraStriped}
-            onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
-            onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
-            onClick={getRowMouseEvent(row, onRowClick)}
-            tableRef={tableRef}
-            ref={rowsRefs[rowIndex]}
-            leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
-            rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
-export const TableData = forwardRef(TableDataRender) as TableDataComponent;
+          return (
+            <TableRow
+              key={getKey(row, getRowKey, rowIndex)}
+              row={row}
+              index={rowIndex}
+              lowHeadersAtom={lowHeadersAtom}
+              zebraStriped={rowZebraStriped}
+              onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
+              onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
+              onClick={getRowMouseEvent(row, onRowClick)}
+              tableElementAtom={tableElementAtom}
+              ref={rowsElements[rowIndex].set}
+              leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
+              rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+});

@@ -137,7 +137,7 @@ export type TableBodyProps<ROW> = PropsWithHTMLAttributesAndRef<
     stickyTopOffsetsAtom: AtomLike<number[]>;
     stickyHeader?: boolean;
     headerZIndex: number;
-    intersectingColumnsAtom: AtomLike<boolean[]>;
+    intersectingColumnsAtom: Atom<boolean[]>;
     onAfterResize?: TableResizeEvent;
   },
   HTMLDivElement

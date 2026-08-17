@@ -1,4 +1,3 @@
-import { objectWithDefault } from '@consta/uikit/__internal__/src/utils/object/objectWithDefault';
 import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
@@ -23,25 +22,7 @@ const MemoTableHeader = memo(TableHeader) as TableHeaderComponent;
 const MemoTableData = memo(TableData) as TableDataComponent;
 
 export const Table = factoryComponent<HTMLDivElement, TableProps>(
-  (props, propsAtom) => {
-    const propsWithDefault = objectWithDefault({ headerZIndex: 1 }, props);
-    const {
-      columns,
-      rows,
-      stickyHeader,
-      virtualScroll,
-      resizable,
-      zebraStriped,
-      headerZIndex,
-      onRowMouseEnter,
-      onRowMouseLeave,
-      onRowClick,
-      getRowKey,
-      rowHoverEffect,
-      onScrollToBottom,
-      ...otherProps
-    } = propsWithDefault;
-
+  (_, propsAtom) => {
     const {
       resizerTopOffsetsAtom,
       headerHeightAtom,
@@ -70,14 +51,31 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
             ? virtualScroll[1]
             : virtualScroll);
         }),
-        onScrollToBottom,
+        onScrollToBottom: action((index: number) =>
+          propsAtom().onScrollToBottom?.(index),
+        ),
       });
 
     const ref = action((el: HTMLDivElement | null) =>
       setRefs([scrollElementAtom.set, propsAtom().ref], el),
     );
 
-    return () => (
+    return ({
+      columns,
+      rows,
+      stickyHeader,
+      virtualScroll,
+      resizable,
+      zebraStriped,
+      headerZIndex = 1,
+      rowHoverEffect,
+      onRowMouseEnter,
+      onRowMouseLeave,
+      onRowClick,
+      getRowKey,
+      onScrollToBottom,
+      ...otherProps
+    }) => (
       <TableBody
         {...otherProps}
         topOffsetsAtom={resizerTopOffsetsAtom}

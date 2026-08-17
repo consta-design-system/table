@@ -7,7 +7,7 @@ import {
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed, peek } from '@reatom/core';
+import { action, atom, AtomLike, computed, effect, peek } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
@@ -17,7 +17,7 @@ import {
   columnDefaultMinWidth,
   separatorLargeWidth,
   separatorWidth,
-} from '../helpers';
+} from '../model';
 import { cnTableCell } from '../TableCell';
 import { TableResizers } from '../TableResizers';
 import { TableSeparatorTitles } from '../TableSeparatorTitles';
@@ -68,8 +68,6 @@ const Styles = memo(
 const TableBodyRoot: TableBodyRootComponent = factoryComponent(
   (
     {
-      children,
-      className,
       headerHeightAtom,
       spaceTopAtom,
       sizesAtom,
@@ -77,7 +75,6 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
-      ...otherProps
     },
     propsAtom,
   ) => {
@@ -251,15 +248,17 @@ export const TableBody: TableBodyComponent = factoryComponent(
             ? separatorLargeWidth
             : separatorWidth;
 
+          const element = resizersElements[index]();
+
           return isSeparator
             ? {
-                element: peek(resizersElements[index]),
+                element,
                 maxWidth: currentSeparatorWidth,
                 minWidth: currentSeparatorWidth,
                 width: currentSeparatorWidth,
               }
             : {
-                element: peek(resizersElements[index]),
+                element,
                 minWidth: minWidth || columnDefaultMinWidth,
                 maxWidth,
                 width,

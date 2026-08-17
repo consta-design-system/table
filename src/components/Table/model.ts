@@ -3,7 +3,7 @@ import {
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { atom, AtomLike, computed, peek } from '@reatom/core';
+import { atom, AtomLike, computed, effect, peek } from '@reatom/core';
 
 import { get, set } from '##/utils/object/get';
 
@@ -398,7 +398,7 @@ export const headerDataModel = <T>(
   );
 
   const headerCellsHeightsAtom = resizeObservedAtom(
-    computed(() => headerCellsElementsAtom().map((elAtom) => peek(elAtom))),
+    computed(() => headerCellsElementsAtom().map((elAtom) => elAtom())),
     (el) => getElementSize(el).height,
   );
 
@@ -444,6 +444,10 @@ export const headerDataModel = <T>(
   const stickyTopOffsetsAtom = computed(() =>
     getStickyTopOffsets(flattenedHeadersAtom(), headerRowsHeightsAtom()),
   );
+
+  effect(() => {
+    console.log(stickyTopOffsetsAtom());
+  });
 
   const resizerTopOffsetsAtom = computed(() =>
     getResizerTopOffsets(

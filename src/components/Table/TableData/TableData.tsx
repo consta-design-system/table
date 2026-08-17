@@ -52,6 +52,7 @@ export const TableData: TableDataComponent = factoryComponent(() => {
     rowHoverEffect,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
+
     ...otherProps
   }) => {
     const rowsElements = rowsElementsAtom();

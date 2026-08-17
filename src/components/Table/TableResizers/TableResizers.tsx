@@ -5,7 +5,7 @@ import {
   rangeAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { Atom, atom, AtomLike, Computed, computed } from '@reatom/core';
+import { Atom, AtomLike, Computed, computed } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -57,7 +57,7 @@ export type TableResizerComponent = <T>(
 
 const TableResizer: TableResizerComponent = factoryComponent(
   ({ activeIndexAtom }, propsAtom) => {
-    const activeAtom = atom(() => propsAtom().index === activeIndexAtom());
+    const activeAtom = computed(() => propsAtom().index === activeIndexAtom());
 
     return ({
       resizableAtom,

@@ -2,7 +2,7 @@ import './TableRowCell.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { AtomLike, computed } from '@reatom/core';
+import { AtomLike, computed, peek } from '@reatom/core';
 import React from 'react';
 
 import { DataCell } from '##/components/DataCell';
@@ -82,8 +82,6 @@ export const TableRowCell: TableRowCellComponent = factoryComponent(
       ref,
       ...otherProps
     }) => {
-      const tableRef = tableRefAtom();
-
       return (
         <div
           {...otherProps}
@@ -122,7 +120,7 @@ export const TableRowCell: TableRowCellComponent = factoryComponent(
               row={row}
               rowIndex={rowIndex}
               columnIndex={index}
-              tableRef={tableRef}
+              tableRef={peek(tableRefAtom)}
             />
           ) : (
             getCellDataByAccessor(row, accessor, separator)

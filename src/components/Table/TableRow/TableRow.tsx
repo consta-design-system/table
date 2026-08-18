@@ -2,13 +2,13 @@ import './TableRow.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { AtomLike } from '@reatom/core';
+import { action, AtomLike } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 
 import { TableRowCell, TableRowCellComponent } from '../TableRowCell';
-import { TableColumn } from '../types';
+import { TableColumn, TableRowMouseEvent } from '../types';
 
 const TableRowCellMemo = memo(TableRowCell) as TableRowCellComponent;
 
@@ -21,6 +21,9 @@ type TableRowProps<ROW> = PropsWithHTMLAttributesAndRef<
     tableElementAtom: AtomLike<HTMLDivElement | null>;
     leftNoVisibleItemsAtom: AtomLike<number>;
     rightNoVisibleItemsAtom: AtomLike<number>;
+    onRowMouseEnter?: TableRowMouseEvent<ROW>;
+    onRowMouseLeave?: TableRowMouseEvent<ROW>;
+    onRowClick?: TableRowMouseEvent<ROW>;
   },
   HTMLDivElement
 >;
@@ -49,104 +52,117 @@ const getMiss = (
   return 0;
 };
 
-export const TableRow: TableRowComponent = factoryComponent(
-  () =>
-    ({
-      className,
-      index: rowIndex,
-      lowHeadersAtom,
-      zebraStriped,
-      row,
-      tableElementAtom,
-      leftNoVisibleItemsAtom,
-      rightNoVisibleItemsAtom,
-      ref,
-      ...otherProps
-    }) => {
-      const lowHeaders = lowHeadersAtom();
-      const leftNoVisibleItems = leftNoVisibleItemsAtom();
-      const rightNoVisibleItems = rightNoVisibleItemsAtom();
+export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
+  const onMouseEnter = action(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      propsAtom().onRowMouseEnter?.(propsAtom().row, { e });
+    },
+  );
 
-      let miss = 0;
+  const onMouseLeave = action(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      propsAtom().onRowMouseLeave?.(propsAtom().row, { e });
+    },
+  );
 
-      const nodes: React.ReactNode[] = [];
+  const onClick = action((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    propsAtom().onRowClick?.(propsAtom().row, { e });
+  });
 
-      for (
-        let columnIndex = 0;
-        columnIndex < lowHeaders.length;
-        columnIndex++
-      ) {
-        const {
-          isSeparator,
-          accessor,
-          pinned,
-          renderCell: RenderCell,
-          colSpan: getColSpan,
-        } = lowHeaders[columnIndex];
+  return ({
+    className,
+    index: rowIndex,
+    lowHeadersAtom,
+    zebraStriped,
+    row,
+    tableElementAtom,
+    leftNoVisibleItemsAtom,
+    rightNoVisibleItemsAtom,
+    ref,
+    ...otherProps
+  }) => {
+    const lowHeaders = lowHeadersAtom();
+    const leftNoVisibleItems = leftNoVisibleItemsAtom();
+    const rightNoVisibleItems = rightNoVisibleItemsAtom();
 
-        if (miss) {
-          miss = miss ? miss - 1 : miss;
+    let miss = 0;
 
-          continue;
-        }
+    const nodes: React.ReactNode[] = [];
 
-        miss = getMiss(
-          getColSpan?.({ row }),
-          columnIndex,
-          lowHeaders.length,
-          !!pinned,
-        );
+    for (let columnIndex = 0; columnIndex < lowHeaders.length; columnIndex++) {
+      const {
+        isSeparator,
+        accessor,
+        pinned,
+        renderCell: RenderCell,
+        colSpan: getColSpan,
+      } = lowHeaders[columnIndex];
 
-        if (
-          (!pinned &&
-            columnIndex !== 0 &&
-            leftNoVisibleItems >= 1 &&
-            leftNoVisibleItems - columnIndex - miss >= 1) ||
-          (!pinned &&
-            columnIndex !== 0 &&
-            rightNoVisibleItems >= 0 &&
-            rightNoVisibleItems + columnIndex >= lowHeaders.length)
-        ) {
-          continue;
-        }
+      if (miss) {
+        miss = miss ? miss - 1 : miss;
 
-        nodes.push(
-          <TableRowCellMemo
-            key={cnTableRow('Cell', { key: accessor || columnIndex })}
-            borderLeft={
-              columnIndex !== 0 &&
-              !(
-                pinned !== 'left' &&
-                lowHeaders[columnIndex - 1]?.pinned === 'left'
-              )
-            }
-            borderRight={
-              pinned === 'left' &&
-              lowHeaders[columnIndex + 1]?.pinned !== 'left'
-            }
-            borderTop={!isSeparator && rowIndex !== 0}
-            ref={columnIndex === 0 ? ref : undefined}
-            row={row}
-            rowIndex={rowIndex}
-            miss={miss}
-            index={columnIndex}
-            tableElementAtom={tableElementAtom}
-            accessor={accessor}
-            separator={isSeparator}
-            pinned={pinned}
-            renderCell={RenderCell}
-          />,
-        );
+        continue;
       }
 
-      return (
-        <div
-          {...otherProps}
-          className={cnTableRow({ zebraStriped }, [className])}
-          aria-hidden="true"
-        >
-          {nodes}
-        </div>
+      miss = getMiss(
+        getColSpan?.({ row }),
+        columnIndex,
+        lowHeaders.length,
+        !!pinned,
       );
-    },
-);
+
+      if (
+        (!pinned &&
+          columnIndex !== 0 &&
+          leftNoVisibleItems >= 1 &&
+          leftNoVisibleItems - columnIndex - miss >= 1) ||
+        (!pinned &&
+          columnIndex !== 0 &&
+          rightNoVisibleItems >= 0 &&
+          rightNoVisibleItems + columnIndex >= lowHeaders.length)
+      ) {
+        continue;
+      }
+
+      nodes.push(
+        <TableRowCellMemo
+          key={cnTableRow('Cell', { key: accessor || columnIndex })}
+          borderLeft={
+            columnIndex !== 0 &&
+            !(
+              pinned !== 'left' &&
+              lowHeaders[columnIndex - 1]?.pinned === 'left'
+            )
+          }
+          borderRight={
+            pinned === 'left' && lowHeaders[columnIndex + 1]?.pinned !== 'left'
+          }
+          borderTop={!isSeparator && rowIndex !== 0}
+          ref={columnIndex === 0 ? ref : undefined}
+          row={row}
+          rowIndex={rowIndex}
+          miss={miss}
+          index={columnIndex}
+          tableElementAtom={tableElementAtom}
+          accessor={accessor}
+          separator={isSeparator}
+          pinned={pinned}
+          renderCell={RenderCell}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onClick={onClick}
+        />,
+      );
+    }
+
+    return (
+      <div
+        {...otherProps}
+        className={cnTableRow({ zebraStriped }, [className])}
+        aria-hidden="true"
+      >
+        {nodes}
+      </div>
+    );
+  };
+});

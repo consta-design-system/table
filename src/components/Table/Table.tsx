@@ -1,13 +1,13 @@
 import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
+  propAction,
   virtualScrollEffect,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { action, computed } from '@reatom/core';
 import React, { memo } from 'react';
 
 import {
-  TableComponent,
   TableDataComponent,
   TableHeaderComponent,
   TableProps,
@@ -60,6 +60,14 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       setRefs([scrollElementAtom.set, propsAtom().ref], el),
     );
 
+    const [onRowMouseEnter, onRowMouseLeave, onRowClick, getRowKey] =
+      propAction(propsAtom, [
+        'onRowMouseEnter',
+        'onRowMouseLeave',
+        'onRowClick',
+        'getRowKey',
+      ]);
+
     return ({
       columns,
       rows,
@@ -69,10 +77,10 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       zebraStriped,
       headerZIndex = 1,
       rowHoverEffect,
-      onRowMouseEnter,
-      onRowMouseLeave,
-      onRowClick,
-      getRowKey,
+      onRowMouseEnter: onRowMouseEnterProp,
+      onRowMouseLeave: onRowMouseLeaveProp,
+      onRowClick: onRowClickProp,
+      getRowKey: getRowKeyProp,
       onScrollToBottom,
       ...otherProps
     }) => (
@@ -120,4 +128,4 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       />
     );
   },
-) as TableComponent;
+);

@@ -9,13 +9,9 @@ import { cn } from '##/utils/bem';
 
 import { TableColumn } from '../types';
 
-type Props<T> = {
+type TableSeparatorTitlesComponent = <T>(props: {
   lowHeadersAtom: AtomLike<TableColumn<T>[]>;
-};
-
-type TableSeparatorTitlesComponent = <T>(
-  props: Props<T>,
-) => React.ReactNode | null;
+}) => React.ReactNode | null;
 
 const cnTableSeparatorTitles = cn('TableSeparatorTitles');
 
@@ -48,5 +44,4 @@ export const TableSeparatorTitles: TableSeparatorTitlesComponent = memo(
       </div>
     );
   }),
-  () => true,
 );

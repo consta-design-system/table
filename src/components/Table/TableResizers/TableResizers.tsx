@@ -5,7 +5,7 @@ import {
   rangeAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { Atom, AtomLike, Computed, computed } from '@reatom/core';
+import { action, Atom, AtomLike, Computed, computed } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -56,8 +56,14 @@ export type TableResizerComponent = <T>(
 ) => React.ReactNode | null;
 
 const TableResizer: TableResizerComponent = factoryComponent(
-  ({ activeIndexAtom }, propsAtom) => {
+  ({ activeIndexAtom, handlersAtom }, propsAtom) => {
     const activeAtom = computed(() => propsAtom().index === activeIndexAtom());
+    const onMouseDown = action(() =>
+      handlersAtom()[propsAtom().index].onMouseDown(),
+    );
+    const onTouchStart = action(() =>
+      handlersAtom()[propsAtom().index].onTouchStart(),
+    );
 
     return ({
       resizableAtom,
@@ -67,12 +73,10 @@ const TableResizer: TableResizerComponent = factoryComponent(
       pinned,
       index,
       lowHeadersLength,
-      handlersAtom,
       virtualScrollHelperRef,
       ref,
     }) => {
       const resizable = resizableAtom();
-      const handlers = handlersAtom();
       const active = activeAtom();
 
       return (
@@ -93,7 +97,8 @@ const TableResizer: TableResizerComponent = factoryComponent(
             !pinned &&
             !(resizable === 'inside' && lowHeadersLength === index + 1) && (
               <div
-                {...handlers[index]}
+                onMouseDown={onMouseDown}
+                onTouchStart={onTouchStart}
                 className={cnTableResizers('Resizer', {
                   active,
                 })}

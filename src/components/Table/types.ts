@@ -174,7 +174,7 @@ export type TableDataProps<ROW = TableDefaultRow> =
       onRowMouseEnter?: TableRowMouseEvent<ROW>;
       onRowMouseLeave?: TableRowMouseEvent<ROW>;
       onRowClick?: TableRowMouseEvent<ROW>;
-      getRowKey?: (row: ROW) => string | number;
+      getRowKey?: (row: ROW) => string | number | undefined;
       tableElementAtom: AtomLike<HTMLDivElement | null>;
       rowHoverEffect?: boolean;
       leftNoVisibleItemsAtom: AtomLike<number>;

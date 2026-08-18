@@ -7,18 +7,13 @@ import { cn } from '##/utils/bem';
 import { isNotNil } from '##/utils/type-guards';
 
 import { TableRow } from '../TableRow';
-import { TableDataComponent, TableRowMouseEvent } from '../types';
+import { TableDataComponent } from '../types';
 
 export const cnTableData = cn('TableData');
 
-const getRowMouseEvent = <ROW,>(row: ROW, fn?: TableRowMouseEvent<ROW>) =>
-  fn
-    ? (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => fn(row, { e })
-    : undefined;
-
 const getKey = <ROW,>(
   row: ROW,
-  getRowKey: ((row: ROW) => string | number) | undefined,
+  getRowKey: ((row: ROW) => string | number | undefined) | undefined,
   rowIndex: number,
 ) => {
   const key = getRowKey?.(row);
@@ -52,7 +47,6 @@ export const TableData: TableDataComponent = factoryComponent(() => {
     rowHoverEffect,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
-
     ...otherProps
   }) => {
     const rowsElements = rowsElementsAtom();
@@ -74,13 +68,13 @@ export const TableData: TableDataComponent = factoryComponent(() => {
               index={rowIndex}
               lowHeadersAtom={lowHeadersAtom}
               zebraStriped={rowZebraStriped}
-              onMouseEnter={getRowMouseEvent(row, onRowMouseEnter)}
-              onMouseLeave={getRowMouseEvent(row, onRowMouseLeave)}
-              onClick={getRowMouseEvent(row, onRowClick)}
               tableElementAtom={tableElementAtom}
               ref={rowsElements[rowIndex].set}
               leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
               rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+              onRowMouseEnter={onRowMouseEnter}
+              onRowMouseLeave={onRowMouseLeave}
+              onRowClick={onRowClick}
             />
           );
         })}

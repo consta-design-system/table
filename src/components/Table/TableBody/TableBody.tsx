@@ -7,7 +7,7 @@ import {
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed, effect, peek } from '@reatom/core';
+import { action, atom, AtomLike, computed } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
@@ -79,7 +79,7 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
     propsAtom,
   ) => {
     const randomClassAtom = atom(
-      cnTableBody({ instance: getRandomHash() }).split(' ')[0],
+      cnTableBody({ instance: getRandomHash() }).split(' ')[1],
     );
 
     const bodyElementAtom = atom<HTMLDivElement | null>(null);

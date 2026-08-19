@@ -158,6 +158,8 @@ type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
     stickyTopOffsetsAtom: AtomLike<number[]>;
     headerZIndexAtom: AtomLike<number>;
     resizingAtom: AtomLike<boolean>;
+    resizableAtom: AtomLike<'inside' | 'outside' | undefined>;
+    stickyHeaderAtom: AtomLike<boolean>;
   },
   HTMLDivElement
 >;
@@ -171,10 +173,10 @@ export type TableDataProps<ROW = TableDefaultRow> =
     {
       rowsElementsAtom: AtomLike<Atom<HTMLDivElement | null>[]>;
       sliceAtom: AtomLike<[number, number]>;
-      onRowMouseEnter?: TableRowMouseEvent<ROW>;
-      onRowMouseLeave?: TableRowMouseEvent<ROW>;
-      onRowClick?: TableRowMouseEvent<ROW>;
-      getRowKey?: (row: ROW) => string | number | undefined;
+      onRowMouseEnter: TableRowMouseEvent<ROW>;
+      onRowMouseLeave: TableRowMouseEvent<ROW>;
+      onRowClick: TableRowMouseEvent<ROW>;
+      getRowKey: (row: ROW) => string | number | undefined;
       tableElementAtom: AtomLike<HTMLDivElement | null>;
       rowHoverEffect?: boolean;
       leftNoVisibleItemsAtom: AtomLike<number>;

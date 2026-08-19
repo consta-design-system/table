@@ -3,11 +3,12 @@ import './TableBody.css';
 import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
+  onEventEffect,
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed } from '@reatom/core';
+import { action, atom, AtomLike, computed, reatomBoolean } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
@@ -75,6 +76,8 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
+      resizableAtom,
+      stickyHeaderAtom,
     },
     propsAtom,
   ) => {
@@ -175,6 +178,40 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       () => `--table-header-z-index: ${headerZIndexAtom()};`,
     );
 
+    const scrollTopAtom = atom(0);
+
+    const scrollBehaviorYAtom = computed<boolean>(() => {
+      return (
+        scrollTopAtom() === 0 ||
+        scrollTopAtom() ===
+          (bodyElementAtom()?.scrollHeight || 0) -
+            (bodyElementAtom()?.clientHeight || 0)
+      );
+    });
+
+    const overscrollBehaviorAtom = computed(
+      () =>
+        `overscroll-behavior-y: ${scrollBehaviorYAtom() ? 'auto' : 'none'};`,
+    );
+
+    const headerVisiblePartAtom = computed(() => {
+      const stickyHeader = stickyHeaderAtom();
+      const headerHeight = headerHeightAtom();
+      const scrollTop = scrollTopAtom();
+      if (!stickyHeader) {
+        return headerHeight - scrollTop >= 0 ? headerHeight - scrollTop : 0;
+      }
+      return headerHeight;
+    });
+
+    const tableHeaderVisiblePartAtomAtom = computed(
+      () => `--table-header-visible-part: ${headerVisiblePartAtom()}px;`,
+    );
+
+    onEventEffect(bodyElementAtom, 'scroll', (e: Event) => {
+      scrollTopAtom.set((e.target as HTMLDivElement).scrollTop);
+    });
+
     return ({
       children,
       className,
@@ -215,6 +252,8 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
             tableColumnRightOffsetsAtom,
             tableResizerTopOffsetsAtom,
             tableResizerStickyTopOffsetsAtom,
+            overscrollBehaviorAtom,
+            tableHeaderVisiblePartAtomAtom,
           ]}
         />
         {children}
@@ -229,6 +268,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
 
     const headerZIndexAtom = computed(() => propsAtom().headerZIndex);
     const resizableAtom = computed(() => propsAtom().resizable);
+    const stickyHeaderAtom = computed(() => !!propsAtom().stickyHeader);
 
     const bodyElementAtom = atom<HTMLDivElement | null>(null);
 
@@ -292,6 +332,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
       stickyHeader,
       headerZIndex,
       intersectingColumnsAtom,
+      onAfterResize,
       ...otherProps
     }) => (
       <TableBodyRoot
@@ -304,6 +345,8 @@ export const TableBody: TableBodyComponent = factoryComponent(
         stickyTopOffsetsAtom={stickyTopOffsetsAtom}
         headerZIndexAtom={headerZIndexAtom}
         resizingAtom={resizingAtom}
+        resizableAtom={resizableAtom}
+        stickyHeaderAtom={stickyHeaderAtom}
       >
         <div className={cnTableBody('OverScroll')} />
         {header}

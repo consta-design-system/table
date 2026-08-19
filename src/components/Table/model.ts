@@ -445,10 +445,6 @@ export const headerDataModel = <T>(
     getStickyTopOffsets(flattenedHeadersAtom(), headerRowsHeightsAtom()),
   );
 
-  effect(() => {
-    console.log(stickyTopOffsetsAtom());
-  });
-
   const resizerTopOffsetsAtom = computed(() =>
     getResizerTopOffsets(
       flattenedHeadersAtom(),

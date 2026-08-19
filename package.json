@@ -14,7 +14,7 @@
   ],
   "peerDependencies": {
     "@consta/icons": "^1.7.1",
-    "@consta/uikit": "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@0c86a7c",
+    "@consta/uikit": "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@a68fabd",
     "@reatom/core": "^1001.3.0",
     "@reatom/react": "https://pkg.pr.new/@reatom/react@1324"
   },

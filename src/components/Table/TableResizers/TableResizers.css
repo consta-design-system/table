@@ -12,7 +12,17 @@
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
     --resizer-top: calc(
-      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
+      (
+          var(--table-header-height) - var(--table-resizer-top-offset) -
+            min(
+              calc(
+                var(--table-header-visible-part) - var(--table-header-height) -
+                  var(--table-resizer-top-offset)
+              ),
+              0px
+            )
+        ) *
+        -1
     );
     position: absolute;
     top: var(--resizer-top);

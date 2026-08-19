@@ -79,6 +79,9 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
     ref,
+    onRowMouseEnter,
+    onRowMouseLeave,
+    onRowClick,
     ...otherProps
   }) => {
     const lowHeaders = lowHeadersAtom();

@@ -13,7 +13,7 @@ export const cnTableData = cn('TableData');
 
 const getKey = <ROW,>(
   row: ROW,
-  getRowKey: ((row: ROW) => string | number | undefined) | undefined,
+  getRowKey: (row: ROW) => string | number | undefined,
   rowIndex: number,
 ) => {
   const key = getRowKey?.(row);

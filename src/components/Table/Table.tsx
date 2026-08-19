@@ -8,6 +8,7 @@ import { action, computed } from '@reatom/core';
 import React, { memo } from 'react';
 
 import {
+  TableComponent,
   TableDataComponent,
   TableHeaderComponent,
   TableProps,
@@ -128,4 +129,4 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       />
     );
   },
-);
+) as TableComponent;

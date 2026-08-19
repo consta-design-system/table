@@ -1,6 +1,6 @@
 import { Example } from '@consta/stand';
 import { action, atom } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
+import { useAction, useAtom } from '@reatom/react';
 import React from 'react';
 
 import { DataNumberingCell } from '##/components/DataNumberingCell';
@@ -36,20 +36,18 @@ const hoverIdAtom = atom<ROW['id'] | undefined>(undefined);
 
 // Actions
 
-const onRowMouseEnterAction = action<[ROW]>((ctx, row) =>
-  hoverIdAtom(ctx, row.id),
-);
+const onRowMouseEnterAction = action<[ROW]>((row) => hoverIdAtom.set(row.id));
 
-const onRowMouseLeaveAction = action<[ROW]>((ctx, row) => {
-  const hoverId = ctx.get(hoverIdAtom);
+const onRowMouseLeaveAction = action<[ROW]>((row) => {
+  const hoverId = hoverIdAtom();
   if (hoverId === row.id) {
-    hoverIdAtom(ctx, undefined);
+    hoverIdAtom.set(undefined);
   }
 });
 
 const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [hover] = useAtom((ctx) => {
-    const hoverId = ctx.spy(hoverIdAtom);
+  const [hover] = useAtom(() => {
+    const hoverId = hoverIdAtom();
     return hoverId === props.row.id;
   });
 

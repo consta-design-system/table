@@ -26,6 +26,7 @@ type TableResizersProps<T> = {
   activeIndexAtom: AtomLike<number | null>;
   intersectingColumnsAtom: Atom<boolean[]>;
   bodyElementAtom: AtomLike<HTMLDivElement | null>;
+  stickyHeaderAtom: AtomLike<boolean>;
 };
 
 export type TableResizersComponent = <T>(
@@ -74,6 +75,7 @@ const TableResizer: TableResizerComponent = factoryComponent(
       index,
       lowHeadersLength,
       virtualScrollHelperRef,
+
       ref,
     }) => {
       const resizable = resizableAtom();
@@ -131,13 +133,15 @@ export const TableResizers: TableResizersComponent = memo(
         activeIndexAtom,
         lowHeadersAtom,
         resizersElementsAtom,
+        stickyHeaderAtom,
       }) => {
         const lowHeaders = lowHeadersAtom();
         const resizersElements = resizersElementsAtom();
         const virtualScrollHelperElements = virtualScrollHelperElementsAtom();
+        const sticky = stickyHeaderAtom();
 
         return (
-          <div className={cnTableResizers()}>
+          <div className={cnTableResizers({ sticky })}>
             {lowHeaders.map(
               ({ maxWidth, minWidth, pinned, isSeparator }, index) => (
                 <TableResizer

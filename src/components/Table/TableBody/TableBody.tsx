@@ -364,6 +364,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
           resizableAtom={resizableAtom}
           activeIndexAtom={activeIndexAtom}
           intersectingColumnsAtom={intersectingColumnsAtom}
+          stickyHeaderAtom={stickyHeaderAtom}
         />
         <TableVirtualScrollSpaceTop />
         {body}

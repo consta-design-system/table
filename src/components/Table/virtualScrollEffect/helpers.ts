@@ -85,8 +85,6 @@ const addCount = (
 
   let add = 0;
 
-  // console.log('add', add);
-
   if (visiblePosition[1] < pxs[1] + add * average) {
     return add;
   }
@@ -94,8 +92,6 @@ const addCount = (
   while (visiblePosition[1] > pxs[1] + add * average) {
     add += defaultItemsCalculationCount;
   }
-
-  console.log('add', add);
 
   return add;
 };

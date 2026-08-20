@@ -20,6 +20,8 @@ import {
   UseVirtualScrollReturn,
 } from './helpers';
 
+// TODO: добавить возможность указывать начальное колличество добавляемых элементов, перенести в очновной пакет, проверить в основном пакете на селектах
+
 export const virtualScrollEffect = <
   ITEM_ELEMENT extends HTMLElement = HTMLDivElement,
   SCROLL_ELEMENT extends HTMLElement = HTMLDivElement,

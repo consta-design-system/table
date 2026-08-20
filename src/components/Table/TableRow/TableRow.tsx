@@ -30,7 +30,7 @@ type TableRowProps<ROW> = PropsWithHTMLAttributesAndRef<
 
 const cnTableRow = cn('TableRow');
 
-type TableRowComponent = <ROW>(
+export type TableRowComponent = <ROW>(
   props: TableRowProps<ROW>,
 ) => React.ReactNode | null;
 
@@ -157,6 +157,8 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         />,
       );
     }
+
+    console.log('TableRow', { row });
 
     return (
       <div

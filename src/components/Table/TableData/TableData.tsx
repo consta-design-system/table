@@ -1,13 +1,15 @@
 import './TableData.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 import { isNotNil } from '##/utils/type-guards';
 
-import { TableRow } from '../TableRow';
+import { TableRow, TableRowComponent } from '../TableRow';
 import { TableDataComponent } from '../types';
+
+const TableRowMemo = memo(TableRow) as TableRowComponent;
 
 export const cnTableData = cn('TableData');
 
@@ -62,7 +64,7 @@ export const TableData: TableDataComponent = factoryComponent(() => {
           const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
 
           return (
-            <TableRow
+            <TableRowMemo
               key={getKey(row, getRowKey, rowIndex)}
               row={row}
               index={rowIndex}

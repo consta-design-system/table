@@ -158,7 +158,6 @@ type TableBodyRootProps = PropsWithHTMLAttributesAndRef<
     stickyTopOffsetsAtom: AtomLike<number[]>;
     headerZIndexAtom: AtomLike<number>;
     resizingAtom: AtomLike<boolean>;
-    resizableAtom: AtomLike<'inside' | 'outside' | undefined>;
     stickyHeaderAtom: AtomLike<boolean>;
   },
   HTMLDivElement

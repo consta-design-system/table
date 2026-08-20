@@ -8,7 +8,7 @@ import {
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed, reatomBoolean } from '@reatom/core';
+import { action, atom, AtomLike, computed } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
@@ -76,7 +76,6 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
-      resizableAtom,
       stickyHeaderAtom,
     },
     propsAtom,
@@ -345,7 +344,6 @@ export const TableBody: TableBodyComponent = factoryComponent(
         stickyTopOffsetsAtom={stickyTopOffsetsAtom}
         headerZIndexAtom={headerZIndexAtom}
         resizingAtom={resizingAtom}
-        resizableAtom={resizableAtom}
         stickyHeaderAtom={stickyHeaderAtom}
       >
         <div className={cnTableBody('OverScroll')} />

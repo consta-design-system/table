@@ -55,10 +55,11 @@ export const getVisiblePosition = (
     Math.ceil(roundPositionByGap(top === 0 ? gap : top + gap * 1.1, height)),
   ];
 
-  return [
-    Math.max(visiblePosition[0] - busy, 0),
-    Math.max(visiblePosition[1] - busy, 100),
-  ];
+  const visiblePositionStart = Math.max(visiblePosition[0] - busy, 0);
+  const visiblePositionEnd =
+    visiblePositionStart === 0 ? visiblePosition[1] - busy : visiblePosition[1];
+
+  return [visiblePositionStart, visiblePositionEnd];
 };
 
 export const calculateSavedSizes = (savedSizes: number[], sizes: number[]) => {

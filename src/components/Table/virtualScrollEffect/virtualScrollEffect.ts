@@ -9,7 +9,6 @@ import {
 import { action, atom, computed, effect, peek } from '@reatom/core';
 
 import {
-  arraysIsEq,
   Bounds,
   calculateBounds,
   calculateSavedSizes,
@@ -27,8 +26,9 @@ export const virtualScrollEffect = <
   SCROLL_ELEMENT extends HTMLElement = HTMLDivElement,
 >({
   length: lengthAtom,
-  onScrollToBottom,
+  onEndReached,
   isActive: isActiveAtom,
+  busy: busyAtom,
 }: UseVirtualScrollProps): UseVirtualScrollReturn<
   ITEM_ELEMENT,
   SCROLL_ELEMENT
@@ -41,7 +41,6 @@ export const virtualScrollEffect = <
   ]);
 
   const spaceTopAtom = computed(() => boundsAtom()[0][0]);
-
   const sliceStartAtom = computed(() => boundsAtom()[1][0]);
   const sliceEndAtom = computed(() => boundsAtom()[1][1]);
 
@@ -70,6 +69,32 @@ export const virtualScrollEffect = <
     getElementHeight,
   );
 
+  const maxElementHeightAtom = computed(() => {
+    const el = scrollElementAtom();
+    const realHeight = scrollElementHeightAtom();
+    let finalHeight = realHeight;
+
+    if (!el) return finalHeight;
+
+    const { maxHeight } = getComputedStyle(el);
+    const maxHeightInt = parseInt(maxHeight, 10);
+
+    if (maxHeight.endsWith('px')) {
+      finalHeight = parseInt(maxHeight, 10);
+    }
+
+    if (maxHeight.endsWith('%')) {
+      const parent = el.parentElement;
+
+      if (!parent) return finalHeight;
+      const parentHeight = parseInt(getComputedStyle(parent).height, 10);
+
+      finalHeight = (maxHeightInt / 100) * parentHeight;
+    }
+
+    return Math.max(finalHeight, realHeight);
+  });
+
   const calculateVisiblePosition = action(() => {
     const scrollElement = scrollElementAtom();
     if (!scrollElement) {
@@ -78,8 +103,9 @@ export const virtualScrollEffect = <
 
     const visiblePosition = getVisiblePosition(
       scrollElement.scrollTop,
-      getElementHeight(scrollElement),
+      maxElementHeightAtom(),
       Math.max.apply(null, sizesAtom()),
+      busyAtom?.(),
     );
 
     visiblePositionAtom.set((state: [number, number]) => {
@@ -94,7 +120,7 @@ export const virtualScrollEffect = <
   onEventEffect(scrollElementAtom, 'scroll', calculateVisiblePosition);
 
   effect(() => {
-    scrollElementHeightAtom();
+    maxElementHeightAtom();
 
     if (isActiveAtom?.()) {
       calculateVisiblePosition();
@@ -103,6 +129,7 @@ export const virtualScrollEffect = <
 
   effect(() => {
     const visiblePosition = visiblePositionAtom();
+
     const sizes = peek(sizesAtom);
     const length = lengthAtom();
 
@@ -131,35 +158,22 @@ export const virtualScrollEffect = <
   });
 
   effect(() => {
-    const isActive = isActiveAtom?.();
     const sliceEnd = sliceEndAtom();
+    const isActive = isActiveAtom ? peek(isActiveAtom) : false;
     const length = peek(lengthAtom);
 
-    if (isActive && onScrollToBottom && sliceEnd === length) {
-      onScrollToBottom(length);
+    if (isActive && onEndReached && sliceEnd === length) {
+      onEndReached(length);
     }
   });
 
   effect(() => {
-    const isActive = isActiveAtom?.();
-    const length = peek(lengthAtom);
-    const resetVisiblePosition: [number, number] = [0, 0];
-    const resetBounds: Bounds = [
-      [0, 0],
-      [0, isActive ? defaultItemsCalculationCount : length],
-    ];
-
-    boundsAtom.set((state) =>
-      arraysIsEq(state[0], resetBounds[0]) &&
-      arraysIsEq(state[1], resetBounds[1])
-        ? state
-        : resetBounds,
-    );
-
-    visiblePositionAtom.set((state) =>
-      arraysIsEq(state, resetVisiblePosition) ? state : resetVisiblePosition,
-    );
+    console.log(visiblePositionAtom());
   });
+
+  effect(() =>
+    console.log(boundsAtom()[1], boundsAtom()[1][1] - boundsAtom()[1][0]),
+  );
 
   return {
     listElementsAtom,

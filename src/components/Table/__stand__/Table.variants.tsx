@@ -296,16 +296,170 @@ const Variants = () => {
             accessor: 'total',
             minWidth: 100,
             width: 100,
-            renderCell: (props) => (
-              <OtherCell
-                title={props.row.total}
-                size={size}
-                truncate={horizontalVirtualScroll}
-              />
-            ),
             renderHeaderCell: (props) => (
               <OtherHeaderCell title={props.title} size={size} />
             ),
+            columns: [
+              {
+                title: 'Всего',
+                accessor: 'total',
+                minWidth: 100,
+                width: 100,
+                renderHeaderCell: (props) => (
+                  <OtherHeaderCell title={props.title} size={size} />
+                ),
+                columns: [
+                  {
+                    title: 'Всего',
+                    accessor: 'total',
+                    minWidth: 100,
+                    width: 100,
+                    renderHeaderCell: (props) => (
+                      <OtherHeaderCell title={props.title} size={size} />
+                    ),
+                    columns: [
+                      {
+                        title: 'Всего',
+                        accessor: 'total',
+                        minWidth: 100,
+                        width: 100,
+                        renderHeaderCell: (props) => (
+                          <OtherHeaderCell title={props.title} size={size} />
+                        ),
+                        columns: [
+                          {
+                            title: 'Всего',
+                            accessor: 'total',
+                            minWidth: 100,
+                            width: 100,
+                            renderHeaderCell: (props) => (
+                              <OtherHeaderCell
+                                title={props.title}
+                                size={size}
+                              />
+                            ),
+                            columns: [
+                              {
+                                title: 'Всего',
+                                accessor: 'total',
+                                minWidth: 100,
+                                width: 100,
+                                renderHeaderCell: (props) => (
+                                  <OtherHeaderCell
+                                    title={props.title}
+                                    size={size}
+                                  />
+                                ),
+                                columns: [
+                                  {
+                                    title: 'Всего',
+                                    accessor: 'total',
+                                    minWidth: 100,
+                                    width: 100,
+                                    renderHeaderCell: (props) => (
+                                      <OtherHeaderCell
+                                        title={props.title}
+                                        size={size}
+                                      />
+                                    ),
+                                    columns: [
+                                      {
+                                        title: 'Всего',
+                                        accessor: 'total',
+                                        minWidth: 100,
+                                        width: 100,
+                                        renderHeaderCell: (props) => (
+                                          <OtherHeaderCell
+                                            title={props.title}
+                                            size={size}
+                                          />
+                                        ),
+                                        columns: [
+                                          {
+                                            title: 'Всего',
+                                            accessor: 'total',
+                                            minWidth: 100,
+                                            width: 100,
+                                            renderHeaderCell: (props) => (
+                                              <OtherHeaderCell
+                                                title={props.title}
+                                                size={size}
+                                              />
+                                            ),
+                                            columns: [
+                                              {
+                                                title: 'Всего',
+                                                accessor: 'total',
+                                                minWidth: 100,
+                                                width: 100,
+                                                renderHeaderCell: (props) => (
+                                                  <OtherHeaderCell
+                                                    title={props.title}
+                                                    size={size}
+                                                  />
+                                                ),
+                                                columns: [
+                                                  {
+                                                    title: 'Всего',
+                                                    accessor: 'total',
+                                                    minWidth: 100,
+                                                    width: 100,
+                                                    renderHeaderCell: (
+                                                      props,
+                                                    ) => (
+                                                      <OtherHeaderCell
+                                                        title={props.title}
+                                                        size={size}
+                                                      />
+                                                    ),
+                                                    columns: [
+                                                      {
+                                                        title: 'Всего',
+                                                        accessor: 'total',
+                                                        minWidth: 100,
+                                                        width: 100,
+                                                        renderHeaderCell: (
+                                                          props,
+                                                        ) => (
+                                                          <OtherHeaderCell
+                                                            title={props.title}
+                                                            size={size}
+                                                          />
+                                                        ),
+                                                        renderCell: (props) => (
+                                                          <OtherCell
+                                                            title={
+                                                              props.row.total ||
+                                                              '-'
+                                                            }
+                                                            size={size}
+                                                            truncate={
+                                                              horizontalVirtualScroll
+                                                            }
+                                                          />
+                                                        ),
+                                                      },
+                                                    ],
+                                                  },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

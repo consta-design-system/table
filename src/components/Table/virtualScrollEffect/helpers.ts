@@ -4,7 +4,8 @@ import { Atom, AtomLike, Computed } from '@reatom/core';
 export type UseVirtualScrollProps = {
   length: AtomLike<number>;
   isActive?: AtomLike<boolean>;
-  onScrollToBottom?: (index: number) => void;
+  busy?: AtomLike<number>;
+  onEndReached?: (index: number) => void;
 };
 
 export type UseVirtualScrollReturn<ITEM_ELEMENT, SCROLL_ELEMENT> = {
@@ -23,9 +24,6 @@ export type Bounds = [[number, number], [number, number]];
 
 export const defaultItemsCalculationCount = 1;
 
-export const arraysIsEq = (arr1: number[], arr2: number[]) =>
-  arr1.join('-') === arr2.join('-');
-
 export const getElementHeight = (el: HTMLElement | SVGGraphicsElement | null) =>
   getElementSize(el).height;
 
@@ -40,13 +38,12 @@ export const getVisiblePosition = (
   top: number,
   height: number,
   elementMaxSize: number,
+  busy: number = 0,
 ): [number, number] => {
   const gap =
     height > elementMaxSize * defaultItemsCalculationCount
       ? height
       : elementMaxSize * defaultItemsCalculationCount;
-
-  console.log('gap', gap);
 
   const visiblePosition: [number, number] = [
     Math.ceil(
@@ -58,9 +55,10 @@ export const getVisiblePosition = (
     Math.ceil(roundPositionByGap(top === 0 ? gap : top + gap * 1.1, height)),
   ];
 
-  console.log('visiblePosition', visiblePosition);
-
-  return visiblePosition;
+  return [
+    Math.max(visiblePosition[0] - busy, 0),
+    Math.max(visiblePosition[1] - busy, 100),
+  ];
 };
 
 export const calculateSavedSizes = (savedSizes: number[], sizes: number[]) => {

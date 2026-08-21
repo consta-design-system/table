@@ -158,8 +158,6 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
       );
     }
 
-    console.log('TableRow', { row });
-
     return (
       <div
         {...otherProps}

@@ -47,14 +47,16 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       virtualScrollEffect({
         length: computed(() => propsAtom().rows.length),
         isActive: computed(() => {
-          const { virtualScroll } = propsAtom();
+          const { virtualScroll, rows } = propsAtom();
+          if (rows.length === 0) return false;
           return !!(Array.isArray(virtualScroll)
             ? virtualScroll[1]
             : virtualScroll);
         }),
-        onScrollToBottom: action((index: number) =>
+        onEndReached: action((index: number) =>
           propsAtom().onScrollToBottom?.(index),
         ),
+        busy: headerHeightAtom,
       });
 
     const ref = action((el: HTMLDivElement | null) =>

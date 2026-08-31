@@ -2,6 +2,7 @@ import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
   propAction,
+  virtualScrollEffect,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { action, computed } from '@reatom/core';
 import React, { memo } from 'react';
@@ -17,7 +18,6 @@ import { headerDataModel } from './model';
 import { TableBody } from './TableBody';
 import { TableData } from './TableData';
 import { TableHeader } from './TableHeader/TableHeader';
-import { virtualScrollEffect } from './virtualScrollEffect';
 
 const MemoTableHeader = memo(TableHeader) as TableHeaderComponent;
 const MemoTableData = memo(TableData) as TableDataComponent;

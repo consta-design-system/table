@@ -77,10 +77,11 @@ const OtherCell = (props: {
   title: string | number | null;
   size: 'm' | 's';
   truncate: boolean;
+  style?: React.CSSProperties;
 }) => {
-  const { title, size, truncate } = props;
+  const { title, size, truncate, style } = props;
   return (
-    <DataCell truncate={truncate} size={size}>
+    <DataCell truncate={truncate} size={size} style={style}>
       {title}
     </DataCell>
   );

@@ -4,6 +4,7 @@ import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
   onEventEffect,
+  propAction,
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
@@ -23,11 +24,7 @@ import { cnTableCell } from '../TableCell';
 import { TableResizers } from '../TableResizers';
 import { TableSeparatorTitles } from '../TableSeparatorTitles';
 import { TableVirtualScrollSpaceTop } from '../TableVirtualScrollSpaceTop';
-import {
-  TableBodyComponent,
-  TableBodyRootComponent,
-  TableResizeEvent,
-} from '../types';
+import { TableBodyComponent, TableBodyRootComponent } from '../types';
 import {
   getGridTemplate,
   getStyleByArray,
@@ -207,27 +204,6 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       () => `--table-header-visible-part: ${headerVisiblePartAtom()}px;`,
     );
 
-    const virtualScrollHelperPositionAtom = computed(() => {
-      const headerHeight = headerHeightAtom();
-      const bodyHeight = bodySizeAtom().height;
-      const scrollHeight = tableBodyHorizontalScrollHeightAtom();
-
-      if (headerHeight > bodyHeight - scrollHeight) {
-        return ['auto', 0];
-      }
-
-      // const scrollTop = scrollTopAtom();
-      return [0, 'auto'];
-    });
-
-    const virtualScrollHelperPositionStyleAtom = computed(() =>
-      getStyleByArray(
-        virtualScrollHelperPositionAtom(),
-        '--table-body-scroll',
-        (value) => (typeof value === 'number' ? `${value}px` : value),
-      ),
-    );
-
     onEventEffect(bodyElementAtom, 'scroll', (e: Event) => {
       scrollTopAtom.set((e.target as HTMLDivElement).scrollTop);
     });
@@ -242,6 +218,7 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
+      stickyHeaderAtom,
       ...otherProps
     }) => (
       <div
@@ -256,7 +233,6 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
         <Styles
           className={randomClassAtom()}
           atoms={[
-            virtualScrollHelperPositionStyleAtom,
             tableBodyHorizontalScrollHeightStyleAtom,
             bodyOffsetHeightAtom,
             tableBodyHeightAtom,
@@ -334,9 +310,7 @@ export const TableBody: TableBodyComponent = factoryComponent(
         blocksAtom,
         bodyElementAtom,
         resizableAtom,
-        action<TableResizeEvent>((...args) => {
-          propsAtom().onAfterResize?.(...args);
-        }),
+        propAction(propsAtom, 'onAfterResize'),
       );
 
     return ({
@@ -369,7 +343,6 @@ export const TableBody: TableBodyComponent = factoryComponent(
         stickyHeaderAtom={stickyHeaderAtom}
       >
         <div className={cnTableBody('OverScroll')} />
-        {/* TODO: переместить ресайзы в самый верх и закрепить сверху таким образом они будут всегда на экране и виртуальный скролл починится. Переработать высоты полоски ресайдера и ее позицию, проверить z-index  */}
         <TableResizers
           lowHeadersAtom={lowHeadersAtom}
           bodyElementAtom={bodyElementAtom}

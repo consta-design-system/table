@@ -1,10 +1,6 @@
 .ct--TableResizers {
   display: contents;
 
-  &_sticky &-Cell {
-    top: var(--table-header-height);
-  }
-
   &_sticky &-Resizer {
     height: min(
       calc(
@@ -15,10 +11,8 @@
         var(--table-body-height) - var(--table-body-horizontal-scroll-height)
       )
     );
-  }
 
-  &:not(&_sticky) &-Cell {
-    top: var(--table-resizer-cell-height);
+    top: var(--table-resizer-top-offset);
   }
 
   &:not(&_sticky) &-Resizer {
@@ -32,9 +26,18 @@
         var(--table-body-height) - var(--table-body-horizontal-scroll-height)
       )
     );
+
+    top: max(
+      calc(
+        var(--table-resizer-top-offset) -
+          (var(--table-header-height) - var(--table-header-visible-part))
+      ),
+      0px
+    );
   }
 
   &-Cell {
+    top: 0;
     --table-resizer-cell-height: calc(
       var(--table-header-height) - var(--table-resizer-top-offset)
     );
@@ -48,7 +51,6 @@
     --resizer-width: 4px;
 
     position: absolute;
-    top: calc(var(--table-resizer-cell-height) * -1);
     right: 0;
     width: var(--resizer-width);
     height: var(--resizer-height);
@@ -80,11 +82,5 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    position: sticky;
-    bottom: 0;
-    /* left: 0; */
-    /* margin-top: calc(
-      var(--table-header-height) * -1 + 100% - var(--table-resizer-top-offset)
-    ); */
   }
 }

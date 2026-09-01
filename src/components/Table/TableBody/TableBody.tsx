@@ -360,7 +360,6 @@ export const TableBody: TableBodyComponent = factoryComponent(
           ])}
         />
         <TableSeparatorTitles lowHeadersAtom={lowHeadersAtom} />
-
         <TableVirtualScrollSpaceTop />
         {body}
       </TableBodyRoot>

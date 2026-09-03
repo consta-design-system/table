@@ -12,11 +12,11 @@ import {
   PortalWithTheme,
   PortalWithThemeConsumer,
 } from '@consta/uikit/PortalWithTheme';
-import { ThemeContext, ThemePreset, useTheme } from '@consta/uikit/Theme';
+import { ThemeContext } from '@consta/uikit/Theme';
 import { Transition } from '@consta/uikit/Transition';
 import { getElementHeight } from '@consta/uikit/useResizeObserved';
 import { abortVar, atom, computed, effect, peek, wrap } from '@reatom/core';
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import { Toolbar } from '##/components/Toolbar';
 import { cn } from '##/utils/bem';
@@ -122,8 +122,6 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
     }) => {
       const portalRef = portalRefAtom();
       const containerIsBody = containerIsBodyAtom();
-
-      console.warn(active);
 
       return (
         <Transition

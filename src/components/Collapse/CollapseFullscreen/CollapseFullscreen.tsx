@@ -12,11 +12,11 @@ import {
   PortalWithTheme,
   PortalWithThemeConsumer,
 } from '@consta/uikit/PortalWithTheme';
-import { ThemeContext } from '@consta/uikit/Theme';
+import { ThemeContext, ThemePreset, useTheme } from '@consta/uikit/Theme';
 import { Transition } from '@consta/uikit/Transition';
 import { getElementHeight } from '@consta/uikit/useResizeObserved';
-import { abortVar, atom, computed, effect, peek } from '@reatom/core';
-import React from 'react';
+import { abortVar, atom, computed, effect, peek, wrap } from '@reatom/core';
+import React, { ReactNode } from 'react';
 
 import { Toolbar } from '##/components/Toolbar';
 import { cn } from '##/utils/bem';
@@ -123,6 +123,8 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
       const portalRef = portalRefAtom();
       const containerIsBody = containerIsBodyAtom();
 
+      console.warn(active);
+
       return (
         <Transition
           in={active}
@@ -132,7 +134,7 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
         >
           {(animate) => (
             <ThemeContext.Consumer>
-              {({ theme }) => (
+              {wrap(({ theme }) => (
                 <PortalWithTheme
                   ref={portalRef}
                   preset={theme}
@@ -154,7 +156,7 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
                     <div className={cnCollapseFullscreen('ToolbarWrapper')}>
                       <Toolbar
                         className={cnCollapseFullscreen('Toolbar')}
-                        ref={toolbarElementAtom.set}
+                        ref={wrap(toolbarElementAtom.set)}
                         leftSide={leftSide}
                         form="brick"
                         border="bottom"
@@ -174,7 +176,7 @@ export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
                     </div>
                   </PortalWithThemeConsumer>
                 </PortalWithTheme>
-              )}
+              ))}
             </ThemeContext.Consumer>
           )}
         </Transition>

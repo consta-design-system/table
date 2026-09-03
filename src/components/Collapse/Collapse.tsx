@@ -8,7 +8,7 @@ import { isString } from '@consta/uikit/__internal__/src/utils/type-guards';
 import { animateTimeout } from '@consta/uikit/MixPopoverAnimate';
 import { Text } from '@consta/uikit/Text';
 import { Transition } from '@consta/uikit/Transition';
-import { action, atom, reatomBoolean } from '@reatom/core';
+import { action, atom, reatomBoolean, wrap } from '@reatom/core';
 import React from 'react';
 
 import { Toolbar } from '##/components/Toolbar';
@@ -127,6 +127,7 @@ export const Collapse = factoryComponent<HTMLDivElement, CollapseProps>(
               leftSide={[
                 expandButton ? (
                   <CollapseButton
+                    className={cnCollapse('ExpandButton')}
                     active={expanded}
                     icon={CollapseExpandIcon}
                     onClick={toggleExpanded}
@@ -138,6 +139,7 @@ export const Collapse = factoryComponent<HTMLDivElement, CollapseProps>(
                 ...(Array.isArray(rightSide) ? rightSide : [rightSide]),
                 fullscreenButton ? (
                   <CollapseButton
+                    className={cnCollapse('FullscreenButton')}
                     active={fullscreen}
                     icon={CollapseFullscreenIcon}
                     onClick={toggleFullscreen}
@@ -161,7 +163,7 @@ export const Collapse = factoryComponent<HTMLDivElement, CollapseProps>(
                   {() => (
                     <div
                       className={cnCollapse('ChildrenWrapper')}
-                      ref={contentElementAtom.set}
+                      ref={wrap(contentElementAtom.set)}
                       style={{ maxHeight: expandedMaxHeight }}
                     >
                       {children}

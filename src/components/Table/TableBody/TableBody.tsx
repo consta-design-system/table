@@ -45,9 +45,9 @@ const Style = reatomFactoryComponent<{
   atom: AtomLike<string>;
   className: string;
 }>(() => {
-  return ({ atom, className }) => (
+  return ({ atom: a, className }) => (
     <style>
-      {`.${className} {`} {atom()} {`}`}
+      {`.${className} {`} {a()} {`}`}
     </style>
   );
 });

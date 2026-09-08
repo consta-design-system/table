@@ -1,5 +1,5 @@
 import { transformSync } from '@babel/core';
-import type { Plugin } from 'vite';
+import type { Plugin } from 'vitest/config';
 
 import reatomNamePlugin from './index';
 

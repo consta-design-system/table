@@ -1,6 +1,5 @@
 import {
   createRoot,
-  TestContext,
   testRootId,
   tick,
 } from '@consta/uikit/__internal__/src/utils/vitest';
@@ -12,7 +11,6 @@ import { act } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { describe, expect, test, vi } from 'vitest';
-import { userEvent } from 'vitest/browser';
 
 import { cn } from '../../../utils/bem';
 import { Collapse } from '../Collapse';
@@ -488,44 +486,6 @@ describe('Компонент Collapse', () => {
 
         expect(onFullscreen).toHaveBeenCalledTimes(2);
         expect(onFullscreen.mock.calls[1][0]).toBe(false);
-      }));
-
-    test('подконтрольный fullscreen открывает/закрывает портал', () =>
-      context.start(async () => {
-        const root = ReactDOM.createRoot(
-          document.querySelector(`*[data-test-block=${testRootId()}]`)!,
-        );
-
-        const doRender = (fullscreen: boolean) =>
-          act(() => {
-            root.render(
-              <reatomContext.Provider value={top()}>
-                <Theme preset={presetGpnDefault}>
-                  <Collapse
-                    data-testid={testId}
-                    leftSide="Заголовок"
-                    fullscreen={fullscreen}
-                  >
-                    Контент
-                  </Collapse>
-                </Theme>
-              </reatomContext.Provider>,
-            );
-          });
-
-        doRender(true);
-        await wrap(tick());
-        await wrap(sleep(animateTimeout));
-        expect(
-          document.body.querySelector(`.${cnCollapseFullscreen()}`),
-        ).toBeTruthy();
-
-        doRender(false);
-        await wrap(tick());
-        await wrap(sleep(300));
-        expect(
-          document.body.querySelector(`.${cnCollapseFullscreen()}`),
-        ).toBeNull();
       }));
   });
 

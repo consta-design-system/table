@@ -1,7 +1,7 @@
 import { Example } from '@consta/stand';
 import { Checkbox } from '@consta/uikit/Checkbox';
-import { atom, AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
+import { Atom, atom } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/react';
 import React from 'react';
 
 import { DataCell } from '##/components/DataCell';
@@ -14,22 +14,22 @@ type ROW = {
   status: string;
 };
 
-const activeIdsAtom = atom<Record<ROW['id'], AtomMut<boolean>>>({});
+const activeIdsAtom = atom<Record<ROW['id'], Atom<boolean>>>({});
 
 const DataCellName: TableRenderCell<ROW> = (props) => {
-  const [active] = useAtom((ctx) => {
-    const activeAtom = ctx.spy(activeIdsAtom)[props.row.id];
-    return activeAtom ? ctx.spy(activeAtom) : false;
+  const [active] = useAtom(() => {
+    const activeAtom = activeIdsAtom()[props.row.id];
+    return activeAtom ? activeAtom() : false;
   });
 
-  const onChange = useAction((ctx) => {
-    const activeIds = ctx.get(activeIdsAtom);
-    const activeAtom = ctx.get(activeIdsAtom)[props.row.id];
+  const onChange = useAction(() => {
+    const activeIds = activeIdsAtom();
+    const activeAtom = activeIdsAtom()[props.row.id];
 
     if (activeAtom) {
-      activeAtom(ctx, !ctx.get(activeAtom));
+      activeAtom.set(!activeAtom());
     } else {
-      activeIdsAtom(ctx, { ...activeIds, [props.row.id]: atom(true) });
+      activeIdsAtom.set({ ...activeIds, [props.row.id]: atom(true) });
     }
   });
 

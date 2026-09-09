@@ -1,23 +1,25 @@
 import './TableBody.css';
 
-import { useCreateAtom } from '@consta/uikit/__internal__/src/utils/state/useCreateAtom';
-import { usePropAtom } from '@consta/uikit/__internal__/src/utils/state/usePickAtom';
-import { useSendToAtom } from '@consta/uikit/__internal__/src/utils/state/useSendToAtom';
+import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
+import {
+  factoryComponent,
+  onEventEffect,
+  propAction,
+  resizeObservedAtom,
+} from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
-import { useForkRef } from '@consta/uikit/useForkRef';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
-import React, { forwardRef, memo, useMemo, useRef } from 'react';
+import { action, atom, AtomLike, computed } from '@reatom/core';
+import { reatomFactoryComponent } from '@reatom/react';
+import React, { memo } from 'react';
 
-import { useResizeObservedAtom } from '##/hooks/useResizeObservedAtom';
 import { cn } from '##/utils/bem';
 
 import {
   columnDefaultMinWidth,
   separatorLargeWidth,
   separatorWidth,
-} from '../helpers';
+} from '../model';
 import { cnTableCell } from '../TableCell';
 import { TableResizers } from '../TableResizers';
 import { TableSeparatorTitles } from '../TableSeparatorTitles';
@@ -30,7 +32,7 @@ import {
   getStyleRightOffsetsForStickyColumns,
   printSize,
 } from './helpers';
-import { useResizableColumns } from './useResizableColumns';
+import { resizableColumns } from './model';
 
 export const cnTableBody = cn('TableBody');
 
@@ -39,22 +41,19 @@ const getRandomHash = () =>
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 
-const Style = ({
-  atom,
-  className,
-}: {
-  atom: AtomMut<string>;
+const Style = reatomFactoryComponent<{
+  atom: AtomLike<string>;
   className: string;
-}) => {
-  return (
+}>(() => {
+  return ({ atom: a, className }) => (
     <style>
-      {`.${className} {`} {useAtom(atom)[0]} {`}`}
+      {`.${className} {`} {a()} {`}`}
     </style>
   );
-};
+});
 
 const Styles = memo(
-  ({ atoms, className }: { atoms: AtomMut<string>[]; className: string }) => (
+  ({ atoms, className }: { atoms: AtomLike<string>[]; className: string }) => (
     <>
       {atoms.map((atom, index) => (
         <Style key={index} atom={atom} className={className} />
@@ -64,9 +63,152 @@ const Styles = memo(
   () => true,
 );
 
-const TableBodyRoot: TableBodyRootComponent = forwardRef(
+const TableBodyRoot: TableBodyRootComponent = factoryComponent(
   (
     {
+      headerHeightAtom,
+      spaceTopAtom,
+      sizesAtom,
+      topOffsetsAtom,
+      stickyTopOffsetsAtom,
+      headerZIndexAtom,
+      resizingAtom,
+      stickyHeaderAtom,
+    },
+    propsAtom,
+  ) => {
+    const randomClassAtom = atom(
+      cnTableBody({ instance: getRandomHash() }).split(' ')[1],
+    );
+
+    const bodyElementAtom = atom<HTMLDivElement | null>(null);
+
+    const ref = action((el: HTMLDivElement | null) =>
+      setRefs([bodyElementAtom.set, propsAtom().ref], el),
+    );
+
+    const bodySizeAtom = resizeObservedAtom(bodyElementAtom, getElementSize);
+
+    const bodyOffsetHeightSizeAtom = resizeObservedAtom(
+      bodyElementAtom,
+      (el) => el?.scrollHeight || 0,
+    );
+
+    const tableBodyHorizontalScrollHeightAtom = resizeObservedAtom(
+      bodyElementAtom,
+      (el) => {
+        const clientHeight = el?.clientHeight || 0;
+        const offsetHeight = el?.offsetHeight || 0;
+
+        return offsetHeight - clientHeight;
+      },
+    );
+
+    const tableBodyHorizontalScrollHeightStyleAtom = computed(
+      () =>
+        `--table-body-horizontal-scroll-height: ${tableBodyHorizontalScrollHeightAtom()}px;`,
+    );
+
+    const tableBodyHeightAtom = computed(
+      () => `--table-body-height: ${bodySizeAtom().height}px;`,
+    );
+
+    const bodyOffsetHeightAtom = computed(
+      () => `--table-body-offset-height: ${bodyOffsetHeightSizeAtom()}px;`,
+    );
+
+    const tableBodyWidthAtom = computed(
+      () => `--table-body-width: ${bodySizeAtom().width}px;`,
+    );
+
+    const tableHeaderHeightAtom = computed(
+      () => `--table-header-height: ${headerHeightAtom()}px;`,
+    );
+
+    const tableBodySpaceTopAtom = computed(
+      () => `--table-body-space-top: ${spaceTopAtom()}px;`,
+    );
+
+    const sizesLength = computed(() => sizesAtom().length);
+
+    const tableGrigColumnsLengthAtom = computed(
+      () => `--table-grid-columns-length: ${sizesLength()};`,
+    );
+
+    const tableGridTemplateColumnsAtom = computed(
+      () => `--table-grid-template-columns: ${getGridTemplate(sizesLength())};`,
+    );
+
+    const tableColumnSizesAtom = computed(() =>
+      getStyleByArray(sizesAtom(), '--table-column-size', printSize),
+    );
+
+    const tableColumnLeftOffsetsAtom = computed(() =>
+      getStyleLeftOffsetsForStickyColumns(sizesLength()),
+    );
+
+    const tableColumnRightOffsetsAtom = computed(() =>
+      getStyleRightOffsetsForStickyColumns(sizesLength()),
+    );
+
+    const tableResizerTopOffsetsAtom = computed(() =>
+      getStyleByArray(topOffsetsAtom(), '--table-resizer-top-offset'),
+    );
+
+    const tableResizerStickyTopOffsetsAtom = computed(() =>
+      getStyleByArray(
+        stickyTopOffsetsAtom(),
+        '--table-column-sticky-top-offset',
+      ),
+    );
+
+    const tableRowGridColumn = computed(
+      () => `--table-row-grid-column: span ${sizesLength()};`,
+    );
+
+    const tableOverScrollDisplayAtom = computed(() =>
+      resizingAtom() ? '--table-over-scroll-display: block' : '',
+    );
+
+    const tableHeaderZIndexAtom = computed(
+      () => `--table-header-z-index: ${headerZIndexAtom()};`,
+    );
+
+    const scrollTopAtom = atom(0);
+
+    const scrollBehaviorYAtom = computed<boolean>(() => {
+      return (
+        scrollTopAtom() === 0 ||
+        scrollTopAtom() ===
+          (bodyElementAtom()?.scrollHeight || 0) -
+            (bodyElementAtom()?.clientHeight || 0)
+      );
+    });
+
+    const overscrollBehaviorAtom = computed(
+      () =>
+        `overscroll-behavior-y: ${scrollBehaviorYAtom() ? 'auto' : 'none'};`,
+    );
+
+    const headerVisiblePartAtom = computed(() => {
+      const stickyHeader = stickyHeaderAtom();
+      const headerHeight = headerHeightAtom();
+      const scrollTop = scrollTopAtom();
+      if (!stickyHeader) {
+        return headerHeight - scrollTop >= 0 ? headerHeight - scrollTop : 0;
+      }
+      return headerHeight;
+    });
+
+    const tableHeaderVisiblePartAtomAtom = computed(
+      () => `--table-header-visible-part: ${headerVisiblePartAtom()}px;`,
+    );
+
+    onEventEffect(bodyElementAtom, 'scroll', (e: Event) => {
+      scrollTopAtom.set((e.target as HTMLDivElement).scrollTop);
+    });
+
+    return ({
       children,
       className,
       headerHeightAtom,
@@ -76,108 +218,20 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
       stickyTopOffsetsAtom,
       headerZIndexAtom,
       resizingAtom,
+      stickyHeaderAtom,
       ...otherProps
-    },
-    ref,
-  ) => {
-    const [randomClass] = useAtom(
-      cnTableBody({ instance: getRandomHash() }).split(' ')[1],
-    );
-    const bodyRef = useRef<HTMLDivElement>(null);
-    const bodySizeAtom = useResizeObservedAtom(
-      useMemo(() => [bodyRef], [bodyRef]),
-      getElementSize,
-    );
-    const bodyOffsetHeightSizeAtom = useResizeObservedAtom(
-      useMemo(() => [bodyRef], [bodyRef]),
-      (el) => el?.scrollHeight || 0,
-    );
-
-    const tableBodyHorizontalScrollHeightAtom = useResizeObservedAtom(
-      useMemo(() => [bodyRef], [bodyRef]),
-      (el) => {
-        const clientHeight = el?.clientHeight || 0;
-        const offsetHeight = el?.offsetHeight || 0;
-
-        return offsetHeight - clientHeight;
-      },
-    );
-
-    const tableBodyHorizontalScrollHeightStyleAtom = useCreateAtom(
-      (ctx) =>
-        `--table-body-horizontal-scroll-height: ${
-          ctx.spy(tableBodyHorizontalScrollHeightAtom)[0]
-        }px;`,
-    );
-
-    const tableBodyHeightAtom = useCreateAtom(
-      (ctx) => `--table-body-height: ${ctx.spy(bodySizeAtom)[0].height}px;`,
-    );
-
-    const bodyOffsetHeightAtom = useCreateAtom(
-      (ctx) =>
-        `--table-body-offset-height: ${ctx.spy(bodyOffsetHeightSizeAtom)}px;`,
-    );
-
-    const tableBodyWidthAtom = useCreateAtom(
-      (ctx) => `--table-body-width: ${ctx.spy(bodySizeAtom)[0].width}px;`,
-    );
-    const tableHeaderHeightAtom = useCreateAtom(
-      (ctx) => `--table-header-height: ${ctx.spy(headerHeightAtom)}px;`,
-    );
-    const tableBodySpaceTopAtom = useCreateAtom(
-      (ctx) => `--table-body-space-top: ${ctx.spy(spaceTopAtom)}px;`,
-    );
-    const sizesLength = useCreateAtom((ctx) => ctx.spy(sizesAtom).length);
-    const tableGrigColumnsLengthAtom = useCreateAtom(
-      (ctx) => `--table-grid-columns-length: ${ctx.spy(sizesLength)};`,
-    );
-    const tableGridTemplateColumnsAtom = useCreateAtom(
-      (ctx) =>
-        `--table-grid-template-columns: ${getGridTemplate(
-          ctx.spy(sizesLength),
-        )};`,
-    );
-    const tableColumnSizesAtom = useCreateAtom((ctx) =>
-      getStyleByArray(ctx.spy(sizesAtom), '--table-column-size', printSize),
-    );
-    const tableColumnLeftOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleLeftOffsetsForStickyColumns(ctx.spy(sizesLength)),
-    );
-    const tableColumnRightOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleRightOffsetsForStickyColumns(ctx.spy(sizesLength)),
-    );
-    const tableResizerTopOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleByArray(ctx.spy(topOffsetsAtom), '--table-resizer-top-offset'),
-    );
-    const tableResizerStickyTopOffsetsAtom = useCreateAtom((ctx) =>
-      getStyleByArray(
-        ctx.spy(stickyTopOffsetsAtom),
-        '--table-column-sticky-top-offset',
-      ),
-    );
-    const tableRowGridColumn = useCreateAtom(
-      (ctx) => `--table-row-grid-column: span ${ctx.spy(sizesLength)}`,
-    );
-    const tableOverScrollDisplayAtom = useCreateAtom((ctx) =>
-      ctx.spy(resizingAtom) ? '--table-over-scroll-display: block' : '',
-    );
-    const tableHeaderZIndexAtom = useCreateAtom(
-      (ctx) => `--table-header-z-index: ${ctx.spy(headerZIndexAtom)};`,
-    );
-
-    return (
+    }) => (
       <div
         {...otherProps}
         className={cnTableBody(null, [
           cnMixScrollBar(),
-          randomClass,
+          randomClassAtom(),
           className,
         ])}
-        ref={useForkRef([ref, bodyRef])}
+        ref={ref}
       >
         <Styles
-          className={randomClass}
+          className={randomClassAtom()}
           atoms={[
             tableBodyHorizontalScrollHeightStyleAtom,
             bodyOffsetHeightAtom,
@@ -195,6 +249,8 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
             tableColumnRightOffsetsAtom,
             tableResizerTopOffsetsAtom,
             tableResizerStickyTopOffsetsAtom,
+            overscrollBehaviorAtom,
+            tableHeaderVisiblePartAtomAtom,
           ]}
         />
         {children}
@@ -203,100 +259,110 @@ const TableBodyRoot: TableBodyRootComponent = forwardRef(
   },
 );
 
-export const TableBody: TableBodyComponent = forwardRef((props, ref) => {
-  const {
-    children,
-    spaceTopAtom,
-    topOffsetsAtom,
-    headerHeightAtom,
-    lowHeadersAtom,
-    resizersRefsAtom,
-    header,
-    body,
-    resizable,
-    stickyTopOffsetsAtom,
-    stickyHeader,
-    headerZIndex,
-    intersectingColumnsAtom,
-    onAfterResize,
+export const TableBody: TableBodyComponent = factoryComponent(
+  (initProps, propsAtom) => {
+    const { lowHeadersAtom, resizersElementsAtom } = initProps;
 
-    ...otherProps
-  } = props;
+    const headerZIndexAtom = computed(() => propsAtom().headerZIndex);
+    const resizableAtom = computed(() => propsAtom().resizable);
+    const stickyHeaderAtom = computed(() => !!propsAtom().stickyHeader);
 
-  const propsAtom = useSendToAtom(props);
-  const headerZIndexAtom = usePropAtom(propsAtom, 'headerZIndex');
-  const resizableAtom = usePropAtom(propsAtom, 'resizable');
+    const bodyElementAtom = atom<HTMLDivElement | null>(null);
 
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const bodyElAtom = useCreateAtom<HTMLDivElement | null>(null);
-  const setBodyEl = useAction((ctx, el: HTMLDivElement) => bodyElAtom(ctx, el));
-
-  const [blocks] = useAtom((ctx) => {
-    const lowHeaders = ctx.spy(lowHeadersAtom);
-    const resizersRefs = ctx.spy(resizersRefsAtom);
-    return lowHeaders.map(
-      ({ isSeparator, width, minWidth, maxWidth, title, accessor }, index) => {
-        const currentSeparatorWidth = title
-          ? separatorLargeWidth
-          : separatorWidth;
-
-        return isSeparator
-          ? {
-              ref: resizersRefs[index],
-              maxWidth: currentSeparatorWidth,
-              minWidth: currentSeparatorWidth,
-              width: currentSeparatorWidth,
-            }
-          : {
-              ref: resizersRefs[index],
-              minWidth: minWidth || columnDefaultMinWidth,
-              maxWidth,
-              width,
-              accessor,
-            };
-      },
+    const ref = action((el: HTMLDivElement | null) =>
+      setRefs([bodyElementAtom.set, propsAtom().ref], el),
     );
-  });
 
-  const { handlersAtom, sizesAtom, activeIndexAtom, resizingAtom } =
-    useResizableColumns({
-      resizable,
-      container: bodyRef,
-      blocks,
-      onAfterResize,
+    const blocksAtom = computed(() => {
+      const lowHeaders = lowHeadersAtom();
+      const resizersElements = resizersElementsAtom();
+      return lowHeaders.map(
+        (
+          { isSeparator, width, minWidth, maxWidth, title, accessor },
+          index,
+        ) => {
+          const currentSeparatorWidth = title
+            ? separatorLargeWidth
+            : separatorWidth;
+
+          const element = resizersElements[index]();
+
+          return isSeparator
+            ? {
+                element,
+                maxWidth: currentSeparatorWidth,
+                minWidth: currentSeparatorWidth,
+                width: currentSeparatorWidth,
+              }
+            : {
+                element,
+                minWidth: minWidth || columnDefaultMinWidth,
+                maxWidth,
+                width,
+                accessor,
+              };
+        },
+      );
     });
 
-  return (
-    <TableBodyRoot
-      {...otherProps}
-      ref={useForkRef([ref, bodyRef, setBodyEl])}
-      headerHeightAtom={headerHeightAtom}
-      spaceTopAtom={spaceTopAtom}
-      sizesAtom={sizesAtom}
-      topOffsetsAtom={topOffsetsAtom}
-      stickyTopOffsetsAtom={stickyTopOffsetsAtom}
-      headerZIndexAtom={headerZIndexAtom}
-      resizingAtom={resizingAtom}
-    >
-      <div className={cnTableBody('OverScroll')} />
-      {header}
-      <div
-        className={cnTableBody('Separator', { sticky: stickyHeader }, [
-          cnTableCell(),
-        ])}
-      />
-      <TableSeparatorTitles lowHeadersAtom={lowHeadersAtom} />
-      <TableResizers
-        bodyElAtom={bodyElAtom}
-        lowHeadersAtom={lowHeadersAtom}
-        resizersRefsAtom={resizersRefsAtom}
-        handlersAtom={handlersAtom}
-        resizableAtom={resizableAtom}
-        activeIndexAtom={activeIndexAtom}
-        intersectingColumnsAtom={intersectingColumnsAtom}
-      />
-      <TableVirtualScrollSpaceTop />
-      {body}
-    </TableBodyRoot>
-  );
-});
+    const { handlersAtom, sizesAtom, activeIndexAtom, resizingAtom } =
+      resizableColumns(
+        blocksAtom,
+        bodyElementAtom,
+        resizableAtom,
+        propAction(propsAtom, 'onAfterResize'),
+      );
+
+    return ({
+      children,
+      spaceTopAtom,
+      topOffsetsAtom,
+      headerHeightAtom,
+      lowHeadersAtom,
+      resizersElementsAtom,
+      header,
+      body,
+      resizable,
+      stickyTopOffsetsAtom,
+      stickyHeader,
+      headerZIndex,
+      intersectingColumnsAtom,
+      onAfterResize,
+      ...otherProps
+    }) => (
+      <TableBodyRoot
+        {...otherProps}
+        ref={ref}
+        headerHeightAtom={headerHeightAtom}
+        spaceTopAtom={spaceTopAtom}
+        sizesAtom={sizesAtom}
+        topOffsetsAtom={topOffsetsAtom}
+        stickyTopOffsetsAtom={stickyTopOffsetsAtom}
+        headerZIndexAtom={headerZIndexAtom}
+        resizingAtom={resizingAtom}
+        stickyHeaderAtom={stickyHeaderAtom}
+      >
+        <div className={cnTableBody('OverScroll')} />
+        <TableResizers
+          lowHeadersAtom={lowHeadersAtom}
+          bodyElementAtom={bodyElementAtom}
+          resizersElementsAtom={resizersElementsAtom}
+          handlersAtom={handlersAtom}
+          resizableAtom={resizableAtom}
+          activeIndexAtom={activeIndexAtom}
+          intersectingColumnsAtom={intersectingColumnsAtom}
+          stickyHeaderAtom={stickyHeaderAtom}
+        />
+        {header}
+        <div
+          className={cnTableBody('Separator', { sticky: stickyHeader }, [
+            cnTableCell(),
+          ])}
+        />
+        <TableSeparatorTitles lowHeadersAtom={lowHeadersAtom} />
+        <TableVirtualScrollSpaceTop />
+        {body}
+      </TableBodyRoot>
+    );
+  },
+);

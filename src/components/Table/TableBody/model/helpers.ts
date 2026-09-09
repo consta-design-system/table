@@ -1,14 +1,9 @@
 import { trackPosition } from '@consta/uikit/__internal__/src/components/Slider/useSlider/helper';
-import { useDebounce } from '@consta/uikit/useDebounce';
-import { useResizeObserved } from '@consta/uikit/useResizeObserved';
-import { AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
-import React, { useMemo } from 'react';
 
 import { TableColumnResizeResult } from '../../types';
-import { UseResizableColumnsBlock, UseResizableColumnsSize } from './types';
+import { ResizableColumnsBlock, ResizableColumnsSize } from './types';
 
-const minMax = (min?: number, max?: number, value?: number) => {
+export const minMax = (min?: number, max?: number, value?: number) => {
   if (typeof value === 'number') {
     if (max && min) {
       return Math.min(max, Math.max(min, value));
@@ -32,7 +27,7 @@ export const sizesEq = (
   sizes: (string | number | undefined)[],
 ) => newSizes.join('-') === sizes.join('-');
 
-const getContainerWidth = (el?: HTMLElement | null) =>
+export const getContainerWidth = (el?: HTMLElement | null) =>
   el
     ? Math.floor(
         el.clientWidth - (el.offsetWidth - el.getBoundingClientRect().width),
@@ -40,13 +35,13 @@ const getContainerWidth = (el?: HTMLElement | null) =>
     : undefined;
 
 export const getRefsSizes = (
-  blocks: UseResizableColumnsBlock[],
+  blocks: ResizableColumnsBlock[],
 ): (number | string | undefined)[] => {
   let gap = 0;
 
-  return blocks.map(({ ref, maxWidth, minWidth, width }) => {
+  return blocks.map(({ element, maxWidth, minWidth, width }) => {
     const value =
-      minMax(minWidth, maxWidth, ref.current?.getBoundingClientRect().width) ||
+      minMax(minWidth, maxWidth, element?.getBoundingClientRect().width) ||
       (typeof width === 'number' ? minMax(minWidth, maxWidth, width) : width);
 
     if (typeof value === 'number') {
@@ -61,22 +56,19 @@ export const getRefsSizes = (
   });
 };
 
-const getTargetBlockPosition = (
-  sizes: UseResizableColumnsSize[],
-  index: number,
-) =>
+const getTargetBlockPosition = (sizes: ResizableColumnsSize[], index: number) =>
   sizes
     .slice(0, index)
     .map((el) => (typeof el === 'number' ? el : 0))
     .reduce((val, a) => (val ?? 0) + (a ?? 0), 0);
 
-const getBlockMaxSizes = (block: UseResizableColumnsBlock | undefined) => {
+export const getBlockMaxSizes = (block: ResizableColumnsBlock | undefined) => {
   return [block?.minWidth || 0, block?.maxWidth] as const;
 };
 
 type GetValidValuesResult = [number, number][];
 
-export const addResult = <T extends UseResizableColumnsSize>(
+export const addResult = <T extends ResizableColumnsSize>(
   result: [number, T][],
   sizes: T[],
 ): T[] => {
@@ -99,8 +91,8 @@ export const isSizesCalculate = (
 export const getSizesSum = (sizes: number[]) => sizes.reduce((a, b) => a + b);
 
 export const getResizeResult = (
-  blocks: UseResizableColumnsBlock[],
-  sizes: UseResizableColumnsSize[],
+  blocks: ResizableColumnsBlock[],
+  sizes: ResizableColumnsSize[],
 ): TableColumnResizeResult[] =>
   blocks.reduce<TableColumnResizeResult[]>((result, block, index) => {
     const width = sizes[index];
@@ -115,9 +107,9 @@ export const getResizeResult = (
 const getValidValues = (
   value: number,
   index: number,
-  blocks: UseResizableColumnsBlock[],
+  blocks: ResizableColumnsBlock[],
   containerWidth: number,
-  sizes: UseResizableColumnsSize[],
+  sizes: ResizableColumnsSize[],
   resizable: 'inside' | 'outside',
 ): GetValidValuesResult => {
   const currentMinMax = getBlockMaxSizes(blocks[index]);
@@ -177,17 +169,17 @@ const getValidValues = (
 export const getCalculatedSizes = (
   event: MouseEvent | TouchEvent | Event,
   index: number,
-  blocks: UseResizableColumnsBlock[],
-  container: React.RefObject<HTMLElement>,
-  sizes: UseResizableColumnsSize[],
+  blocks: ResizableColumnsBlock[],
+  container: HTMLElement | null,
+  sizes: ResizableColumnsSize[],
   resizable: 'inside' | 'outside',
-): [number, UseResizableColumnsSize][] => {
+): [number, ResizableColumnsSize][] => {
   const position = trackPosition(event as MouseEvent | TouchEvent)?.x;
 
   if (position) {
-    const containerWidth = getContainerWidth(container.current) || 0;
-    const containerLeft = container.current?.getBoundingClientRect().left || 0;
-    const scrollLeft = container.current?.scrollLeft || 0;
+    const containerWidth = getContainerWidth(container) || 0;
+    const containerLeft = container?.getBoundingClientRect().left || 0;
+    const scrollLeft = container?.scrollLeft || 0;
     const trackPosition = getTargetBlockPosition(sizes, index);
 
     const value = Math.floor(
@@ -205,54 +197,4 @@ export const getCalculatedSizes = (
   }
 
   return [];
-};
-
-export const useResizeContainer = (
-  containerAtom: AtomMut<React.RefObject<HTMLElement>>,
-  blocksAtom: AtomMut<UseResizableColumnsBlock[]>,
-  resizableAtom: AtomMut<'inside' | 'outside' | undefined>,
-  sizesAtom: AtomMut<(string | number | undefined)[]>,
-  set: (newSizes: (string | number | undefined)[]) => void,
-) => {
-  const [containerRef] = useAtom(containerAtom);
-
-  return useResizeObserved(
-    useMemo(() => [containerRef], [containerRef]),
-    useDebounce(
-      useAction((ctx, el) => {
-        const containerWidth = getContainerWidth(el);
-        const newSizes = [...ctx.get(sizesAtom)];
-        const resizable = ctx.get(resizableAtom);
-
-        if (containerWidth && isSizesCalculate(newSizes)) {
-          const blocks = ctx.get(blocksAtom);
-          const sizesSum = getSizesSum(newSizes);
-          let gap = containerWidth - sizesSum;
-
-          if (
-            (resizable !== 'outside' && gap) ||
-            (resizable === 'outside' && gap > 0)
-          ) {
-            let index = blocks.length - 1;
-
-            while (newSizes[index] && gap) {
-              const blockMinMax = getBlockMaxSizes(blocks[index]);
-              const size = newSizes[index];
-              const newSize =
-                minMax(blockMinMax[0], blockMinMax[1], newSizes[index] + gap) ||
-                0;
-
-              gap -= newSize - size;
-
-              newSizes[index] = newSize;
-
-              index -= 1;
-            }
-          }
-          set(newSizes);
-        }
-      }),
-      10,
-    ),
-  );
 };

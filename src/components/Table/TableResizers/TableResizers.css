@@ -1,27 +1,59 @@
 .ct--TableResizers {
   display: contents;
 
+  &_sticky &-Resizer {
+    height: min(
+      calc(
+        var(--table-body-height) - var(--table-resizer-top-offset) -
+          var(--table-body-horizontal-scroll-height) - 2px
+      ),
+      calc(
+        var(--table-body-height) - var(--table-body-horizontal-scroll-height)
+      )
+    );
+
+    top: var(--table-resizer-top-offset);
+  }
+
+  &:not(&_sticky) &-Resizer {
+    height: min(
+      calc(
+        var(--table-body-height) - var(--table-resizer-top-offset) -
+          var(--table-body-horizontal-scroll-height) - 2px +
+          (var(--table-header-height) - var(--table-header-visible-part))
+      ),
+      calc(
+        var(--table-body-height) - var(--table-body-horizontal-scroll-height)
+      )
+    );
+
+    top: max(
+      calc(
+        var(--table-resizer-top-offset) -
+          (var(--table-header-height) - var(--table-header-visible-part))
+      ),
+      0px
+    );
+  }
+
   &-Cell {
+    top: 0;
+    --table-resizer-cell-height: calc(
+      var(--table-header-height) - var(--table-resizer-top-offset)
+    );
     position: sticky;
     z-index: calc(var(--table-header-z-index) + 10);
-    top: calc(var(--table-header-height) + var(--table-body-separator-height));
   }
 
   &-Resizer {
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-    --resizer-top: calc(
-      (var(--table-header-height) - var(--table-resizer-top-offset)) * -1
-    );
+
     position: absolute;
-    top: var(--resizer-top);
     right: 0;
     width: var(--resizer-width);
-    height: calc(
-      var(--table-body-height) - var(--table-resizer-top-offset) -
-        var(--table-body-horizontal-scroll-height) - 2px
-    );
+    height: var(--resizer-height);
     background-color: var(--color-bg-ghost);
     opacity: 0;
     cursor: col-resize;
@@ -47,9 +79,8 @@
   }
 
   &-VirtualScrollHelper {
-    position: absolute;
-    top: calc(var(--table-header-height) * -1);
     width: 100%;
+    height: 100%;
     pointer-events: none;
   }
 }

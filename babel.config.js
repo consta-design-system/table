@@ -60,6 +60,64 @@ module.exports = {
         regenerator: true,
       },
     ],
+     ...(!isProduction
+      ? [
+          [
+            './scripts/babel-plugin-reatom-name/src/index.ts',
+            {
+              functionConfig: [
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'factoryComponent',
+                  argNameIndex: 1,
+                },
+
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'rangeAtom',
+                  argNameIndex: 2,
+                },
+
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'forkRef',
+                  argNameIndex: 1,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'computedSet',
+                  argNameIndex: 1,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'clickOutsideEffect',
+                  argNameIndex: 1,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'isTouch',
+                  argNameIndex: 0,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'onEventEffect',
+                  argNameIndex: 3,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'keysEffect',
+                  argNameIndex: 1,
+                },
+                {
+                  path: '@consta/uikit/__internal__/src/utils/state',
+                  functionName: 'resizeObservedAtom',
+                  argNameIndex: 2,
+                },
+              ],
+            },
+          ],
+        ]
+      : []),
     ...(isProduction
       ? [
           [

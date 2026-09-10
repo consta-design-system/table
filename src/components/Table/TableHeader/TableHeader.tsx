@@ -1,8 +1,8 @@
 import './TableHeader.css';
 
-import { forkRef } from '@consta/uikit/useForkRef';
-import { useAtom } from '@reatom/npm-react';
-import React, { forwardRef } from 'react';
+import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
+import { computed, peek } from '@reatom/core';
+import React from 'react';
 
 import { HeaderDataCell } from '##/components/HeaderDataCell';
 import { cn } from '##/utils/bem';
@@ -16,78 +16,85 @@ const DefaultRenderHeaderCell: TableRenderHeaderCell = ({ title }) => (
   <HeaderDataCell>{title}</HeaderDataCell>
 );
 
-export const TableHeader: TableHeaderComponent = forwardRef((props, ref) => {
-  const {
-    headersAtom,
-    className,
-    stickyLeftOffsetsAtom,
-    stickyRightOffsetsAtom,
-    stickyHeader,
-    headerCellsRefsAtom,
-    bordersAtom,
-    tableRef,
-    ...otherProps
-  } = props;
+export const TableHeader: TableHeaderComponent = factoryComponent(
+  ({ tableElementAtom }) => {
+    const tableRefAtom = computed(() => ({
+      current: tableElementAtom(),
+    }));
 
-  const [headers] = useAtom(headersAtom);
-  const [borders] = useAtom(bordersAtom);
-  const [stickyLeftOffsets] = useAtom(stickyLeftOffsetsAtom);
-  const [stickyRightOffsets] = useAtom(stickyRightOffsetsAtom);
-  const [headerCellsRefs] = useAtom(headerCellsRefsAtom);
+    return ({
+      headersAtom,
+      className,
+      stickyLeftOffsetsAtom,
+      stickyRightOffsetsAtom,
+      stickyHeader,
+      headerCellsElementsAtom,
+      bordersAtom,
+      tableElementAtom,
+      ...otherProps
+    }) => {
+      const borders = bordersAtom();
+      const stickyLeftOffsets = stickyLeftOffsetsAtom();
+      const stickyRightOffsets = stickyRightOffsetsAtom();
+      const headerCellsElements = headerCellsElementsAtom();
+      const headers = headersAtom();
+      const tableRef = peek(tableRefAtom);
 
-  return (
-    <div {...otherProps} className={cnTableHeader(null, [className])} ref={ref}>
-      {headers.map((column, index) => {
-        const style: React.CSSProperties = {};
-        if (column.position!.colSpan) {
-          style.gridColumnEnd = `span ${column.position!.colSpan}`;
-        }
-        if (column.position!.rowSpan) {
-          style.gridRowEnd = `span ${column.position!.rowSpan}`;
-        }
+      return (
+        <div {...otherProps} className={cnTableHeader(null, [className])}>
+          {headers.map((column, index) => {
+            const style: React.CSSProperties = {};
+            if (column.position!.colSpan) {
+              style.gridColumnEnd = `span ${column.position!.colSpan}`;
+            }
+            if (column.position!.rowSpan) {
+              style.gridRowEnd = `span ${column.position!.rowSpan}`;
+            }
 
-        const RenderHeaderCell =
-          column.renderHeaderCell || DefaultRenderHeaderCell;
+            const RenderHeaderCell =
+              column.renderHeaderCell || DefaultRenderHeaderCell;
 
-        return (
-          <div
-            className={cnTableHeader('Cell', { pinned: !!column.pinned }, [
-              cnTableCell({
-                separator: column.isSeparator,
-                borderLeft: borders[index][0],
-                borderRight: borders[index][1],
-                borderTop: borders[index][2],
-                sticky: !!column.pinned || stickyHeader,
-                up: !!column.pinned,
-              }),
-            ])}
-            style={{
-              ...style,
-              top: stickyHeader
-                ? `var(--table-column-sticky-top-offset-${index})`
-                : undefined,
-              left:
-                column.pinned === 'left'
-                  ? `var(--table-column-sticky-left-offset-${stickyLeftOffsets[index]})`
-                  : undefined,
-              right:
-                column.pinned === 'right'
-                  ? `var(--table-column-sticky-right-offset-${stickyRightOffsets[index]})`
-                  : undefined,
-            }}
-            ref={forkRef([headerCellsRefs[index]])}
-            key={cnTableHeader('Cell', { index })}
-          >
-            {column.isSeparator ? null : (
-              <RenderHeaderCell
-                title={column.title}
-                index={index}
-                tableRef={tableRef}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-});
+            return (
+              <div
+                className={cnTableHeader('Cell', { pinned: !!column.pinned }, [
+                  cnTableCell({
+                    separator: column.isSeparator,
+                    borderLeft: borders[index][0],
+                    borderRight: borders[index][1],
+                    borderTop: borders[index][2],
+                    sticky: !!column.pinned || stickyHeader,
+                    up: !!column.pinned,
+                  }),
+                ])}
+                style={{
+                  ...style,
+                  top: stickyHeader
+                    ? `var(--table-column-sticky-top-offset-${index})`
+                    : undefined,
+                  left:
+                    column.pinned === 'left'
+                      ? `var(--table-column-sticky-left-offset-${stickyLeftOffsets[index]})`
+                      : undefined,
+                  right:
+                    column.pinned === 'right'
+                      ? `var(--table-column-sticky-right-offset-${stickyRightOffsets[index]})`
+                      : undefined,
+                }}
+                ref={headerCellsElements[index].set}
+                key={cnTableHeader('Cell', { index })}
+              >
+                {column.isSeparator ? null : (
+                  <RenderHeaderCell
+                    title={column.title}
+                    index={index}
+                    tableRef={tableRef}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    };
+  },
+);

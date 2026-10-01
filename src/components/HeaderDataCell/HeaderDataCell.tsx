@@ -9,7 +9,7 @@ import { cn } from '##/utils/bem';
 import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
 import { isNumber, isString } from '##/utils/type-guards';
 
-const cnHeaderDataCell = cn('HeaderDataCell');
+export const cnHeaderDataCell = cn('HeaderDataCell');
 
 export type HeaderDataCellProps = {
   controlRight?: React.ReactNode | JSX.Element[];

@@ -7,10 +7,11 @@ export const CollapseButton: React.FC<{
   icon?: IconComponent;
   active?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}> = ({ icon, active, onClick }) => (
+  className?: string;
+}> = ({ icon, active, ...otherProps }) => (
   <AnimateIconSwitcherProvider active={active}>
     <Button
-      onClick={onClick}
+      {...otherProps}
       size="s"
       iconLeft={icon}
       view="ghost"

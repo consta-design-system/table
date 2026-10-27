@@ -1,6 +1,7 @@
 import './TableData.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
+import { wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -71,7 +72,7 @@ export const TableData: TableDataComponent = factoryComponent(() => {
               lowHeadersAtom={lowHeadersAtom}
               zebraStriped={rowZebraStriped}
               tableElementAtom={tableElementAtom}
-              ref={rowsElements[rowIndex].set}
+              ref={wrap(rowsElements[rowIndex].set)}
               leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
               rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
               onRowMouseEnter={onRowMouseEnter}

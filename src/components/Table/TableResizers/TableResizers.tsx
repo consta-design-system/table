@@ -5,7 +5,7 @@ import {
   rangeAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { action, Atom, AtomLike, Computed, computed } from '@reatom/core';
+import { action, Atom, AtomLike, Computed, computed, wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -147,10 +147,10 @@ export const TableResizers: TableResizersComponent = memo(
                 <TableResizer
                   resizableAtom={resizableAtom}
                   key={index}
-                  ref={resizersElements[index].set}
-                  virtualScrollHelperRef={
-                    virtualScrollHelperElements[index].set
-                  }
+                  ref={wrap(resizersElements[index].set)}
+                  virtualScrollHelperRef={wrap(
+                    virtualScrollHelperElements[index].set,
+                  )}
                   maxWidth={maxWidth}
                   minWidth={minWidth}
                   pinned={pinned}

@@ -179,6 +179,10 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
   const pinnedRightColumns: TableColumnWidthKey<T>[] = [];
   const otherColumns: TableColumnWidthKey<T>[] = [];
 
+  if (columns.length === 0) {
+    return [[], [], []];
+  }
+
   mapColumns<TableColumn<T>>(columns, (item, index) => {
     if (!item.columns?.length && item.pinned === 'left') {
       pushByIndex(index, columns, pinnedLeftColumns, 'left');

@@ -6,6 +6,7 @@ import {
   effect,
   peek,
   reatomArray,
+  wrap,
 } from '@reatom/core';
 
 export const visibleColumnsEffect = (
@@ -13,12 +14,14 @@ export const visibleColumnsEffect = (
   intersectingColumnsAtom: Atom<boolean[]>,
   rootAtom: AtomLike<HTMLDivElement | null>,
 ) => {
-  const setIntersectingColumns = action((index: number, value: boolean) => {
-    const newState = [...intersectingColumnsAtom()];
-    newState[index] = value;
+  const setIntersectingColumns = wrap(
+    action((index: number, value: boolean) => {
+      const newState = [...intersectingColumnsAtom()];
+      newState[index] = value;
 
-    intersectingColumnsAtom.set(newState);
-  });
+      intersectingColumnsAtom.set(newState);
+    }),
+  );
 
   const observersAtom = reatomArray<IntersectionObserver>([]);
 

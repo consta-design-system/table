@@ -1,7 +1,7 @@
 import './TableHeader.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
-import { computed, peek } from '@reatom/core';
+import { computed, peek, wrap } from '@reatom/core';
 import React from 'react';
 
 import { HeaderDataCell } from '##/components/HeaderDataCell';
@@ -80,7 +80,7 @@ export const TableHeader: TableHeaderComponent = factoryComponent(
                       ? `var(--table-column-sticky-right-offset-${stickyRightOffsets[index]})`
                       : undefined,
                 }}
-                ref={headerCellsElements[index].set}
+                ref={wrap(headerCellsElements[index].set)}
                 key={cnTableHeader('Cell', { index })}
               >
                 {column.isSeparator ? null : (

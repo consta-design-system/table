@@ -3,7 +3,7 @@ import {
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { atom, AtomLike, computed, effect, peek } from '@reatom/core';
+import { atom, AtomLike, computed, peek } from '@reatom/core';
 
 import { get, set } from '##/utils/object/get';
 

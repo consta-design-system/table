@@ -4,6 +4,7 @@ import { IconComponent } from '@consta/icons/Icon';
 import { cnMixFlex } from '@consta/uikit/MixFlex';
 import { cnMixSpace } from '@consta/uikit/MixSpace';
 import { Text } from '@consta/uikit/Text';
+import { wrap } from '@reatom/core';
 import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';

@@ -3,9 +3,8 @@ import {
   testRootId,
   tick,
 } from '@consta/uikit/__internal__/src/utils/vitest';
-import { animateTimeout } from '@consta/uikit/MixPopoverAnimate';
 import { presetGpnDefault, Theme } from '@consta/uikit/Theme';
-import { clearStack, context, sleep, top, wrap } from '@reatom/core';
+import { clearStack, context, top, wrap } from '@reatom/core';
 import { reatomContext } from '@reatom/react';
 import { act } from '@testing-library/react';
 import React from 'react';

@@ -257,7 +257,7 @@ export const transformColumns = <T>(
         headersArr[level].push(handledItem);
         node.index++;
       } else {
-        // TODO: Заменитть на функцию обхода по дереву, чтоб без рекурсии
+        // TODO: Заменить на функцию обхода по дереву, чтоб без рекурсии
         handledItem.position.colSpan = getLastChildrenCount(
           handledItem.columns,
         );

@@ -2073,8 +2073,10 @@ const rows: Row[] = [
       data: 'Антон',
     },
     profession: {
+      /* cspell:disable-next-line */
       data: 'РОЮЛАВТМЯО',
       status: 'alert',
+      /* cspell:disable-next-line */
       statusMessage: 'Неизвестное название диапазона: РОЮЛАВТМЯО.',
     },
     status: {
@@ -2162,6 +2164,7 @@ const DataCellWithInformer = ({
         onMouseEnter={anchorOnMouseEnter}
         onMouseLeave={anchorOnMouseLeave}
       >
+        {/* cspell:disable-next-line */}
         {status === 'alert' ? '#ТИПДАННЫХ?' : data}
       </DataCell>
       {status && (
@@ -2456,7 +2459,7 @@ const TableExampleOnScrollToBottom = () => {
   return (
     <>
       <Text size="m" weight="bold">
-        {isScrollToBottom ? 'Вы проскроллили до конца' : 'Скролльте вниз'}
+        {isScrollToBottom ? 'Вы проскроллили до конца' : 'Скрольте вниз'}
       </Text>
       <Table
         style={{ maxHeight: 400 }}

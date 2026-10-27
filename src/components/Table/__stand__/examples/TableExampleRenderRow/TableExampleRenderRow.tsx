@@ -56,8 +56,8 @@ const data: Row[] = [
       {
         label: 'Порты',
         value: [
-          { label: 'Входяший', value: 'A2-папа' },
-          { label: 'Исходяший', value: 'A2-папа' },
+          { label: 'Входящий', value: 'A2-папа' },
+          { label: 'Исходящий', value: 'A2-папа' },
         ],
       },
       {

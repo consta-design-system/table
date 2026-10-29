@@ -86,49 +86,55 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       getRowKey: getRowKeyProp,
       onScrollToBottom,
       ...otherProps
-    }) => (
-      <TableBody
-        {...otherProps}
-        topOffsetsAtom={resizerTopOffsetsAtom}
-        spaceTopAtom={spaceTopAtom}
-        ref={ref}
-        headerHeightAtom={headerHeightAtom}
-        lowHeadersAtom={lowHeadersAtom}
-        resizersElementsAtom={resizersElementsAtom}
-        resizable={resizable}
-        stickyTopOffsetsAtom={stickyTopOffsetsAtom}
-        stickyHeader={stickyHeader}
-        headerZIndex={headerZIndex}
-        intersectingColumnsAtom={intersectingColumnsAtom}
-        header={
-          <MemoTableHeader
-            headersAtom={flattenedHeadersAtom}
-            headerCellsElementsAtom={headerCellsElementsAtom}
-            stickyHeader={stickyHeader}
-            stickyLeftOffsetsAtom={stickyLeftOffsetsAtom}
-            stickyRightOffsetsAtom={stickyRightOffsetsAtom}
-            bordersAtom={bordersFlattenedHeadersAtom}
-            tableElementAtom={scrollElementAtom}
-          />
-        }
-        body={
-          <MemoTableData
-            lowHeadersAtom={lowHeadersAtom}
-            rows={rows}
-            rowsElementsAtom={listElementsAtom}
-            sliceAtom={sliceAtom}
-            zebraStriped={zebraStriped}
-            onRowMouseEnter={onRowMouseEnter}
-            onRowMouseLeave={onRowMouseLeave}
-            onRowClick={onRowClick}
-            getRowKey={getRowKey}
-            tableElementAtom={scrollElementAtom}
-            rowHoverEffect={rowHoverEffect}
-            leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
-            rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
-          />
-        }
-      />
-    );
+    }) => {
+      if (columns.length === 0) {
+        return null;
+      }
+
+      return (
+        <TableBody
+          {...otherProps}
+          topOffsetsAtom={resizerTopOffsetsAtom}
+          spaceTopAtom={spaceTopAtom}
+          ref={ref}
+          headerHeightAtom={headerHeightAtom}
+          lowHeadersAtom={lowHeadersAtom}
+          resizersElementsAtom={resizersElementsAtom}
+          resizable={resizable}
+          stickyTopOffsetsAtom={stickyTopOffsetsAtom}
+          stickyHeader={stickyHeader}
+          headerZIndex={headerZIndex}
+          intersectingColumnsAtom={intersectingColumnsAtom}
+          header={
+            <MemoTableHeader
+              headersAtom={flattenedHeadersAtom}
+              headerCellsElementsAtom={headerCellsElementsAtom}
+              stickyHeader={stickyHeader}
+              stickyLeftOffsetsAtom={stickyLeftOffsetsAtom}
+              stickyRightOffsetsAtom={stickyRightOffsetsAtom}
+              bordersAtom={bordersFlattenedHeadersAtom}
+              tableElementAtom={scrollElementAtom}
+            />
+          }
+          body={
+            <MemoTableData
+              lowHeadersAtom={lowHeadersAtom}
+              rows={rows}
+              rowsElementsAtom={listElementsAtom}
+              sliceAtom={sliceAtom}
+              zebraStriped={zebraStriped}
+              onRowMouseEnter={onRowMouseEnter}
+              onRowMouseLeave={onRowMouseLeave}
+              onRowClick={onRowClick}
+              getRowKey={getRowKey}
+              tableElementAtom={scrollElementAtom}
+              rowHoverEffect={rowHoverEffect}
+              leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
+              rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+            />
+          }
+        />
+      );
+    };
   },
 ) as TableComponent;

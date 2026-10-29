@@ -180,7 +180,7 @@ const transformPinnedColumns = <T>(columns: TableColumn<T>[]) => {
   const otherColumns: TableColumnWidthKey<T>[] = [];
 
   if (columns.length === 0) {
-    return [[], [], []];
+    return [];
   }
 
   mapColumns<TableColumn<T>>(columns, (item, index) => {
@@ -441,9 +441,10 @@ export const headerDataModel = <T>(
     null,
   );
 
-  const headerHeightAtom = computed(() =>
-    headerRowsHeightsAtom().reduce(reduceSum),
-  );
+  const headerHeightAtom = computed(() => {
+    const headerRowsHeights = headerRowsHeightsAtom();
+    return headerRowsHeights.length ? headerRowsHeights.reduce(reduceSum) : 0;
+  });
 
   const stickyTopOffsetsAtom = computed(() =>
     getStickyTopOffsets(flattenedHeadersAtom(), headerRowsHeightsAtom()),

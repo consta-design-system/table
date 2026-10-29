@@ -1821,19 +1821,19 @@
   resolved "https://registry.yarnpkg.com/@consta/icons/-/icons-1.7.1.tgz#438d6fc7cb20ac1db67cc9502aa06eb83682ac62"
   integrity sha512-ZFngpjo9MlVyNnRU0SJqg2kbzHmh41ydqCYLOWokvhPjlgqUS7W+R38+dHSpIMyMe33wKBvF8LciSqhGwmuP9w==
 
-"@consta/stand@https://pkg.pr.new/consta-design-system/stand/@consta/stand@bb0eded":
+"@consta/stand@https://pkg.pr.new/consta-design-system/stand/@consta/stand@e9596e1":
   version "0.0.163-alpha"
-  resolved "https://pkg.pr.new/consta-design-system/stand/@consta/stand@bb0eded#2adff80c0bb7eed1d11ce05a4bd38eeb674d49fc"
+  resolved "https://pkg.pr.new/consta-design-system/stand/@consta/stand@e9596e1#2b48c179286b419413e5f5c42e00bbfdf0045e2d"
   dependencies:
     "@consta/header" "^3.1.0"
     "@consta/icons" "^1.7.1"
-    "@consta/uikit" "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@03b690f"
+    "@consta/uikit" "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@c54c147"
     "@mdx-js/loader" "^2.3.0"
     "@mdx-js/react" "^2.3.0"
     "@oclif/command" "^1.8.22"
     "@pmmmwh/react-refresh-webpack-plugin" "^0.5.10"
     "@reatom/core" "^1001.3.0"
-    "@reatom/react" "^1001.0.1"
+    "@reatom/react" "https://pkg.pr.new/@reatom/react@8e287d5"
     "@svgr/core" "^6.5.1"
     "@svgr/plugin-jsx" "^6.5.1"
     "@svgr/plugin-prettier" "^6.5.1"
@@ -1891,9 +1891,9 @@
     webpack-manifest-plugin "^5.0.0"
     workbox-webpack-plugin "^6.4.1"
 
-"@consta/uikit@https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@03b690f":
-  version "5.34.0-alpha.1"
-  resolved "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@03b690f#e4a8b5aed51c2e37f1da3b190394edf1f90080df"
+"@consta/uikit@https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@c54c147":
+  version "5.34.0-alpha.2"
+  resolved "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@c54c147#6a8e13fe630920daa6d3359b9dd1f5f9a0c2e371"
 
 "@cspell/cspell-bundled-dicts@8.19.4":
   version "8.19.4"
@@ -3070,10 +3070,9 @@
   optionalDependencies:
     idb-keyval "^6.2.4"
 
-"@reatom/react@^1001.0.1":
+"@reatom/react@https://pkg.pr.new/@reatom/react@8e287d5":
   version "1001.0.1"
-  resolved "https://registry.yarnpkg.com/@reatom/react/-/react-1001.0.1.tgz#a5159652b6bc2b2a32e06f02902a0a1b4ae45995"
-  integrity sha512-xU5diWeNIrVmJs5a5G6RTPOAz3OhPTtT7iqswPKJs5tGEahf2tCWo25JKEALv79pG0eqTGGJ5W/k7llweOhe3g==
+  resolved "https://pkg.pr.new/@reatom/react@8e287d5#c117ec42f9997da2e3287f9d0e2a22512b044150"
 
 "@rolldown/binding-android-arm-eabi@1.2.7":
   version "1.2.7"

@@ -9,7 +9,7 @@ import {
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed, wrap } from '@reatom/core';
+import { action, atom, AtomLike, computed, effect, wrap } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 
@@ -43,24 +43,24 @@ const getRandomHash = () =>
 
 const Style = reatomFactoryComponent<{
   atom: AtomLike<string>;
-  className: string;
-}>(() => {
-  return ({ atom: a, className }) => (
-    <style>
-      {`.${className} {`} {a()} {`}`}
-    </style>
-  );
-});
+  classNameAtom: AtomLike<string>;
+}>(() => ({ atom: a, classNameAtom }) => (
+  <style>
+    {`.${classNameAtom()} {`} {a()} {`}`}
+  </style>
+));
 
 const Styles = memo(
-  ({ atoms, className }: { atoms: AtomLike<string>[]; className: string }) => (
-    <>
-      {atoms.map((atom, index) => (
-        <Style key={index} atom={atom} className={className} />
-      ))}
-    </>
+  reatomFactoryComponent<{
+    stylesAtom: AtomLike<AtomLike<string>[]>;
+    classNameAtom: AtomLike<string>;
+  }>(
+    () =>
+      ({ stylesAtom, classNameAtom }) =>
+        stylesAtom().map((atom, index) => (
+          <Style key={index} atom={atom} classNameAtom={classNameAtom} />
+        )),
   ),
-  () => true,
 );
 
 const TableBodyRoot: TableBodyRootComponent = factoryComponent(
@@ -204,6 +204,27 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
       () => `--table-header-visible-part: ${headerVisiblePartAtom()}px;`,
     );
 
+    const stylesAtom = computed(() => [
+      tableBodyHorizontalScrollHeightStyleAtom,
+      bodyOffsetHeightAtom,
+      tableBodyHeightAtom,
+      tableBodyWidthAtom,
+      tableHeaderHeightAtom,
+      tableBodySpaceTopAtom,
+      tableGrigColumnsLengthAtom,
+      tableGridTemplateColumnsAtom,
+      tableRowGridColumn,
+      tableOverScrollDisplayAtom,
+      tableHeaderZIndexAtom,
+      tableColumnSizesAtom,
+      tableColumnLeftOffsetsAtom,
+      tableColumnRightOffsetsAtom,
+      tableResizerTopOffsetsAtom,
+      tableResizerStickyTopOffsetsAtom,
+      overscrollBehaviorAtom,
+      tableHeaderVisiblePartAtomAtom,
+    ]);
+
     onEventEffect(bodyElementAtom, 'scroll', (e: Event) => {
       scrollTopAtom.set((e.target as HTMLDivElement).scrollTop);
     });
@@ -230,29 +251,7 @@ const TableBodyRoot: TableBodyRootComponent = factoryComponent(
         ])}
         ref={wrap(ref)}
       >
-        <Styles
-          className={randomClassAtom()}
-          atoms={[
-            tableBodyHorizontalScrollHeightStyleAtom,
-            bodyOffsetHeightAtom,
-            tableBodyHeightAtom,
-            tableBodyWidthAtom,
-            tableHeaderHeightAtom,
-            tableBodySpaceTopAtom,
-            tableGrigColumnsLengthAtom,
-            tableGridTemplateColumnsAtom,
-            tableRowGridColumn,
-            tableOverScrollDisplayAtom,
-            tableHeaderZIndexAtom,
-            tableColumnSizesAtom,
-            tableColumnLeftOffsetsAtom,
-            tableColumnRightOffsetsAtom,
-            tableResizerTopOffsetsAtom,
-            tableResizerStickyTopOffsetsAtom,
-            overscrollBehaviorAtom,
-            tableHeaderVisiblePartAtomAtom,
-          ]}
-        />
+        <Styles classNameAtom={randomClassAtom} stylesAtom={stylesAtom} />
         {children}
       </div>
     );

@@ -16,7 +16,7 @@
     "@consta/icons": "^1.7.1",
     "@consta/uikit": "https://pkg.pr.new/consta-design-system/uikit/@consta/uikit@c54c147",
     "@reatom/core": "^1001.3.0",
-    "@reatom/react": "https://pkg.pr.new/@reatom/react@1324"
+    "@reatom/react": "https://pkg.pr.new/@reatom/react@8e287d5"
   },
   "files": [
     "*",
@@ -102,7 +102,7 @@
     "@bem-react/classnames": "^1.3.10",
     "@bem/sdk.naming.cell.match": "^0.1.3",
     "@bem/sdk.naming.presets": "^0.2.3",
-    "@consta/stand": "https://pkg.pr.new/consta-design-system/stand/@consta/stand@bb0eded",
+    "@consta/stand": "https://pkg.pr.new/consta-design-system/stand/@consta/stand@e9596e1",
     "@cspell/dict-ru_ru": "^2.2.4",
     "@mdx-js/loader": "^2.1.5",
     "@oclif/command": "^1.8.16",

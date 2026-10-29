@@ -43,7 +43,7 @@
     "test:unit": "yarn vitest",
     "test:ts": "yarn tsc-dry-run",
     "test:cspell": "yarn cspell --no-progress",
-    "test": "yarn tsc-dry-run && yarn vitest && test:cspell",
+    "test": "yarn test:ts && yarn test:unit && yarn test:cspell",
     "vitest": "vitest run",
     "build:css": "cross-env NODE_ENV=buildProduction postcss 'src/**/*.css' --base src --dir dist/__internal__/src/",
     "build:js": "cross-env NODE_ENV=buildProduction BUILDING_JS=true babel --extensions '.ts,.tsx' --config-file ./babel.config.js --source-maps --out-dir dist/__internal__/src/ ./src",

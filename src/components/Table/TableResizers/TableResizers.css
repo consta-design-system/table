@@ -2,6 +2,7 @@
   display: contents;
 
   &_sticky &-Resizer {
+    top: var(--table-resizer-top-offset);
     height: min(
       calc(
         var(--table-body-height) - var(--table-resizer-top-offset) -
@@ -11,11 +12,16 @@
         var(--table-body-height) - var(--table-body-horizontal-scroll-height)
       )
     );
-
-    top: var(--table-resizer-top-offset);
   }
 
   &:not(&_sticky) &-Resizer {
+    top: max(
+      calc(
+        var(--table-resizer-top-offset) -
+          (var(--table-header-height) - var(--table-header-visible-part))
+      ),
+      0px
+    );
     height: min(
       calc(
         var(--table-body-height) - var(--table-resizer-top-offset) -
@@ -26,30 +32,21 @@
         var(--table-body-height) - var(--table-body-horizontal-scroll-height)
       )
     );
-
-    top: max(
-      calc(
-        var(--table-resizer-top-offset) -
-          (var(--table-header-height) - var(--table-header-visible-part))
-      ),
-      0px
-    );
   }
 
   &-Cell {
-    top: 0;
     --table-resizer-cell-height: calc(
       var(--table-header-height) - var(--table-resizer-top-offset)
     );
     position: sticky;
     z-index: calc(var(--table-header-z-index) + 10);
+    top: 0;
   }
 
   &-Resizer {
     --inner-line-width: 1px;
     --fast-transition: 0.15s ease-out;
     --resizer-width: 4px;
-
     position: absolute;
     right: 0;
     width: var(--resizer-width);

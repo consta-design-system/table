@@ -2,7 +2,6 @@ import {
   createRoot,
   testOutsideId,
   testRootId,
-  testSuiteId,
   tick,
 } from '@consta/uikit/__internal__/src/utils/vitest';
 import { presetGpnDefault, Theme } from '@consta/uikit/Theme';
@@ -79,11 +78,6 @@ const getTextArea = () =>
 const getOutside = () =>
   document.querySelector(
     `*[data-test-block=${testOutsideId()}]`,
-  ) as HTMLDivElement;
-
-const getSuite = () =>
-  document.querySelector(
-    `*[data-test-block=${testSuiteId()}]`,
   ) as HTMLDivElement;
 
 /** Переключает ячейку в режим редактирования двойным кликом. */

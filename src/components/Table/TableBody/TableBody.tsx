@@ -42,11 +42,11 @@ const getRandomHash = () =>
     .join('');
 
 const Style = reatomFactoryComponent<{
-  atom: AtomLike<string>;
+  styleAtom: AtomLike<string>;
   classNameAtom: AtomLike<string>;
-}>(() => ({ atom: a, classNameAtom }) => (
+}>(() => ({ styleAtom, classNameAtom }) => (
   <style>
-    {`.${classNameAtom()} {`} {a()} {`}`}
+    {`.${classNameAtom()} {`} {styleAtom()} {`}`}
   </style>
 ));
 
@@ -57,8 +57,12 @@ const Styles = memo(
   }>(
     () =>
       ({ stylesAtom, classNameAtom }) =>
-        stylesAtom().map((atom, index) => (
-          <Style key={index} atom={atom} classNameAtom={classNameAtom} />
+        stylesAtom().map((styleAtom, index) => (
+          <Style
+            key={index}
+            styleAtom={styleAtom}
+            classNameAtom={classNameAtom}
+          />
         )),
   ),
 );

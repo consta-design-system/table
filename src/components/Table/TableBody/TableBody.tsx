@@ -9,7 +9,7 @@ import {
 } from '@consta/uikit/__internal__/src/utils/state';
 import { cnMixScrollBar } from '@consta/uikit/MixScrollBar';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { action, atom, AtomLike, computed, effect, wrap } from '@reatom/core';
+import { action, atom, AtomLike, computed, wrap } from '@reatom/core';
 import { reatomFactoryComponent } from '@reatom/react';
 import React, { memo } from 'react';
 

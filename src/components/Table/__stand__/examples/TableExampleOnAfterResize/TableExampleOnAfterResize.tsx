@@ -27,8 +27,8 @@ const baseColumns: TableColumn<ROW>[] = [
   {
     title: 'Возраст',
     accessor: 'age',
-    width: 'auto',
-    minWidth: 100,
+    width: 90,
+    minWidth: 90,
   },
   {
     title: 'Страна',
@@ -39,7 +39,7 @@ const baseColumns: TableColumn<ROW>[] = [
   {
     title: 'Год',
     accessor: 'year',
-    width: 'auto',
+    width: 100,
     minWidth: 100,
   },
   {
@@ -87,7 +87,7 @@ export const TableExampleOnAfterResize = () => {
         columns={columns}
         stickyHeader
         virtualScroll
-        resizable="inside"
+        resizable="outside"
         zebraStriped
         onAfterResize={handleAfterResize}
       />

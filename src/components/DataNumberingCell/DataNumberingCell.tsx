@@ -7,7 +7,7 @@ import React, { forwardRef } from 'react';
 
 import { cn } from '##/utils/bem';
 
-const cnDataNumberingCell = cn('DataNumberingCell');
+export const cnDataNumberingCell = cn('DataNumberingCell');
 
 export type DataNumberingCellProps = {
   children: React.ReactNode;

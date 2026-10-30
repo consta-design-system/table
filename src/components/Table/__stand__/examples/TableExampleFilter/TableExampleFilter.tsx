@@ -3,7 +3,7 @@ import { Example } from '@consta/stand';
 import { Button } from '@consta/uikit/Button';
 import { FlatSelect } from '@consta/uikit/FlatSelect';
 import { atom } from '@reatom/core';
-import { useAtom } from '@reatom/npm-react';
+import { useAtom } from '@reatom/react';
 import React, { useRef } from 'react';
 
 import { HeaderDataCell } from '##/components/HeaderDataCell';
@@ -25,10 +25,10 @@ const dataAtom = atom<ROW[]>([
 const statusFilterValueAtom = atom<string[]>([]);
 const nameFilterValueAtom = atom<string[]>([]);
 
-const rowsAtom = atom<ROW[]>((ctx) => {
-  const data = ctx.spy(dataAtom);
-  const statusFilterValue = ctx.spy(statusFilterValueAtom);
-  const nameFilterValue = ctx.spy(nameFilterValueAtom);
+const rowsAtom = atom<ROW[]>(() => {
+  const data = dataAtom();
+  const statusFilterValue = statusFilterValueAtom();
+  const nameFilterValue = nameFilterValueAtom();
 
   return data.filter((row) => {
     return (

@@ -77,10 +77,11 @@ const OtherCell = (props: {
   title: string | number | null;
   size: 'm' | 's';
   truncate: boolean;
+  style?: React.CSSProperties;
 }) => {
-  const { title, size, truncate } = props;
+  const { title, size, truncate, style } = props;
   return (
-    <DataCell truncate={truncate} size={size}>
+    <DataCell truncate={truncate} size={size} style={style}>
       {title}
     </DataCell>
   );
@@ -296,15 +297,15 @@ const Variants = () => {
             accessor: 'total',
             minWidth: 100,
             width: 100,
+            renderHeaderCell: (props) => (
+              <OtherHeaderCell title={props.title} size={size} />
+            ),
             renderCell: (props) => (
               <OtherCell
-                title={props.row.total}
+                title={props.row.total || '-'}
                 size={size}
                 truncate={horizontalVirtualScroll}
               />
-            ),
-            renderHeaderCell: (props) => (
-              <OtherHeaderCell title={props.title} size={size} />
             ),
           },
         ],

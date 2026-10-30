@@ -1,6 +1,6 @@
 import { Example } from '@consta/stand';
-import { action, atom, AtomMut } from '@reatom/core';
-import { useAction, useAtom } from '@reatom/npm-react';
+import { action, Atom, atom, BooleanAtom, reatomBoolean } from '@reatom/core';
+import { useAction, useAtom } from '@reatom/react';
 import React from 'react';
 
 import { DataCell } from '##/components/DataCell';
@@ -14,46 +14,42 @@ type ROW = {
   name: string;
   profession: string;
   status: string;
-  hover: AtomMut<boolean>;
-  active: AtomMut<boolean>;
+  hover: BooleanAtom;
+  active: BooleanAtom;
 };
 
-// Atoms
-const rowsAtom = atom<AtomMut<ROW>[]>([
+const rowsAtom = atom<Atom<ROW>[]>([
   atom({
     id: 1,
     name: 'Антон Григорьев',
     profession: 'Строитель, который построил дом',
     status: 'недоступен',
-    hover: atom(false),
-    active: atom(false),
+    hover: reatomBoolean(),
+    active: reatomBoolean(),
   }),
   atom({
     id: 2,
     name: 'Василий Пупкин',
     profession: 'Отвечает на вопросы, хотя его не спросили',
     status: 'на связи',
-    hover: atom(false),
-    active: atom(false),
+    hover: reatomBoolean(),
+    active: reatomBoolean(),
   }),
 ]);
 
-// Actions
+const onRowClickAction = action<[Atom<ROW>]>((rowAtom) =>
+  rowAtom().active.toggle(),
+);
 
-const onRowClickAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  const row = ctx.get(rowAtom);
-  row.active(ctx, !ctx.get(row.active));
-});
+const onRowMouseEnterAction = action<[Atom<ROW>]>((rowAtom) =>
+  rowAtom().hover.setTrue(),
+);
 
-const onRowMouseEnterAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hover(ctx, true);
-});
+const onRowMouseLeaveAction = action<[Atom<ROW>]>((rowAtom) =>
+  rowAtom().hover.setFalse(),
+);
 
-const onRowMouseLeaveAction = action<[AtomMut<ROW>]>((ctx, rowAtom) => {
-  ctx.get(rowAtom).hover(ctx, false);
-});
-
-const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
+const DataCellName: TableRenderCell<Atom<ROW>> = (props) => {
   const [row] = useAtom(props.row);
   const [active] = useAtom(row.active);
   const [hover] = useAtom(row.hover);
@@ -68,7 +64,7 @@ const DataCellName: TableRenderCell<AtomMut<ROW>> = (props) => {
 const createDataCellOther = (
   accessor: Exclude<keyof ROW, 'hover' | 'active'>,
 ) => {
-  const Component: TableRenderCell<AtomMut<ROW>> = (props) => {
+  const Component: TableRenderCell<Atom<ROW>> = (props) => {
     const [row] = useAtom(props.row);
 
     return <DataCell>{row[accessor]}</DataCell>;
@@ -77,7 +73,7 @@ const createDataCellOther = (
   return Component;
 };
 
-const columns: TableColumn<AtomMut<ROW>>[] = [
+const columns: TableColumn<Atom<ROW>>[] = [
   {
     title: '',
     accessor: 'id',

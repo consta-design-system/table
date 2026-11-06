@@ -84,7 +84,7 @@ export const addResult = <T extends ResizableColumnsSize>(
 export const isSizesCalculate = (
   sizes: (number | string | undefined)[],
 ): sizes is number[] =>
-  !sizes.find(
+  !sizes.some(
     (item) => typeof item === 'string' || typeof item === 'undefined',
   );
 

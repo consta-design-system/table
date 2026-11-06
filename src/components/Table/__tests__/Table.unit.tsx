@@ -589,8 +589,6 @@ describe('Компонент Table', () => {
     test('рендерится без ошибок при virtualScroll', () =>
       context.start(async () => {
         expect(() => renderComponent({ virtualScroll: true })).not.toThrow();
-
-        await wrap(tick());
       }));
 
     test('рендерится без ошибок при virtualScroll = [true, true]', () =>
@@ -598,8 +596,111 @@ describe('Компонент Table', () => {
         expect(() =>
           renderComponent({ virtualScroll: [true, true] }),
         ).not.toThrow();
+      }));
+  });
+
+  describe('свойство onScrollToBottom', () => {
+    const getVirtualScrollRows = (): Row[] =>
+      Array.from({ length: 50 }, (_item, index) => ({
+        id: index + 1,
+        name: `Имя ${index + 1}`,
+        profession: 'Строитель',
+        status: 'на связи',
+      }));
+
+    test('вызывается с длиной списка при скролле до низа', () =>
+      context.start(async () => {
+        const rows = getVirtualScrollRows();
+        const onScrollToBottom = vi.fn();
+
+        renderComponent({
+          virtualScroll: true,
+          rows,
+          onScrollToBottom,
+          style: { maxHeight: 200 },
+        });
 
         await wrap(tick());
+
+        expect(onScrollToBottom).not.toHaveBeenCalled();
+
+        const render = getRender();
+
+        // имитируем прокрутку контейнера до самого низа
+        Object.defineProperty(render, 'scrollTop', {
+          value: 100000,
+          configurable: true,
+        });
+
+        fireEvent.scroll(render);
+
+        await wrap(tick());
+
+        expect(onScrollToBottom).toHaveBeenCalledTimes(1);
+        expect(onScrollToBottom).toHaveBeenCalledWith(rows.length);
+      }));
+  });
+
+  describe('свойство onAfterResize', () => {
+    const getResizers = () =>
+      getRender().querySelectorAll(
+        `.${cnTableResizers('Resizer')}`,
+      ) as unknown as HTMLElement[];
+
+    const checkResizeResult = (
+      result: Array<{ accessor: string; width: number }>,
+    ) => {
+      expect(result).toHaveLength(defaultColumns.length);
+      expect(result.map(({ accessor }) => accessor)).toEqual([
+        'name',
+        'profession',
+        'status',
+      ]);
+      result.forEach(({ width }) => expect(width).toBeGreaterThan(0));
+    };
+
+    test('вызывается с размерами колонок после mouse-ресайза', () =>
+      context.start(async () => {
+        const onAfterResize = vi.fn();
+
+        renderComponent({ resizable: 'outside', onAfterResize });
+
+        await wrap(tick());
+
+        expect(onAfterResize).not.toHaveBeenCalled();
+
+        const resizer = getResizers()[0];
+
+        fireEvent.mouseDown(resizer);
+        fireEvent.mouseMove(document, { clientX: 300 });
+        fireEvent.mouseUp(document);
+
+        expect(onAfterResize).toHaveBeenCalledTimes(1);
+
+        checkResizeResult(onAfterResize.mock.calls[0][0]);
+      }));
+
+    test('вызывается с размерами колонок после touch-ресайза', () =>
+      context.start(async () => {
+        const onAfterResize = vi.fn();
+
+        renderComponent({ resizable: 'outside', onAfterResize });
+
+        await wrap(tick());
+
+        const resizer = getResizers()[0];
+
+        fireEvent.touchStart(resizer);
+        fireEvent.touchMove(document, {
+          changedTouches: [
+            new Touch({ identifier: 1, target: document, clientX: 300 }),
+          ],
+        });
+        fireEvent.touchEnd(document);
+
+        expect(onAfterResize).toHaveBeenCalledTimes(1);
+
+        checkResizeResult(onAfterResize.mock.calls[0][0]);
       }));
   });
 });

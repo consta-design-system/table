@@ -87,7 +87,6 @@ export type TableProps<ROW = TableDefaultRow> = PropsWithHTMLAttributesAndRef<
     columns: TableColumn<ROW>[];
     rows: ROW[];
     getRowKey?: (row: ROW) => string | number;
-    getRowHeight?: (row: ROW) => number;
     onRowMouseEnter?: TableRowMouseEvent<ROW>;
     onRowMouseLeave?: TableRowMouseEvent<ROW>;
     onRowClick?: TableRowMouseEvent<ROW>;

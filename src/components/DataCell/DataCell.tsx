@@ -10,7 +10,7 @@ import { cn } from '##/utils/bem';
 import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
 import { isNumber, isString } from '##/utils/type-guards';
 
-const cnDataCell = cn('DataCell');
+export const cnDataCell = cn('DataCell');
 
 export type DataCellProps = {
   control?: React.ReactNode | JSX.Element[];

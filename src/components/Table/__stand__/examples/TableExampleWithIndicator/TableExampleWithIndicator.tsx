@@ -31,8 +31,10 @@ const rows: Row[] = [
       data: 'Антон',
     },
     profession: {
+      /* cspell:disable-next-line */
       data: 'РОЮЛАВТМЯО',
       status: 'alert',
+      /* cspell:disable-next-line */
       statusMessage: 'Неизвестное название диапазона: РОЮЛАВТМЯО.',
     },
     status: {
@@ -222,8 +224,10 @@ const rows: Row[] = [
       data: 'Юлия',
     },
     profession: {
+      /* cspell:disable-next-line */
       data: 'ВДПШСЫЭЭЭКДА',
       status: 'alert',
+      /* cspell:disable-next-line */
       statusMessage: 'Неизвестное название диапазона: ВДПШСЫЭЭЭКДА.',
     },
     status: {
@@ -332,6 +336,7 @@ const DataCellWithInformer = ({
         onMouseEnter={anchorOnMouseEnter}
         onMouseLeave={anchorOnMouseLeave}
       >
+        {/* cspell:disable-next-line */}
         {status === 'alert' ? '#ТИПДАННЫХ?' : data}
       </DataCell>
       {status && (

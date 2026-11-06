@@ -1,7 +1,6 @@
 import { useNumber, useSelect, useText } from '@consta/stand';
-import { withCtx } from '@consta/uikit/__internal__/src/utils/state/withCtx';
-import { useAtom, useUpdate } from '@reatom/npm-react';
-import React from 'react';
+import { useAtom } from '@reatom/react';
+import React, { useEffect } from 'react';
 
 import { Pagination } from '..';
 
@@ -12,14 +11,14 @@ const stepsMap = {
 
 const stepsOptions = [`[10, 25, 50, 100, 1000]`, `[15, 30, 50]`] as const;
 
-const Variants = withCtx(() => {
+const Variants = () => {
   const label = useText('label', 'Строк на странице');
   const total = useNumber('total', 300);
   const steps =
     useSelect('steps', stepsOptions, stepsOptions[0]) || stepsOptions[0];
   const [step, setStep] = useAtom(stepsMap[steps][0]);
 
-  useUpdate(() => {
+  useEffect(() => {
     setStep(stepsMap[steps][0]);
   }, [steps]);
 
@@ -34,6 +33,6 @@ const Variants = withCtx(() => {
       />
     </div>
   );
-});
+};
 
 export default Variants;

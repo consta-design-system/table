@@ -46,14 +46,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cnHeaderDataCell с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element | null, className: string) =>
-  !!el && className.split(' ').every((token) => el.classList.contains(token));
-
 const getContentSlots = () =>
   getRender().querySelectorAll(`.${cnHeaderDataCell('ContentSlot')}`);
 
@@ -69,7 +61,7 @@ describe('Компонент HeaderDataCell', () => {
         const render = getRender();
 
         expect(render).toBeTruthy();
-        expect(hasClassName(render, cnHeaderDataCell())).toBe(true);
+        expect(render).toHaveClass(...cnHeaderDataCell().split(' '));
         expect(render.tagName).toBe('DIV');
       }));
 
@@ -79,13 +71,14 @@ describe('Компонент HeaderDataCell', () => {
 
         const render = getRender();
 
-        expect(
-          hasClassName(
-            render,
-            cnMixFlex({ flex: 'flex', gap: 'xs', justify: 'space-between' }),
-          ),
-        ).toBe(true);
-        expect(hasClassName(render, cnMixSpace({ pH: 's' }))).toBe(true);
+        expect(render).toHaveClass(
+          ...cnMixFlex({
+            flex: 'flex',
+            gap: 'xs',
+            justify: 'space-between',
+          }).split(' '),
+        );
+        expect(render).toHaveClass(...cnMixSpace({ pH: 's' }).split(' '));
       }));
 
     test('должен пробрасывать className', () =>
@@ -137,8 +130,8 @@ describe('Компонент HeaderDataCell', () => {
         const textEl = getContentSlots()[0]?.querySelector(`.${cnText()}`);
 
         expect(textEl).toBeTruthy();
-        expect(hasClassName(textEl, cnText({ size: 'm' }))).toBe(true);
-        expect(hasClassName(textEl, cnMixSpace({ pV: 's' }))).toBe(true);
+        expect(textEl).toHaveClass(...cnText({ size: 'm' }).split(' '));
+        expect(textEl).toHaveClass(...cnMixSpace({ pV: 's' }).split(' '));
       }));
 
     test('должен учитывать size при оборачивании текста в Text', () =>
@@ -147,8 +140,8 @@ describe('Компонент HeaderDataCell', () => {
 
         const textEl = getContentSlots()[0]?.querySelector(`.${cnText()}`);
 
-        expect(hasClassName(textEl, cnText({ size: 's' }))).toBe(true);
-        expect(hasClassName(textEl, cnMixSpace({ pV: 'xs' }))).toBe(true);
+        expect(textEl).toHaveClass(...cnText({ size: 's' }).split(' '));
+        expect(textEl).toHaveClass(...cnMixSpace({ pV: 'xs' }).split(' '));
       }));
 
     test('не должен оборачивать произвольный React-узел в Text', () =>
@@ -267,8 +260,8 @@ describe('Компонент HeaderDataCell', () => {
       context.start(async () => {
         renderComponent({ children: 'Текст' });
 
-        expect(hasClassName(getRender(), cnHeaderDataCell({ size: 'm' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnHeaderDataCell({ size: 'm' }).split(' '),
         );
       }));
 
@@ -278,11 +271,11 @@ describe('Компонент HeaderDataCell', () => {
 
         const render = getRender();
 
-        expect(hasClassName(render, cnHeaderDataCell({ size: 's' }))).toBe(
-          true,
+        expect(render).toHaveClass(
+          ...cnHeaderDataCell({ size: 's' }).split(' '),
         );
-        expect(hasClassName(render, cnHeaderDataCell({ size: 'm' }))).toBe(
-          false,
+        expect(render).not.toHaveClass(
+          ...cnHeaderDataCell({ size: 'm' }).split(' '),
         );
       }));
   });

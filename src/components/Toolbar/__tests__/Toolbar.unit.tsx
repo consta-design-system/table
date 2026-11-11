@@ -49,14 +49,6 @@ const getRender = () =>
   ) as HTMLDivElement;
 
 /**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cn с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element | null, className: string) =>
-  !!el && className.split(' ').every((token) => el.classList.contains(token));
-
-/**
  * Элемент слота рендерится внутри обёртки Slot, поэтому для поиска
  * flex-обёртки стороны нужно подняться на два уровня вверх.
  */
@@ -78,7 +70,7 @@ describe('Компонент Toolbar', () => {
 
         expect(render).toBeTruthy();
         expect(render.tagName).toBe('DIV');
-        expect(hasClassName(render, cnToolbar())).toBe(true);
+        expect(render).toHaveClass(...cnToolbar().split(' '));
       }));
 
     test('должен рендериться без ошибок и с базовым классом', () =>
@@ -88,7 +80,7 @@ describe('Компонент Toolbar', () => {
         const render = getRender();
 
         expect(render).toBeTruthy();
-        expect(hasClassName(render, cnToolbar())).toBe(true);
+        expect(render).toHaveClass(...cnToolbar().split(' '));
         expect(render.tagName).toBe('DIV');
       }));
 
@@ -96,42 +88,36 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст' });
 
-        expect(
-          hasClassName(
-            getRender(),
-            cnMixFlex({ justify: 'space-between', gap: 'm' }),
-          ),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixFlex({ justify: 'space-between', gap: 'm' }).split(' '),
+        );
       }));
 
     test('применяет justify=flex-end, когда задан только rightSide', () =>
       context.start(async () => {
         renderComponent({ rightSide: 'Текст' });
 
-        expect(
-          hasClassName(
-            getRender(),
-            cnMixFlex({ justify: 'flex-end', gap: 'm' }),
-          ),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixFlex({ justify: 'flex-end', gap: 'm' }).split(' '),
+        );
       }));
 
     test('по умолчанию применяет MixSpace с отступами pH=s и pV=xs', () =>
       context.start(async () => {
         renderComponent({ leftSide: 'Текст' });
 
-        expect(
-          hasClassName(getRender(), cnMixSpace({ pH: 's', pV: 'xs' })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixSpace({ pH: 's', pV: 'xs' }).split(' '),
+        );
       }));
 
     test('должен применять кастомный space', () =>
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', space: { pH: 'm', pV: 'l' } });
 
-        expect(
-          hasClassName(getRender(), cnMixSpace({ pH: 'm', pV: 'l' })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixSpace({ pH: 'm', pV: 'l' }).split(' '),
+        );
       }));
 
     test('должен пробрасывать className', () =>
@@ -163,8 +149,8 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст' });
 
-        expect(hasClassName(getRender(), cnToolbar({ form: 'default' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ form: 'default' }).split(' '),
         );
       }));
 
@@ -174,9 +160,9 @@ describe('Компонент Toolbar', () => {
 
         const render = getRender();
 
-        expect(hasClassName(render, cnToolbar({ form: 'brick' }))).toBe(true);
-        expect(hasClassName(render, cnToolbar({ form: 'default' }))).toBe(
-          false,
+        expect(render).toHaveClass(...cnToolbar({ form: 'brick' }).split(' '));
+        expect(render).not.toHaveClass(
+          ...cnToolbar({ form: 'default' }).split(' '),
         );
       }));
 
@@ -184,18 +170,18 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', form: 'defaultBrick' });
 
-        expect(
-          hasClassName(getRender(), cnToolbar({ form: 'defaultBrick' })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ form: 'defaultBrick' }).split(' '),
+        );
       }));
 
     test('применяет модификатор формы brickDefault', () =>
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', form: 'brickDefault' });
 
-        expect(
-          hasClassName(getRender(), cnToolbar({ form: 'brickDefault' })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ form: 'brickDefault' }).split(' '),
+        );
       }));
   });
 
@@ -299,15 +285,12 @@ describe('Компонент Toolbar', () => {
           rightSide: <span data-right-item>Право</span>,
         });
 
-        expect(hasClassName(getLeftWrapper(), cnMixFlex({ gap: 's' }))).toBe(
-          true,
+        expect(getLeftWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 's' }).split(' '),
         );
-        expect(
-          hasClassName(
-            getRightWrapper(),
-            cnMixFlex({ gap: 's', justify: 'flex-end' }),
-          ),
-        ).toBe(true);
+        expect(getRightWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 's', justify: 'flex-end' }).split(' '),
+        );
       }));
 
     test('применяет одиночное значение gap к обеим сторонам', () =>
@@ -318,15 +301,12 @@ describe('Компонент Toolbar', () => {
           itemsGap: 'm',
         });
 
-        expect(hasClassName(getLeftWrapper(), cnMixFlex({ gap: 'm' }))).toBe(
-          true,
+        expect(getLeftWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 'm' }).split(' '),
         );
-        expect(
-          hasClassName(
-            getRightWrapper(),
-            cnMixFlex({ gap: 'm', justify: 'flex-end' }),
-          ),
-        ).toBe(true);
+        expect(getRightWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 'm', justify: 'flex-end' }).split(' '),
+        );
       }));
 
     test('применяет массив значений gap по индексу стороны', () =>
@@ -337,15 +317,12 @@ describe('Компонент Toolbar', () => {
           itemsGap: ['s', 'l'],
         });
 
-        expect(hasClassName(getLeftWrapper(), cnMixFlex({ gap: 's' }))).toBe(
-          true,
+        expect(getLeftWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 's' }).split(' '),
         );
-        expect(
-          hasClassName(
-            getRightWrapper(),
-            cnMixFlex({ gap: 'l', justify: 'flex-end' }),
-          ),
-        ).toBe(true);
+        expect(getRightWrapper()).toHaveClass(
+          ...cnMixFlex({ gap: 'l', justify: 'flex-end' }).split(' '),
+        );
       }));
   });
 
@@ -354,8 +331,8 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', border: 'all' });
 
-        expect(hasClassName(getRender(), cnToolbar({ border: 'all' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ border: 'all' }).split(' '),
         );
       }));
 
@@ -363,8 +340,8 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', border: true });
 
-        expect(hasClassName(getRender(), cnToolbar({ border: 'all' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ border: 'all' }).split(' '),
         );
       }));
 
@@ -375,7 +352,9 @@ describe('Компонент Toolbar', () => {
         const render = getRender();
 
         expect(render.classList.contains('ct--Toolbar_border_top')).toBe(false);
-        expect(hasClassName(render, cnToolbar({ form: 'default' }))).toBe(true);
+        expect(render).toHaveClass(
+          ...cnToolbar({ form: 'default' }).split(' '),
+        );
       }));
 
     test('при border=bottom и form=default не добавляет модификатор border', () =>
@@ -400,8 +379,8 @@ describe('Компонент Toolbar', () => {
         const render = getRender();
 
         expect(render.classList.contains('ct--Toolbar_border_top')).toBe(false);
-        expect(hasClassName(render, cnToolbar({ form: 'defaultBrick' }))).toBe(
-          true,
+        expect(render).toHaveClass(
+          ...cnToolbar({ form: 'defaultBrick' }).split(' '),
         );
       }));
 
@@ -418,8 +397,8 @@ describe('Компонент Toolbar', () => {
         expect(render.classList.contains('ct--Toolbar_border_bottom')).toBe(
           false,
         );
-        expect(hasClassName(render, cnToolbar({ form: 'brickDefault' }))).toBe(
-          true,
+        expect(render).toHaveClass(
+          ...cnToolbar({ form: 'brickDefault' }).split(' '),
         );
       }));
 
@@ -427,8 +406,8 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', border: 'top', form: 'brick' });
 
-        expect(hasClassName(getRender(), cnToolbar({ border: 'top' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ border: 'top' }).split(' '),
         );
       }));
 
@@ -436,8 +415,8 @@ describe('Компонент Toolbar', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Текст', border: 'bottom', form: 'brick' });
 
-        expect(hasClassName(getRender(), cnToolbar({ border: 'bottom' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnToolbar({ border: 'bottom' }).split(' '),
         );
       }));
   });

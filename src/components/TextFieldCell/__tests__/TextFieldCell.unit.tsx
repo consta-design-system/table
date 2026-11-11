@@ -56,14 +56,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cn с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element | null, className: string) =>
-  !!el && className.split(' ').every((token) => el.classList.contains(token));
-
 /** Обёртка TextField внутри ячейки (класс Field). */
 const getField = () =>
   getRender().querySelector(`.${cnTextFieldCell('Field')}`);
@@ -97,7 +89,7 @@ describe('Компонент TextFieldCell', () => {
         const render = getRender();
 
         expect(render).toBeTruthy();
-        expect(hasClassName(render, cnTextFieldCell())).toBe(true);
+        expect(render).toHaveClass(...cnTextFieldCell().split(' '));
         expect(render.tagName).toBe('DIV');
       }));
 
@@ -136,8 +128,8 @@ describe('Компонент TextFieldCell', () => {
       context.start(async () => {
         renderComponent({ type: 'text', value: 'Текст' });
 
-        expect(hasClassName(getRender(), cnTextFieldCell({ size: 'm' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnTextFieldCell({ size: 'm' }).split(' '),
         );
       }));
 
@@ -147,9 +139,11 @@ describe('Компонент TextFieldCell', () => {
 
         const render = getRender();
 
-        expect(hasClassName(render, cnTextFieldCell({ size: 's' }))).toBe(true);
-        expect(hasClassName(render, cnTextFieldCell({ size: 'm' }))).toBe(
-          false,
+        expect(render).toHaveClass(
+          ...cnTextFieldCell({ size: 's' }).split(' '),
+        );
+        expect(render).not.toHaveClass(
+          ...cnTextFieldCell({ size: 'm' }).split(' '),
         );
       }));
 
@@ -306,12 +300,12 @@ describe('Компонент TextFieldCell', () => {
     test('не должен передавать indicator в DataCell в режиме редактирования', () =>
       context.start(async () => {
         renderComponent({ type: 'text', value: 'Текст', indicator: 'alert' });
-        expect(hasClassName(getRender(), cnDataCell({ indicator: true }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnDataCell({ indicator: true }).split(' '),
         );
         await wrap(enterEditMode());
-        expect(hasClassName(getRender(), cnDataCell({ indicator: true }))).toBe(
-          false,
+        expect(getRender()).not.toHaveClass(
+          ...cnDataCell({ indicator: true }).split(' '),
         );
       }));
     test('должен рендерить textarea для type=textarea', () =>
@@ -370,20 +364,17 @@ describe('Компонент TextFieldCell', () => {
           `.${cnDataCell('ContentSlot')}`,
         );
 
-        expect(
-          hasClassName(
-            contentSlot,
-            cnDataCell('ContentSlot', { truncate: true }),
-          ),
-        ).toBe(true);
+        expect(contentSlot).toHaveClass(
+          ...cnDataCell('ContentSlot', { truncate: true }).split(' '),
+        );
       }));
 
     test('должен передавать indicator в DataCell в режиме чтения', () =>
       context.start(async () => {
         renderComponent({ type: 'text', value: 'Текст', indicator: 'warning' });
 
-        expect(hasClassName(getRender(), cnDataCell({ indicator: true }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnDataCell({ indicator: true }).split(' '),
         );
         expect(
           getRender().style.getPropertyValue(

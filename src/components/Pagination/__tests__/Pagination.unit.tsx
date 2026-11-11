@@ -88,9 +88,9 @@ describe('Компонент Pagination', () => {
       context.start(async () => {
         renderComponent({});
 
-        expect(
-          hasClassName(getRender(), cnMixFlex({ align: 'center', gap: 'xl' })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixFlex({ align: 'center', gap: 'xl' }).split(' '),
+        );
       }));
 
     test('должен пробрасывать className', () =>
@@ -138,13 +138,13 @@ describe('Компонент Pagination', () => {
         renderComponent({ label: 'Показывать по:' });
 
         const text = Array.from(getRender().querySelectorAll('*')).find(
-          (el) =>
-            hasClassName(el, cnText({ size: 's' })) &&
-            hasClassName(el, cnText({ view: 'secondary' })) &&
-            el.textContent === 'Показывать по:',
+          (el) => el.textContent === 'Показывать по:',
         );
 
         expect(text).toBeTruthy();
+        expect(text).toHaveClass(
+          ...cnText({ size: 's', view: 'secondary' }).split(' '),
+        );
       }));
 
     test('не должен рендерить текст слева при пустом label', () =>
@@ -323,11 +323,3 @@ describe('Компонент Pagination', () => {
       }));
   });
 });
-
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cn с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element, className: string) =>
-  className.split(' ').every((token) => el.classList.contains(token));

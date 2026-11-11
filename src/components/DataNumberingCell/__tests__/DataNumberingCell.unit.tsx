@@ -46,14 +46,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cnDataNumberingCell с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element, className: string) =>
-  className.split(' ').every((token) => el.classList.contains(token));
-
 describe('Компонент DataNumberingCell', () => {
   describe('рендер корневого элемента', () => {
     test('должен рендериться без ошибок и с базовым классом', () =>
@@ -73,16 +65,18 @@ describe('Компонент DataNumberingCell', () => {
 
         const render = getRender();
 
-        expect(hasClassName(render, cnText({ size: 'xs' }))).toBe(true);
-        expect(hasClassName(render, cnText({ view: 'secondary' }))).toBe(true);
-        expect(hasClassName(render, cnText({ lineHeight: 'l' }))).toBe(true);
+        expect(render).toHaveClass(...cnText({ size: 'xs' }).split(' '));
+        expect(render).toHaveClass(...cnText({ view: 'secondary' }).split(' '));
+        expect(render).toHaveClass(...cnText({ lineHeight: 'l' }).split(' '));
       }));
 
     test('должен применять вертикальный отступ MixSpace pV=3xs', () =>
       context.start(async () => {
         renderComponent({ children: '1' });
 
-        expect(hasClassName(getRender(), cnMixSpace({ pV: '3xs' }))).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnMixSpace({ pV: '3xs' }).split(' '),
+        );
       }));
 
     test('должен центрировать содержимое через MixFlex', () =>
@@ -91,16 +85,13 @@ describe('Компонент DataNumberingCell', () => {
 
         const render = getRender();
 
-        expect(
-          hasClassName(
-            render,
-            cnMixFlex({
-              flex: 'flex',
-              align: 'center',
-              justify: 'center',
-            }),
-          ),
-        ).toBe(true);
+        expect(render).toHaveClass(
+          ...cnMixFlex({
+            flex: 'flex',
+            align: 'center',
+            justify: 'center',
+          }).split(' '),
+        );
       }));
 
     test('должен пробрасывать className', () =>

@@ -75,14 +75,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cn с модификаторами возвращает несколько классов через пробел,
- * поэтому нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element | null, className: string) =>
-  !!el && className.split(' ').every((token) => el.classList.contains(token));
-
 const getHeaderCells = () =>
   Array.from(
     getRender().querySelectorAll(`.${cnTableHeader('Cell')}`),
@@ -435,11 +427,11 @@ describe('Компонент Table', () => {
 
         const rows = getRows();
 
-        expect(hasClassName(rows[0], cnTableRow({ zebraStriped: true }))).toBe(
-          false,
+        expect(rows[0]).not.toHaveClass(
+          ...cnTableRow({ zebraStriped: true }).split(' '),
         );
-        expect(hasClassName(rows[1], cnTableRow({ zebraStriped: true }))).toBe(
-          true,
+        expect(rows[1]).toHaveClass(
+          ...cnTableRow({ zebraStriped: true }).split(' '),
         );
       }));
 
@@ -449,8 +441,8 @@ describe('Компонент Table', () => {
 
         const rows = getRows();
 
-        expect(hasClassName(rows[1], cnTableRow({ zebraStriped: true }))).toBe(
-          false,
+        expect(rows[1]).not.toHaveClass(
+          ...cnTableRow({ zebraStriped: true }).split(' '),
         );
       }));
   });
@@ -462,8 +454,8 @@ describe('Компонент Table', () => {
 
         const data = getRender().querySelector(`.${cnTableData()}`);
 
-        expect(hasClassName(data, cnTableData({ rowHoverEffect: true }))).toBe(
-          true,
+        expect(data).toHaveClass(
+          ...cnTableData({ rowHoverEffect: true }).split(' '),
         );
       }));
 
@@ -473,8 +465,8 @@ describe('Компонент Table', () => {
 
         const data = getRender().querySelector(`.${cnTableData()}`);
 
-        expect(hasClassName(data, cnTableData({ rowHoverEffect: true }))).toBe(
-          false,
+        expect(data).not.toHaveClass(
+          ...cnTableData({ rowHoverEffect: true }).split(' '),
         );
       }));
   });

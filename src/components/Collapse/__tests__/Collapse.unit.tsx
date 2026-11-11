@@ -44,12 +44,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- */
-const hasClassName = (el: Element, className: string) =>
-  className.split(' ').every((token) => el.classList.contains(token));
-
 const getExpandButton = () =>
   getRender().querySelector(
     `.${cnCollapse('ExpandButton')}`,
@@ -220,11 +214,8 @@ describe('Компонент Collapse', () => {
         expect(wrapper).toBeTruthy();
         expect(wrapper?.textContent).toContain('Контент');
         expect(
-          hasClassName(
-            getRender().querySelector(`.${cnCollapse('Content')}`)!,
-            cnCollapse('Content', { expanded: true }),
-          ),
-        ).toBe(true);
+          getRender().querySelector(`.${cnCollapse('Content')}`),
+        ).toHaveClass(...cnCollapse('Content', { expanded: true }).split(' '));
       }));
 
     test('не рендерит блок Content при отсутствии children', () =>
@@ -284,11 +275,8 @@ describe('Компонент Collapse', () => {
         await wrap(tick());
 
         expect(
-          hasClassName(
-            getRender().querySelector(`.${cnCollapse('Content')}`)!,
-            cnCollapse('Content', { expanded: true }),
-          ),
-        ).toBe(true);
+          getRender().querySelector(`.${cnCollapse('Content')}`),
+        ).toHaveClass(...cnCollapse('Content', { expanded: true }).split(' '));
 
         expect(getChildrenWrapper()).toBeTruthy();
       }));
@@ -312,11 +300,10 @@ describe('Компонент Collapse', () => {
         await wrap(tick());
 
         expect(
-          hasClassName(
-            getRender().querySelector(`.${cnCollapse('Content')}`)!,
-            cnCollapse('Content', { expanded: true }),
-          ),
-        ).toBe(false);
+          getRender().querySelector(`.${cnCollapse('Content')}`),
+        ).not.toHaveClass(
+          ...cnCollapse('Content', { expanded: true }).split(' '),
+        );
 
         expect(onExpand).toHaveBeenCalledTimes(2);
         expect(onExpand.mock.calls[1][0]).toBe(false);

@@ -64,14 +64,6 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
-/**
- * Проверяет, что в className элемента присутствуют все классы из переданной строки.
- * cnDataCell с модификаторами возвращает несколько классов через пробел, поэтому
- * нельзя использовать classList.contains напрямую.
- */
-const hasClassName = (el: Element, className: string) =>
-  className.split(' ').every((token) => el.classList.contains(token));
-
 describe('Компонент DataCell', () => {
   describe('рендер корневого элемента', () => {
     test('должен рендериться без ошибок и с базовым классом', () =>
@@ -122,8 +114,8 @@ describe('Компонент DataCell', () => {
       context.start(async () => {
         renderComponent({});
 
-        expect(hasClassName(getRender(), cnMixFlex({ flex: 'flex' }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnMixFlex({ flex: 'flex' }).split(' '),
         );
       }));
 
@@ -452,9 +444,9 @@ describe('Компонент DataCell', () => {
         expect(
           render.querySelector(`.${cnDataCell('ControlSlot')}`),
         ).toBeNull();
-        expect(
-          hasClassName(render, cnDataCell({ alignmentIndent: true })),
-        ).toBe(true);
+        expect(render).toHaveClass(
+          ...cnDataCell({ alignmentIndent: true }).split(' '),
+        );
       }));
 
     test('не должен рендерить слот контролов при отсутствии control', () =>
@@ -473,9 +465,9 @@ describe('Компонент DataCell', () => {
           control: <span data-control>К</span>,
         });
 
-        expect(
-          hasClassName(getRender(), cnDataCell({ alignmentIndent: true })),
-        ).toBe(false);
+        expect(getRender()).not.toHaveClass(
+          ...cnDataCell({ alignmentIndent: true }).split(' '),
+        );
       }));
   });
 
@@ -484,8 +476,8 @@ describe('Компонент DataCell', () => {
       context.start(async () => {
         renderComponent({ indicator: 'alert' });
 
-        expect(hasClassName(getRender(), cnDataCell({ indicator: true }))).toBe(
-          true,
+        expect(getRender()).toHaveClass(
+          ...cnDataCell({ indicator: true }).split(' '),
         );
       }));
 
@@ -493,8 +485,8 @@ describe('Компонент DataCell', () => {
       context.start(async () => {
         renderComponent({});
 
-        expect(hasClassName(getRender(), cnDataCell({ indicator: true }))).toBe(
-          false,
+        expect(getRender()).not.toHaveClass(
+          ...cnDataCell({ indicator: true }).split(' '),
         );
       }));
 
@@ -537,7 +529,9 @@ describe('Компонент DataCell', () => {
       context.start(async () => {
         renderComponent({});
 
-        expect(hasClassName(getRender(), cnDataCell({ size: 'm' }))).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnDataCell({ size: 'm' }).split(' '),
+        );
       }));
 
     test('применяет модификатор размера s', () =>
@@ -546,8 +540,8 @@ describe('Компонент DataCell', () => {
 
         const render = getRender();
 
-        expect(hasClassName(render, cnDataCell({ size: 's' }))).toBe(true);
-        expect(hasClassName(render, cnDataCell({ size: 'm' }))).toBe(false);
+        expect(render).toHaveClass(...cnDataCell({ size: 's' }).split(' '));
+        expect(render).not.toHaveClass(...cnDataCell({ size: 'm' }).split(' '));
       }));
 
     test('размер пробрасывается в Text и задаёт вертикальный отступ', () =>
@@ -558,13 +552,10 @@ describe('Компонент DataCell', () => {
           const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
           expect(textEl).toBeTruthy();
-          expect(hasClassName(textEl, cnText({ size }))).toBe(true);
-          expect(
-            hasClassName(
-              textEl,
-              cnMixSpace({ mV: cellVerticalSpaceMap[size] }),
-            ),
-          ).toBe(true);
+          expect(textEl).toHaveClass(...cnText({ size }).split(' '));
+          expect(textEl).toHaveClass(
+            ...cnMixSpace({ mV: cellVerticalSpaceMap[size] }).split(' '),
+          );
         }
       }));
 
@@ -593,7 +584,7 @@ describe('Компонент DataCell', () => {
           const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
           expect(textEl).toBeTruthy();
-          expect(hasClassName(textEl, cnText({ view }))).toBe(true);
+          expect(textEl).toHaveClass(...cnText({ view }).split(' '));
         }
       }));
 
@@ -620,7 +611,7 @@ describe('Компонент DataCell', () => {
           const iconEl = getRender().querySelector(`.${cnIcon()}`)!;
 
           expect(iconEl).toBeTruthy();
-          expect(hasClassName(iconEl, cnIcon({ view }))).toBe(true);
+          expect(iconEl).toHaveClass(...cnIcon({ view }).split(' '));
         }
       }));
 
@@ -631,7 +622,7 @@ describe('Компонент DataCell', () => {
 
           const iconEl = getRender().querySelector(`.${cnIcon()}`)!;
 
-          expect(hasClassName(iconEl, cnIcon({ size: 's' }))).toBe(true);
+          expect(iconEl).toHaveClass(...cnIcon({ size: 's' }).split(' '));
         }
       }));
   });
@@ -659,18 +650,18 @@ describe('Компонент DataCell', () => {
       context.start(async () => {
         renderComponent({ level: 1 });
 
-        expect(
-          hasClassName(getRender(), cnDataCell({ alignmentIndent: true })),
-        ).toBe(true);
+        expect(getRender()).toHaveClass(
+          ...cnDataCell({ alignmentIndent: true }).split(' '),
+        );
       }));
 
     test('не добавляет alignmentIndent при level = 0', () =>
       context.start(async () => {
         renderComponent({ level: 0 });
 
-        expect(
-          hasClassName(getRender(), cnDataCell({ alignmentIndent: true })),
-        ).toBe(false);
+        expect(getRender()).not.toHaveClass(
+          ...cnDataCell({ alignmentIndent: true }).split(' '),
+        );
       }));
 
     test('отрицательный level приводится к 0 и не задаёт переменную', () =>
@@ -682,9 +673,9 @@ describe('Компонент DataCell', () => {
         expect(render.style.getPropertyValue('--table-data-cell-level')).toBe(
           '',
         );
-        expect(
-          hasClassName(render, cnDataCell({ alignmentIndent: true })),
-        ).toBe(false);
+        expect(render).not.toHaveClass(
+          ...cnDataCell({ alignmentIndent: true }).split(' '),
+        );
       }));
   });
 
@@ -697,12 +688,9 @@ describe('Компонент DataCell', () => {
           `.${cnDataCell('ContentSlot')}`,
         );
 
-        expect(
-          hasClassName(
-            contentSlot!,
-            cnDataCell('ContentSlot', { truncate: true }),
-          ),
-        ).toBe(true);
+        expect(contentSlot!).toHaveClass(
+          ...cnDataCell('ContentSlot', { truncate: true }).split(' '),
+        );
       }));
 
     test('добавляет модификатор truncate слоту Slots', () =>
@@ -711,9 +699,9 @@ describe('Компонент DataCell', () => {
 
         const slots = getRender().querySelector(`.${cnDataCell('Slots')}`)!;
 
-        expect(
-          hasClassName(slots, cnDataCell('Slots', { truncate: true })),
-        ).toBe(true);
+        expect(slots).toHaveClass(
+          ...cnDataCell('Slots', { truncate: true }).split(' '),
+        );
       }));
 
     test('не добавляет модификаторы truncate по умолчанию', () =>
@@ -724,14 +712,9 @@ describe('Компонент DataCell', () => {
           `.${cnDataCell('ContentSlot')}`,
         );
 
-        expect(
-          contentSlot
-            ? hasClassName(
-                contentSlot,
-                cnDataCell('ContentSlot', { truncate: true }),
-              )
-            : false,
-        ).toBe(false);
+        expect(contentSlot).not.toHaveClass(
+          ...cnDataCell('ContentSlot', { truncate: true }).split(' '),
+        );
       }));
 
     test('Slots получает truncate даже для React-узла без Text', () =>
@@ -746,19 +729,13 @@ describe('Компонент DataCell', () => {
           `.${cnDataCell('ContentSlot')}`,
         )!;
 
-        expect(
-          hasClassName(
-            render.querySelector(`.${cnDataCell('Slots')}`)!,
-            cnDataCell('Slots', { truncate: true }),
-          ),
-        ).toBe(true);
+        expect(render.querySelector(`.${cnDataCell('Slots')}`)!).toHaveClass(
+          ...cnDataCell('Slots', { truncate: true }).split(' '),
+        );
         // Модификатор доходит только до Slots: ContentSlot его не получает.
-        expect(
-          hasClassName(
-            contentSlot,
-            cnDataCell('ContentSlot', { truncate: true }),
-          ),
-        ).toBe(false);
+        expect(contentSlot).not.toHaveClass(
+          ...cnDataCell('ContentSlot', { truncate: true }).split(' '),
+        );
       }));
 
     test('не должен добавлять truncate контентному слоту для React-узла', () =>
@@ -775,12 +752,9 @@ describe('Компонент DataCell', () => {
           `.${cnDataCell('ContentSlot')}`,
         )!;
 
-        expect(
-          hasClassName(
-            contentSlot,
-            cnDataCell('ContentSlot', { truncate: true }),
-          ),
-        ).toBe(false);
+        expect(contentSlot).not.toHaveClass(
+          ...cnDataCell('ContentSlot', { truncate: true }).split(' '),
+        );
       }));
 
     test('truncate и lineClamp дают Text оба модификатора', () =>
@@ -790,9 +764,9 @@ describe('Компонент DataCell', () => {
         const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
         expect(textEl.className).toContain('Text_truncate');
-        expect(
-          hasClassName(textEl, cnDataCell('Text', { lineClamp: true })),
-        ).toBe(true);
+        expect(textEl).toHaveClass(
+          ...cnDataCell('Text', { lineClamp: true }).split(' '),
+        );
       }));
   });
 
@@ -812,9 +786,9 @@ describe('Компонент DataCell', () => {
 
         const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
-        expect(
-          hasClassName(textEl, cnDataCell('Text', { lineClamp: true })),
-        ).toBe(true);
+        expect(textEl).toHaveClass(
+          ...cnDataCell('Text', { lineClamp: true }).split(' '),
+        );
       }));
 
     test('не задаёт переменную и модификатор при отсутствии значения', () =>
@@ -828,11 +802,9 @@ describe('Компонент DataCell', () => {
         ).toBe('');
 
         const textEl = render.querySelector(`.${cnDataCell('Text')}`);
-        expect(
-          textEl
-            ? hasClassName(textEl, cnDataCell('Text', { lineClamp: true }))
-            : false,
-        ).toBe(false);
+        expect(textEl).not.toHaveClass(
+          ...cnDataCell('Text', { lineClamp: true }).split(' '),
+        );
       }));
 
     test('lineClamp = 0 не задаёт переменную', () =>
@@ -844,12 +816,9 @@ describe('Компонент DataCell', () => {
         expect(
           render.style.getPropertyValue('--table-data-cell-line-clamp'),
         ).toBe('');
-        expect(
-          hasClassName(
-            render.querySelector(`.${cnDataCell('Text')}`)!,
-            cnDataCell('Text', { lineClamp: true }),
-          ),
-        ).toBe(false);
+        expect(render.querySelector(`.${cnDataCell('Text')}`)!).not.toHaveClass(
+          ...cnDataCell('Text', { lineClamp: true }).split(' '),
+        );
       }));
 
     test('переменная line-clamp ставится и без Text, но модификатор не появляется', () =>
@@ -874,8 +843,8 @@ describe('Компонент DataCell', () => {
         const render = getRender();
 
         expect(render.textContent).toBe('Стало');
-        expect(hasClassName(render, cnDataCell({ size: 's' }))).toBe(true);
-        expect(hasClassName(render, cnDataCell({ size: 'm' }))).toBe(false);
+        expect(render).toHaveClass(...cnDataCell({ size: 's' }).split(' '));
+        expect(render).not.toHaveClass(...cnDataCell({ size: 'm' }).split(' '));
         expect(
           render.querySelectorAll(`.${cnDataCell('ContentSlot')}`).length,
         ).toBe(1);

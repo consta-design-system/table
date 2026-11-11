@@ -19,17 +19,20 @@ clearStack();
 
 const cnCollapse = cn('Collapse');
 const cnCollapseFullscreen = cn('CollapseFullscreen');
+const cnToolbar = cn('Toolbar');
 
 const testId = cnCollapse();
 
 type AttachmentProps = React.ComponentProps<typeof Collapse>;
 
-const renderComponent = (props: AttachmentProps) => {
-  const root = ReactDOM.createRoot(
-    document.querySelector(`*[data-test-block=${testRootId()}]`)!,
-  );
+const getHost = () =>
+  document.querySelector(`*[data-test-block=${testRootId()}]`)!;
+
+const renderComponent = (props: AttachmentProps, root?: ReactDOM.Root) => {
+  const target = root ?? ReactDOM.createRoot(getHost());
+
   act(() => {
-    root.render(
+    target.render(
       <reatomContext.Provider value={top()}>
         <Theme preset={presetGpnDefault}>
           <Collapse data-testid={testId} {...props} />
@@ -37,6 +40,8 @@ const renderComponent = (props: AttachmentProps) => {
       </reatomContext.Provider>,
     );
   });
+
+  return target;
 };
 
 const getRender = () =>
@@ -44,24 +49,49 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
+const getToolbar = () =>
+  getRender().querySelector(`.${cnToolbar()}`) as HTMLElement | null;
+
+const getContent = () =>
+  getRender().querySelector(`.${cnCollapse('Content')}`) as HTMLElement | null;
+
 const getExpandButton = () =>
   getRender().querySelector(
     `.${cnCollapse('ExpandButton')}`,
-  ) as HTMLButtonElement;
+  ) as HTMLButtonElement | null;
 
 const getFullscreenButton = () =>
   getRender().querySelector(
     `.${cnCollapse('FullscreenButton')}`,
-  ) as HTMLButtonElement;
+  ) as HTMLButtonElement | null;
 
 const getFullscreenContainer = () =>
-  document.body.querySelector(`.${cnCollapseFullscreen()}`);
+  document.body.querySelector(
+    `.${cnCollapseFullscreen()}`,
+  ) as HTMLElement | null;
+
+const getFullscreenToolbar = () =>
+  getFullscreenContainer()?.querySelector(
+    `.${cnCollapseFullscreen('Toolbar')}`,
+  ) as HTMLElement | null;
+
+const getFullscreenChildrenWrapper = () =>
+  getFullscreenContainer()?.querySelector(
+    `.${cnCollapseFullscreen('ChildrenWrapper')}`,
+  ) as HTMLElement | null;
+
+const getFullscreenExitButton = () =>
+  getFullscreenToolbar()?.querySelector('button') as HTMLButtonElement | null;
 
 /**
- * Возвращает кнопку (Button) внутри тулбара по переданному data-атрибуту.
+ * У иконок кнопок нет data-атрибутов, поэтому активное состояние
+ * проверяется по обёртке переключателя и классу самой иконки.
  */
+const getExpandIconSwitcher = () =>
+  getExpandButton()?.querySelector(
+    '.icons--AnimateIconBase',
+  ) as HTMLElement | null;
 
-// const getExpandButton = ()
 /**
  * Возвращает children-wrapper (контейнер контента) внутри корневого div.
  */
@@ -185,8 +215,11 @@ describe('Компонент Collapse', () => {
       context.start(async () => {
         renderComponent({ leftSide: 'Заголовок' });
 
-        // Кнопок раскрытия/полного экрана тоже нет — контента справа быть не должно
+        // Кнопок раскрытия/полного экрана тоже нет: в тулбаре только слот с Title
         expect(getRender().querySelector('[data-right]')).toBeNull();
+        expect(
+          getRender().querySelectorAll(`.${cnToolbar('Slot')}`),
+        ).toHaveLength(1);
       }));
   });
 
@@ -324,34 +357,74 @@ describe('Компонент Collapse', () => {
 
     test('сворачивается при переходе expanded в false', () =>
       context.start(async () => {
-        const root = ReactDOM.createRoot(
-          document.querySelector(`*[data-test-block=${testRootId()}]`)!,
-        );
+        const root = renderComponent({
+          leftSide: 'Заголовок',
+          expanded: true,
+          children: 'Контент',
+        });
 
-        const doRender = (expanded: boolean) =>
-          act(() => {
-            root.render(
-              <reatomContext.Provider value={top()}>
-                <Theme preset={presetGpnDefault}>
-                  <Collapse
-                    data-testid={testId}
-                    leftSide="Заголовок"
-                    expanded={expanded}
-                  >
-                    Контент
-                  </Collapse>
-                </Theme>
-              </reatomContext.Provider>,
-            );
-          });
-
-        doRender(true);
         await wrap(tick());
         expect(getChildrenWrapper()).toBeTruthy();
 
-        doRender(false);
+        renderComponent(
+          {
+            leftSide: 'Заголовок',
+            expanded: false,
+            children: 'Контент',
+          },
+          root,
+        );
 
         await wrap(tick());
+        expect(getChildrenWrapper()).toBeNull();
+      }));
+
+    test('состояние, выставленное кликом, переживает ре-рендер с теми же props', () =>
+      context.start(async () => {
+        const props: AttachmentProps = {
+          leftSide: 'Заголовок',
+          expandButton: true,
+          children: 'Контент',
+        };
+
+        const root = renderComponent(props);
+        await wrap(tick());
+
+        getExpandButton()!.click();
+        await wrap(tick());
+        expect(getChildrenWrapper()).toBeTruthy();
+
+        renderComponent(props, root);
+        await wrap(tick());
+
+        expect(getChildrenWrapper()).toBeTruthy();
+      }));
+
+    test('изменённый expanded перезаписывает состояние, выставленное кликом', () =>
+      context.start(async () => {
+        const root = renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          expanded: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        getExpandButton()!.click();
+        await wrap(tick());
+        expect(getChildrenWrapper()).toBeNull();
+
+        renderComponent(
+          {
+            leftSide: 'Заголовок',
+            expandButton: true,
+            expanded: true,
+            children: 'Контент',
+          },
+          root,
+        );
+        await wrap(tick());
+
         expect(getChildrenWrapper()).toBeNull();
       }));
   });
@@ -450,7 +523,7 @@ describe('Компонент Collapse', () => {
           children: 'Контент',
         });
 
-        getFullscreenButton().click();
+        getFullscreenButton()!.click();
 
         expect(onFullscreen).toHaveBeenCalledTimes(1);
         expect(onFullscreen.mock.calls[0][0]).toBe(true);
@@ -467,8 +540,8 @@ describe('Компонент Collapse', () => {
           children: 'Контент',
         });
 
-        getFullscreenButton().click();
-        getFullscreenButton().click();
+        getFullscreenButton()!.click();
+        getFullscreenButton()!.click();
 
         expect(onFullscreen).toHaveBeenCalledTimes(2);
         expect(onFullscreen.mock.calls[1][0]).toBe(false);
@@ -541,6 +614,434 @@ describe('Компонент Collapse', () => {
 
         expect(
           document.body.querySelector(`.${cnCollapseFullscreen()}`),
+        ).toBeTruthy();
+      }));
+  });
+
+  describe('модификатор container полноэкранного портала', () => {
+    const containerModifier = cnCollapseFullscreen({ container: true }).split(
+      ' ',
+    );
+
+    const createContainer = () => {
+      const container = document.createElement('div');
+      container.setAttribute('data-container', 'custom');
+      document.body.appendChild(container);
+
+      return container;
+    };
+
+    test('рендерит мод container для Element-контейнера', () =>
+      context.start(async () => {
+        const container = createContainer();
+
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          fullscreenContainer: container,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getFullscreenContainer()).toHaveClass(...containerModifier);
+
+        container.remove();
+      }));
+
+    test('рендерит мод container для ref на элемент вне body', () =>
+      context.start(async () => {
+        const container = createContainer();
+
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          fullscreenContainer: { current: container },
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getFullscreenContainer()).toHaveClass(...containerModifier);
+
+        container.remove();
+      }));
+
+    test('не рендерит мод container для ref на body', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          fullscreenContainer: { current: document.body },
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getFullscreenContainer()).not.toHaveClass(...containerModifier);
+      }));
+  });
+
+  describe('рамка тулбара при раскрытии контента', () => {
+    const borderBottom = cnToolbar({ border: 'bottom' }).split(' ');
+
+    test('рамки нет, пока контент не раскрыт', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getToolbar()).not.toHaveClass(...borderBottom);
+      }));
+
+    test('рамка появляется после раскрытия', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        getExpandButton()!.click();
+        await wrap(tick());
+
+        expect(getToolbar()).toHaveClass(...borderBottom);
+      }));
+
+    test('рамка пропадает после сворачивания', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        getExpandButton()!.click();
+        await wrap(tick());
+        expect(getToolbar()).toHaveClass(...borderBottom);
+
+        getExpandButton()!.click();
+        await wrap(tick());
+
+        expect(getToolbar()).not.toHaveClass(...borderBottom);
+        expect(getChildrenWrapper()).toBeNull();
+      }));
+  });
+
+  describe('высота контента при переходе в полноэкранный режим', () => {
+    /**
+     * clientHeight зависит от реального лейаута, поэтому его фиксируют
+     * заглушкой: иначе проверка зависела бы от браузера и шрифта.
+     */
+    const stubContentHeight = (element: HTMLElement, height: number) =>
+      Object.defineProperty(element, 'clientHeight', {
+        value: height,
+        configurable: true,
+      });
+
+    test('без смонтированного контента height не проставляется', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreenButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+
+        expect(getContent()?.style.height).toBe('');
+      }));
+
+    test('Content получает высоту контента, измеренную до включения полноэкранного режима', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expanded: true,
+          fullscreenButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        stubContentHeight(getChildrenWrapper()!, 240);
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+
+        expect(getContent()?.style.height).toBe('240px');
+      }));
+
+    test('height сбрасывается при выходе из полноэкранного режима', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expanded: true,
+          fullscreenButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        stubContentHeight(getChildrenWrapper()!, 240);
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+        expect(getContent()?.style.height).toBe('240px');
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+
+        expect(getContent()?.style.height).toBe('');
+      }));
+  });
+
+  describe('содержимое полноэкранного портала', () => {
+    test('тулбар портала содержит Title и контент rightSide', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          rightSide: <span data-right>Справа</span>,
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        const toolbar = getFullscreenToolbar();
+
+        expect(toolbar).toBeTruthy();
+        expect(
+          toolbar?.querySelector(`.${cnCollapse('Title')}`)?.textContent,
+        ).toBe('Заголовок');
+        expect(toolbar?.querySelector('[data-right]')).toBeTruthy();
+      }));
+
+    test('тулбар портала имеет нижнюю рамку', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getFullscreenToolbar()).toHaveClass(
+          ...cnToolbar({ border: 'bottom' }).split(' '),
+        );
+      }));
+
+    test('контент рендерится в ChildrenWrapper портала', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        const portal = getFullscreenContainer();
+
+        expect(
+          portal?.querySelector(`.${cnCollapseFullscreen('ToolbarWrapper')}`),
+        ).toBeTruthy();
+        expect(getFullscreenChildrenWrapper()?.textContent).toContain(
+          'Контент',
+        );
+      }));
+
+    test('кнопка выхода в портале сворачивает фуллскрин', () =>
+      context.start(async () => {
+        const onFullscreen = vi.fn();
+
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreenButton: true,
+          fullscreen: true,
+          onFullscreen,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(getFullscreenExitButton()).toBeTruthy();
+
+        getFullscreenExitButton()!.click();
+        await wrap(tick());
+
+        expect(onFullscreen).toHaveBeenCalledTimes(1);
+        expect(onFullscreen.mock.calls[0][0]).toBe(false);
+        expect(getFullscreenContainer()).toBeNull();
+      }));
+
+    test('портал проставляет переменную высоты тулбара', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(
+          getFullscreenContainer()?.style.getPropertyValue(
+            '--collapse-toolbar-height',
+          ),
+        ).toMatch(/^\d+(\.\d+)?px$/);
+      }));
+  });
+
+  describe('влияние полноэкранного режима на документ', () => {
+    const bodyClass = cnCollapseFullscreen('Body');
+    const scrollbarWidthVariable =
+      '--ct-collapse-fullscreen-body-scrollbar-width';
+
+    test('активный фуллскрин добавляет класс Body и переменную скроллбара', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(document.documentElement).toHaveClass(bodyClass);
+        expect(
+          document.documentElement.style.getPropertyValue(
+            scrollbarWidthVariable,
+          ),
+        ).toMatch(/^\d+(\.\d+)?px$/);
+      }));
+
+    test('выход из полноэкранного режима снимает класс Body и переменную', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreenButton: true,
+          fullscreen: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(document.documentElement).toHaveClass(bodyClass);
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+
+        expect(document.documentElement).not.toHaveClass(bodyClass);
+        expect(
+          document.documentElement.style.getPropertyValue(
+            scrollbarWidthVariable,
+          ),
+        ).toBe('');
+      }));
+
+    test('неактивный фуллскрин не меняет документ', () =>
+      context.start(async () => {
+        renderComponent({ leftSide: 'Заголовок', children: 'Контент' });
+        await wrap(tick());
+
+        expect(document.documentElement).not.toHaveClass(bodyClass);
+        expect(
+          document.documentElement.style.getPropertyValue(
+            scrollbarWidthVariable,
+          ),
+        ).toBe('');
+      }));
+  });
+
+  describe('событие клика в аргументах колбэка', () => {
+    test('onExpand получает событие клика по кнопке', () =>
+      context.start(async () => {
+        const onExpand = vi.fn();
+
+        renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          onExpand,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        const button = getExpandButton()!;
+        button.click();
+
+        const event = onExpand.mock.calls[0][1];
+
+        expect(event.type).toBe('click');
+        expect(event.target).toBe(button);
+        expect(event.nativeEvent).toBeInstanceOf(MouseEvent);
+      }));
+
+    test('onFullscreen получает событие клика по кнопке', () =>
+      context.start(async () => {
+        const onFullscreen = vi.fn();
+
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreenButton: true,
+          onFullscreen,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        const button = getFullscreenButton()!;
+        button.click();
+
+        const event = onFullscreen.mock.calls[0][1];
+
+        expect(event.type).toBe('click');
+        expect(event.target).toBe(button);
+        expect(event.nativeEvent).toBeInstanceOf(MouseEvent);
+      }));
+  });
+
+  describe('активное состояние кнопок тулбара', () => {
+    test('иконка раскрытия повёрнута при раскрытом контенте', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          expandButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(
+          getExpandIconSwitcher()?.style.getPropertyValue(
+            '--animate-icon-direction',
+          ),
+        ).toBe('rotate(0deg)');
+
+        getExpandButton()!.click();
+        await wrap(tick());
+
+        expect(
+          getExpandIconSwitcher()?.style.getPropertyValue(
+            '--animate-icon-direction',
+          ),
+        ).toBe('rotate(180deg)');
+      }));
+
+    test('иконка кнопки полноэкранного режима меняется на сворачивание при активном режиме', () =>
+      context.start(async () => {
+        renderComponent({
+          leftSide: 'Заголовок',
+          fullscreenButton: true,
+          children: 'Контент',
+        });
+        await wrap(tick());
+
+        expect(
+          getFullscreenButton()?.querySelector('.IconExpand'),
+        ).toBeTruthy();
+        expect(
+          getFullscreenButton()?.querySelector('.IconCollapse'),
+        ).toBeNull();
+
+        getFullscreenButton()!.click();
+        await wrap(tick());
+
+        expect(
+          getFullscreenButton()?.querySelector('.IconCollapse'),
         ).toBeTruthy();
       }));
   });

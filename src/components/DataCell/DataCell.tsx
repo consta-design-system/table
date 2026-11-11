@@ -8,7 +8,7 @@ import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
 import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
-import { isNumber, isString } from '##/utils/type-guards';
+import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
 export const cnDataCell = cn('DataCell');
 
@@ -101,7 +101,13 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
         ]
       : [];
 
-    const childrenSlots = children
+    // React не рендерит boolean-детей (`{cond && <Icon />}`), но `0` и `''` —
+    // валидные значения, поэтому children проверяются на null/undefined/boolean,
+    // а не на truthiness: иначе `<DataCell>{row.id}</DataCell>` с id = 0
+    // выводит пустую ячейку без слота.
+    const hasChildren = isNotNil(children) && typeof children !== 'boolean';
+
+    const childrenSlots = hasChildren
       ? [
           ...(Array.isArray(children)
             ? children.map((item) =>

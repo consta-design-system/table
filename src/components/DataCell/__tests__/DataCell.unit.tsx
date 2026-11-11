@@ -1,9 +1,13 @@
+import { cnIcon } from '@consta/icons/Icon';
 import { IconArrowUp } from '@consta/icons/IconArrowUp';
 import { IconDinosaur } from '@consta/icons/IconDinosaur';
 import {
   createRoot,
   testRootId,
 } from '@consta/uikit/__internal__/src/utils/vitest';
+import { cnMixFlex } from '@consta/uikit/MixFlex';
+import { cnMixSpace } from '@consta/uikit/MixSpace';
+import { cnText } from '@consta/uikit/Text';
 import { presetGpnDefault, Theme } from '@consta/uikit/Theme';
 import { clearStack, context, top } from '@reatom/core';
 import { reatomContext } from '@reatom/react';
@@ -11,6 +15,8 @@ import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { describe, expect, test, vi } from 'vitest';
+
+import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
 
 import { cnDataCell, DataCell } from '../DataCell';
 
@@ -24,13 +30,26 @@ const testId = cnDataCell();
 
 type AttachmentProps = React.ComponentProps<typeof DataCell>;
 
+/**
+ * Root используется повторно, пока контейнер не сменился (createRoot() из uikit
+ * создаёт новый блок на каждый тест): повторный ReactDOM.createRoot() на том
+ * же узле роняет React-предупреждение и теряет обновления при rerender.
+ */
+let root: ReactDOM.Root | null = null;
+let rootContainer: Element | null = null;
+
 const renderComponent = (props: AttachmentProps) => {
-  const root = ReactDOM.createRoot(
-    document.querySelector(`*[data-test-block=${testRootId()}]`)!,
-  );
+  const container = document.querySelector(
+    `*[data-test-block=${testRootId()}]`,
+  ) as Element;
+
+  if (!root || rootContainer !== container) {
+    root = ReactDOM.createRoot(container);
+    rootContainer = container;
+  }
 
   act(() => {
-    root.render(
+    root?.render(
       <reatomContext.Provider value={top()}>
         <Theme preset={presetGpnDefault}>
           <DataCell data-testid={testId} {...props} />
@@ -97,6 +116,73 @@ describe('Компонент DataCell', () => {
         renderComponent({ ref });
 
         expect(ref.current).toBe(getRender());
+      }));
+
+    test('корень рендерится flex-контейнером через MixFlex', () =>
+      context.start(async () => {
+        renderComponent({});
+
+        expect(hasClassName(getRender(), cnMixFlex({ flex: 'flex' }))).toBe(
+          true,
+        );
+      }));
+
+    test('служебные свойства не попадают в DOM-атрибуты div', () =>
+      context.start(async () => {
+        renderComponent({
+          level: 2,
+          view: 'alert',
+          size: 's',
+          indicator: 'alert',
+          truncate: true,
+          lineClamp: 2,
+          icon: IconDinosaur,
+          control: <span data-control>К</span>,
+          children: 'Текст',
+        });
+
+        const attributes = Array.from(getRender().attributes).map(
+          (attribute) => attribute.name,
+        );
+
+        expect(attributes).toContain('class');
+        expect(attributes).not.toContain('level');
+        expect(attributes).not.toContain('view');
+        expect(attributes).not.toContain('size');
+        expect(attributes).not.toContain('indicator');
+        expect(attributes).not.toContain('truncate');
+        expect(attributes).not.toContain('lineClamp');
+        expect(attributes).not.toContain('icon');
+        expect(attributes).not.toContain('control');
+      }));
+
+    test('внутренняя переменная уровня перекрывает значение из style', () =>
+      context.start(async () => {
+        renderComponent({
+          level: 2,
+          style: {
+            ['--table-data-cell-level' as string]: '9',
+          } as React.CSSProperties,
+        });
+
+        expect(
+          getRender().style.getPropertyValue('--table-data-cell-level'),
+        ).toBe('2');
+      }));
+
+    test('при level = 0 переменная уровня из style затирается', () =>
+      context.start(async () => {
+        // Внутренний spread ставит `undefined` и выключает значение, переданное
+        // пользователем, даже когда level не задан.
+        renderComponent({
+          style: {
+            ['--table-data-cell-level' as string]: '9',
+          } as React.CSSProperties,
+        });
+
+        expect(
+          getRender().style.getPropertyValue('--table-data-cell-level'),
+        ).toBe('');
       }));
   });
 
@@ -172,6 +258,70 @@ describe('Компонент DataCell', () => {
         expect(contentSlots.length).toBe(2);
       }));
 
+    test('falsy элемент массива детей рендерится пустым слотом', () =>
+      context.start(async () => {
+        renderComponent({ children: ['Текст', false] });
+
+        const contentSlots = getRender().querySelectorAll(
+          `.${cnDataCell('ContentSlot')}`,
+        );
+
+        expect(contentSlots.length).toBe(2);
+        expect(contentSlots[1].textContent).toBe('');
+      }));
+
+    test('должен рендерить ноль как текст внутри контентного слота', () =>
+      context.start(async () => {
+        renderComponent({ children: 0 });
+
+        const render = getRender();
+
+        expect(render.textContent).toBe('0');
+        expect(
+          render.querySelector(`.${cnDataCell('ContentSlot')}`),
+        ).toBeTruthy();
+        expect(render.querySelector(`.${cnDataCell('Text')}`)).toBeTruthy();
+      }));
+
+    test('пустая строка рендерится текстовым слотом', () =>
+      context.start(async () => {
+        renderComponent({ children: '' });
+
+        const render = getRender();
+
+        expect(
+          render.querySelector(`.${cnDataCell('ContentSlot')}`),
+        ).toBeTruthy();
+        expect(
+          render.querySelector(`.${cnDataCell('Text')}`)?.textContent,
+        ).toBe('');
+      }));
+
+    test('boolean-ребёнок не создаёт слот содержимого', () =>
+      context.start(async () => {
+        for (const children of [false, true]) {
+          renderComponent({ children });
+
+          expect(
+            getRender().querySelector(`.${cnDataCell('Slots')}`),
+          ).toBeNull();
+        }
+      }));
+
+    test('null как children не создаёт слот содержимого', () =>
+      context.start(async () => {
+        renderComponent({ children: null });
+
+        expect(getRender().querySelector(`.${cnDataCell('Slots')}`)).toBeNull();
+      }));
+
+    test('пустой массив детей не рендерит слот содержимого', () =>
+      context.start(async () => {
+        renderComponent({ children: [] });
+
+        expect(getRender().querySelector(`.${cnDataCell('Slots')}`)).toBeNull();
+      }));
+
     test('не должен рендерить слот содержимого при отсутствии children', () =>
       context.start(async () => {
         renderComponent({});
@@ -208,6 +358,26 @@ describe('Компонент DataCell', () => {
         );
 
         expect(contentSlots.length).toBe(2);
+      }));
+
+    test('иконки рендерятся перед children внутри слота содержимого', () =>
+      context.start(async () => {
+        renderComponent({ icon: IconDinosaur, children: 'Текст' });
+
+        const contentSlots = getRender()
+          .querySelector(`.${cnDataCell('Slots')}`)!
+          .querySelectorAll(`.${cnDataCell('ContentSlot')}`);
+
+        expect(contentSlots.length).toBe(2);
+        expect(contentSlots[0].querySelector('svg')).toBeTruthy();
+        expect(contentSlots[1].textContent).toBe('Текст');
+      }));
+
+    test('пустой массив иконок не рендерит слот содержимого', () =>
+      context.start(async () => {
+        renderComponent({ icon: [] });
+
+        expect(getRender().querySelector(`.${cnDataCell('Slots')}`)).toBeNull();
       }));
 
     test('не должен рендерить слот содержимого при отсутствии icon и children', () =>
@@ -249,6 +419,42 @@ describe('Компонент DataCell', () => {
         );
 
         expect(controlSlots.length).toBe(2);
+      }));
+
+    test('обёртка контролов идёт раньше слота содержимого', () =>
+      context.start(async () => {
+        renderComponent({
+          control: <span data-control>К</span>,
+          icon: IconDinosaur,
+          children: 'Текст',
+        });
+
+        const render = getRender();
+        const controlsWrapper = render.querySelector(
+          `.${cnDataCell('ControlSlot')}`,
+        )?.parentElement;
+
+        // Обёртка контролов не имеет BEM-класса — отличить её можно только по
+        // вложенному ControlSlot.
+        expect(controlsWrapper).not.toBe(render);
+        expect(render.firstElementChild).toBe(controlsWrapper);
+        expect(render.lastElementChild?.className).toContain(
+          cnDataCell('Slots'),
+        );
+      }));
+
+    test('пустой массив контролов не рендерит слот и оставляет alignmentIndent', () =>
+      context.start(async () => {
+        renderComponent({ control: [], level: 2 });
+
+        const render = getRender();
+
+        expect(
+          render.querySelector(`.${cnDataCell('ControlSlot')}`),
+        ).toBeNull();
+        expect(
+          hasClassName(render, cnDataCell({ alignmentIndent: true })),
+        ).toBe(true);
       }));
 
     test('не должен рендерить слот контролов при отсутствии control', () =>
@@ -300,7 +506,7 @@ describe('Компонент DataCell', () => {
           getRender().style.getPropertyValue(
             '--table-data-cell-indicator-color',
           ),
-        ).toContain('alert');
+        ).toBe('var(--color-bg-alert)');
       }));
 
     test('устанавливает цвет индикатора warning', () =>
@@ -311,7 +517,7 @@ describe('Компонент DataCell', () => {
           getRender().style.getPropertyValue(
             '--table-data-cell-indicator-color',
           ),
-        ).toContain('warning');
+        ).toBe('var(--color-bg-warning)');
       }));
 
     test('не устанавливает цвет индикатора при отсутствии значения', () =>
@@ -343,6 +549,34 @@ describe('Компонент DataCell', () => {
         expect(hasClassName(render, cnDataCell({ size: 's' }))).toBe(true);
         expect(hasClassName(render, cnDataCell({ size: 'm' }))).toBe(false);
       }));
+
+    test('размер пробрасывается в Text и задаёт вертикальный отступ', () =>
+      context.start(async () => {
+        for (const size of ['m', 's'] as const) {
+          renderComponent({ size, children: 'Текст' });
+
+          const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
+
+          expect(textEl).toBeTruthy();
+          expect(hasClassName(textEl, cnText({ size }))).toBe(true);
+          expect(
+            hasClassName(
+              textEl,
+              cnMixSpace({ mV: cellVerticalSpaceMap[size] }),
+            ),
+          ).toBe(true);
+        }
+      }));
+
+    test('размер не влияет на не-текстовых детей', () =>
+      context.start(async () => {
+        renderComponent({ size: 's', children: <span data-child>Т</span> });
+
+        const render = getRender();
+
+        expect(render.querySelector(`.${cnDataCell('Text')}`)).toBeNull();
+        expect(render.querySelector('[data-child]')).toBeTruthy();
+      }));
   });
 
   describe('свойство view', () => {
@@ -356,19 +590,49 @@ describe('Компонент DataCell', () => {
         ] as const) {
           renderComponent({ view, children: 'Текст' });
 
-          const textEl = getRender().querySelector(`.${cnDataCell('Text')}`);
+          const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
           expect(textEl).toBeTruthy();
+          expect(hasClassName(textEl, cnText({ view }))).toBe(true);
         }
       }));
 
-    test('не передаёт view, если оно не задано', () =>
+    test('не добавляет модификатор view тексту без view', () =>
       context.start(async () => {
         renderComponent({ children: 'Текст' });
 
-        const textEl = getRender().querySelector(`.${cnDataCell('Text')}`);
+        const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
 
-        expect(textEl?.getAttribute('data-view')).toBeNull();
+        expect(textEl).toBeTruthy();
+        expect(textEl.className).not.toMatch(/Text_view_/);
+      }));
+
+    test('передаёт view иконке для всех значений view', () =>
+      context.start(async () => {
+        for (const view of [
+          'primary',
+          'alert',
+          'success',
+          'warning',
+        ] as const) {
+          renderComponent({ view, icon: IconDinosaur });
+
+          const iconEl = getRender().querySelector(`.${cnIcon()}`)!;
+
+          expect(iconEl).toBeTruthy();
+          expect(hasClassName(iconEl, cnIcon({ view }))).toBe(true);
+        }
+      }));
+
+    test('иконка рендерится в размере s независимо от размера ячейки', () =>
+      context.start(async () => {
+        for (const size of ['m', 's'] as const) {
+          renderComponent({ icon: IconDinosaur, size });
+
+          const iconEl = getRender().querySelector(`.${cnIcon()}`)!;
+
+          expect(hasClassName(iconEl, cnIcon({ size: 's' }))).toBe(true);
+        }
       }));
   });
 
@@ -469,6 +733,67 @@ describe('Компонент DataCell', () => {
             : false,
         ).toBe(false);
       }));
+
+    test('Slots получает truncate даже для React-узла без Text', () =>
+      context.start(async () => {
+        renderComponent({
+          truncate: true,
+          children: <span data-child>T</span>,
+        });
+
+        const render = getRender();
+        const contentSlot = render.querySelector(
+          `.${cnDataCell('ContentSlot')}`,
+        )!;
+
+        expect(
+          hasClassName(
+            render.querySelector(`.${cnDataCell('Slots')}`)!,
+            cnDataCell('Slots', { truncate: true }),
+          ),
+        ).toBe(true);
+        // Модификатор доходит только до Slots: ContentSlot его не получает.
+        expect(
+          hasClassName(
+            contentSlot,
+            cnDataCell('ContentSlot', { truncate: true }),
+          ),
+        ).toBe(false);
+      }));
+
+    test('не должен добавлять truncate контентному слоту для React-узла', () =>
+      context.start(async () => {
+        // Проверка падает: renderChildren передаёт truncate только в ветке
+        // со строкой/числом, поэтому `overflow: hidden` не применяется к
+        // слоту с React-узлом.
+        renderComponent({
+          truncate: true,
+          children: <span data-child>T</span>,
+        });
+
+        const contentSlot = getRender().querySelector(
+          `.${cnDataCell('ContentSlot')}`,
+        )!;
+
+        expect(
+          hasClassName(
+            contentSlot,
+            cnDataCell('ContentSlot', { truncate: true }),
+          ),
+        ).toBe(false);
+      }));
+
+    test('truncate и lineClamp дают Text оба модификатора', () =>
+      context.start(async () => {
+        renderComponent({ truncate: true, lineClamp: 2, children: 'Текст' });
+
+        const textEl = getRender().querySelector(`.${cnDataCell('Text')}`)!;
+
+        expect(textEl.className).toContain('Text_truncate');
+        expect(
+          hasClassName(textEl, cnDataCell('Text', { lineClamp: true })),
+        ).toBe(true);
+      }));
   });
 
   describe('свойство lineClamp', () => {
@@ -508,6 +833,80 @@ describe('Компонент DataCell', () => {
             ? hasClassName(textEl, cnDataCell('Text', { lineClamp: true }))
             : false,
         ).toBe(false);
+      }));
+
+    test('lineClamp = 0 не задаёт переменную', () =>
+      context.start(async () => {
+        renderComponent({ lineClamp: 0, children: 'Текст' });
+
+        const render = getRender();
+
+        expect(
+          render.style.getPropertyValue('--table-data-cell-line-clamp'),
+        ).toBe('');
+        expect(
+          hasClassName(
+            render.querySelector(`.${cnDataCell('Text')}`)!,
+            cnDataCell('Text', { lineClamp: true }),
+          ),
+        ).toBe(false);
+      }));
+
+    test('переменная line-clamp ставится и без Text, но модификатор не появляется', () =>
+      context.start(async () => {
+        renderComponent({ lineClamp: 3, children: <span data-child>T</span> });
+
+        const render = getRender();
+
+        expect(
+          render.style.getPropertyValue('--table-data-cell-line-clamp'),
+        ).toBe('3');
+        expect(render.querySelector(`.${cnDataCell('Text')}`)).toBeNull();
+      }));
+  });
+
+  describe('обновление свойств', () => {
+    test('ререндер обновляет содержимое и модификаторы', () =>
+      context.start(async () => {
+        renderComponent({ children: 'Было', size: 'm' });
+        renderComponent({ children: 'Стало', size: 's', truncate: true });
+
+        const render = getRender();
+
+        expect(render.textContent).toBe('Стало');
+        expect(hasClassName(render, cnDataCell({ size: 's' }))).toBe(true);
+        expect(hasClassName(render, cnDataCell({ size: 'm' }))).toBe(false);
+        expect(
+          render.querySelectorAll(`.${cnDataCell('ContentSlot')}`).length,
+        ).toBe(1);
+      }));
+
+    test('ререндер без control убирает слот контролов', () =>
+      context.start(async () => {
+        renderComponent({ control: <span data-control>К</span> });
+
+        expect(
+          getRender().querySelector(`.${cnDataCell('ControlSlot')}`),
+        ).toBeTruthy();
+
+        renderComponent({});
+
+        expect(
+          getRender().querySelector(`.${cnDataCell('ControlSlot')}`),
+        ).toBeNull();
+      }));
+
+    test('ререндер меняет число слотов при изменении массива детей', () =>
+      context.start(async () => {
+        renderComponent({ children: ['Один'] });
+        expect(
+          getRender().querySelectorAll(`.${cnDataCell('ContentSlot')}`).length,
+        ).toBe(1);
+
+        renderComponent({ children: ['Один', 'Два', 'Три'] });
+        expect(
+          getRender().querySelectorAll(`.${cnDataCell('ContentSlot')}`).length,
+        ).toBe(3);
       }));
   });
 

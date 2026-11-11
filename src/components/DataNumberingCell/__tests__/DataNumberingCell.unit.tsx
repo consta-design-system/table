@@ -16,6 +16,8 @@ import { describe, expect, test, vi } from 'vitest';
 import { cnDataNumberingCell, DataNumberingCell } from '../DataNumberingCell';
 
 createRoot();
+// В reatom v1001 стек контекстов очищается явно: без context.start любой top()
+// бросает ReatomError «missing async stack».
 clearStack();
 
 /**
@@ -23,15 +25,30 @@ clearStack();
  */
 const testId = cnDataNumberingCell();
 
-type AttachmentProps = React.ComponentProps<typeof DataNumberingCell>;
+type DataNumberingCellTestProps = React.ComponentProps<
+  typeof DataNumberingCell
+>;
 
-const renderComponent = (props: AttachmentProps) => {
-  const root = ReactDOM.createRoot(
-    document.querySelector(`*[data-test-block=${testRootId()}]`)!,
-  );
+/**
+ * Root используется повторно, пока контейнер не сменился (createRoot() из uikit
+ * создаёт новый блок на каждый тест): повторный ReactDOM.createRoot() на том
+ * же узле роняет React-предупреждение и теряет обновления при rerender.
+ */
+let root: ReactDOM.Root | null = null;
+let rootContainer: Element | null = null;
+
+const renderComponent = (props: DataNumberingCellTestProps) => {
+  const container = document.querySelector(
+    `*[data-test-block=${testRootId()}]`,
+  ) as Element;
+
+  if (!root || rootContainer !== container) {
+    root = ReactDOM.createRoot(container);
+    rootContainer = container;
+  }
 
   act(() => {
-    root.render(
+    root?.render(
       <reatomContext.Provider value={top()}>
         <Theme preset={presetGpnDefault}>
           <DataNumberingCell data-testid={testId} {...props} />
@@ -46,6 +63,8 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLElement;
 
+const getClasses = () => Array.from(getRender().classList);
+
 describe('Компонент DataNumberingCell', () => {
   describe('рендер корневого элемента', () => {
     test('должен рендериться без ошибок и с базовым классом', () =>
@@ -55,7 +74,7 @@ describe('Компонент DataNumberingCell', () => {
         const render = getRender();
 
         expect(render).toBeTruthy();
-        expect(render.className).toContain(cnDataNumberingCell());
+        expect(render).toHaveClass(...cnDataNumberingCell().split(' '));
         expect(render.tagName).toBe('DIV');
       }));
 
@@ -94,11 +113,48 @@ describe('Компонент DataNumberingCell', () => {
         );
       }));
 
-    test('должен пробрасывать className', () =>
+    test('должен рендериться единственным узлом без дополнительного wrapper', () =>
       context.start(async () => {
-        renderComponent({ children: '1', className: 'custom-class' });
+        renderComponent({ children: '1' });
 
-        expect(getRender().className).toContain('custom-class');
+        const render = getRender();
+
+        expect(render.firstElementChild).toBeNull();
+        expect(
+          document.querySelectorAll(`*[data-testid=${testId}]`).length,
+        ).toBe(1);
+      }));
+
+    test('не должен переопределять size, view и lineHeight значениями из props', () =>
+      context.start(async () => {
+        // Инвариант проверяется свойствами, которых нет в типе div: компонент
+        // ставит значения Text после spread, поэтому они не перебиваются.
+        const overrides = {
+          size: 'm',
+          view: 'primary',
+          lineHeight: 's',
+        } as unknown as DataNumberingCellTestProps;
+
+        renderComponent({ ...overrides, children: '1' });
+
+        const classes = getClasses();
+
+        expect(classes).toContain('Text_size_xs');
+        expect(classes).not.toContain('Text_size_m');
+        expect(classes).not.toContain('Text_view_primary');
+        expect(classes).not.toContain('Text_lineHeight_s');
+      }));
+
+    test('должен пробрасывать className, сохраняя базовый и служебные классы', () =>
+      context.start(async () => {
+        renderComponent({ children: '1', className: 'custom-class other' });
+
+        const classes = getClasses();
+
+        expect(classes).toContain('custom-class');
+        expect(classes).toContain('other');
+        expect(classes).toContain(cnDataNumberingCell());
+        expect(classes).toContain('Text');
       }));
 
     test('должен пробрасывать прочие атрибуты div через ...otherProps', () =>
@@ -106,6 +162,21 @@ describe('Компонент DataNumberingCell', () => {
         renderComponent({ 'children': '1', 'aria-label': 'cell' });
 
         expect(getRender().getAttribute('aria-label')).toBe('cell');
+      }));
+
+    test('должен пробрасывать data-* атрибуты строчной нумерации', () =>
+      context.start(async () => {
+        // Примеры Table помечают строку через data-row-hover/data-row-active.
+        renderComponent({
+          'children': '1',
+          'data-row-hover': 'true',
+          'data-row-active': 'true',
+        } as DataNumberingCellTestProps);
+
+        const render = getRender();
+
+        expect(render.getAttribute('data-row-hover')).toBe('true');
+        expect(render.getAttribute('data-row-active')).toBe('true');
       }));
 
     test('должен пробрасывать ref на корневой элемент', () =>
@@ -133,6 +204,13 @@ describe('Компонент DataNumberingCell', () => {
         expect(getRender().textContent).toContain('100');
       }));
 
+    test('должен рендерить ноль как текст', () =>
+      context.start(async () => {
+        renderComponent({ children: 0 });
+
+        expect(getRender().textContent).toBe('0');
+      }));
+
     test('должен рендерить произвольный React-узел', () =>
       context.start(async () => {
         renderComponent({ children: <span data-child>Ребенок</span> });
@@ -142,9 +220,32 @@ describe('Компонент DataNumberingCell', () => {
 
     test('должен рендериться без children', () =>
       context.start(async () => {
-        expect(() => renderComponent({} as AttachmentProps)).not.toThrow();
+        expect(() => renderComponent({ children: undefined })).not.toThrow();
 
-        expect(getRender()).toBeTruthy();
+        const render = getRender();
+
+        expect(render).toBeTruthy();
+        expect(render.textContent).toBe('');
+      }));
+
+    test('должен рендериться с children = null', () =>
+      context.start(async () => {
+        expect(() => renderComponent({ children: null })).not.toThrow();
+
+        expect(getRender().textContent).toBe('');
+      }));
+
+    test('должен обновлять children при повторном render в том же узле', () =>
+      context.start(async () => {
+        renderComponent({ children: 1 });
+        renderComponent({ children: 2 });
+
+        const render = getRender();
+
+        expect(render.textContent).toBe('2');
+        expect(
+          document.querySelectorAll(`*[data-testid=${testId}]`).length,
+        ).toBe(1);
       }));
   });
 
@@ -156,6 +257,17 @@ describe('Компонент DataNumberingCell', () => {
         renderComponent({ children: '1', onClick });
 
         fireEvent.click(getRender());
+
+        expect(onClick).toHaveBeenCalledTimes(1);
+      }));
+
+    test('должен вызывать onClick при клике по дочернему узлу', () =>
+      context.start(async () => {
+        const onClick = vi.fn();
+
+        renderComponent({ children: <span data-child>Внук</span>, onClick });
+
+        fireEvent.click(getRender().querySelector('[data-child]')!);
 
         expect(onClick).toHaveBeenCalledTimes(1);
       }));

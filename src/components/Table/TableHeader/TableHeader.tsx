@@ -80,7 +80,9 @@ export const TableHeader: TableHeaderComponent = factoryComponent(
                       ? `var(--table-column-sticky-right-offset-${stickyRightOffsets[index]})`
                       : undefined,
                 }}
-                ref={wrap(headerCellsElements[index].set)}
+                ref={wrap((el) => {
+                  headerCellsElements[index].set(el);
+                })}
                 key={cnTableHeader('Cell', { index })}
               >
                 {column.isSeparator ? null : (

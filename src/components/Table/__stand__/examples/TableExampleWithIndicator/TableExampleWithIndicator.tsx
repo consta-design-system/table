@@ -272,7 +272,7 @@ const DataCellWithInformer = ({
   data: string;
   status?: 'alert' | 'warning';
   statusMessage?: string;
-  tableRef: React.RefObject<HTMLDivElement>;
+  tableRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const cellRef = useRef<HTMLDivElement>(null);
   const popoverContentRef = useRef<HTMLDivElement>(null);

@@ -21,7 +21,7 @@ import { CollapseFullscreenIcon } from './CollapseFullscreenIcon';
 
 const cnCollapse = cn('Collapse');
 
-export type CollapseProps = JSX.IntrinsicElements['div'] & {
+export type CollapseProps = React.JSX.IntrinsicElements['div'] & {
   expandButton?: boolean;
   expanded?: boolean;
   expandedMaxHeight?: number | 'auto';
@@ -34,14 +34,14 @@ export type CollapseProps = JSX.IntrinsicElements['div'] & {
   ) => void;
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
-  fullscreenContainer?: Element | React.RefObject<HTMLElement>;
+  fullscreenContainer?: Element | React.RefObject<HTMLElement | null>;
   fullscreenZIndex?: number;
 };
 
 /**
  * Props for the Collapse component.
  *
- * @extends JSX.IntrinsicElements['div']
+ * @extends React.JSX.IntrinsicElements['div']
  * @property {boolean} [expandButton] - показывает кнопку раскрытия..
  * @property {boolean} [expanded=false] - указывает, раскрыт ли компонент.
  * @property {number | 'auto'} [expandedMaxHeight='auto'] - максимальная высота при раскрытии..
@@ -51,7 +51,7 @@ export type CollapseProps = JSX.IntrinsicElements['div'] & {
  * @property {(value: boolean, e: React.MouseEvent<HTMLButtonElement>) => void} [onFullscreen] - обработчик изменения полноэкранного режима.
  * @property {React.ReactNode} leftSide - контент для отображения на левой стороне.
  * @property {React.ReactNode} [rightSide] - контент для отображения на правой стороне.
- * @property {Element | React.RefObject<HTMLElement>} [fullscreenContainer=`window.document.body`] -  контейнер для полноэкранного режима.
+ * @property {Element | React.RefObject<HTMLElement | null>} [fullscreenContainer=`window.document.body`] -  контейнер для полноэкранного режима.
  * @property {number} [fullscreenZIndex=1000] - уровень z-index для полноэкранного режима.
  * @property {string} [className] - дополнительный класс.
  * @property {React.ReactNode} children - контент для отображения внутри компонента.
@@ -163,7 +163,9 @@ export const Collapse = factoryComponent<HTMLDivElement, CollapseProps>(
                   {() => (
                     <div
                       className={cnCollapse('ChildrenWrapper')}
-                      ref={wrap(contentElementAtom.set)}
+                      ref={wrap((el) => {
+                        contentElementAtom.set(el);
+                      })}
                       style={{ maxHeight: expandedMaxHeight }}
                     >
                       {children}

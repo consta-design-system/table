@@ -24,13 +24,13 @@ import { cn } from '##/utils/bem';
 import { CollapseButton } from '../CollapseButton';
 import { CollapseFullscreenIcon } from '../CollapseFullscreenIcon';
 
-type CollapseFullscreenProps = JSX.IntrinsicElements['div'] & {
+type CollapseFullscreenProps = React.JSX.IntrinsicElements['div'] & {
   active?: boolean;
   onFullscreen?: React.MouseEventHandler<HTMLButtonElement>;
   leftSide: React.ReactNode;
   rightSide?: React.ReactNode;
 
-  container: Element | React.RefObject<HTMLElement>;
+  container: Element | React.RefObject<HTMLElement | null>;
   zIndex?: number;
 };
 
@@ -83,101 +83,105 @@ const bodyRemoveStyles = () => {
   removeCssVariable('--ct-collapse-fullscreen-body-scrollbar-width');
 };
 
-export const CollapseFullscreen: React.FC<CollapseFullscreenProps> =
-  factoryComponent((_, propsAtom) => {
-    const containerIsBodyAtom = computed(() => {
-      const { container } = propsAtom();
-      return (
-        container === window.document.body ||
-        ('current' in container && container.current === window.document.body)
-      );
-    });
-
-    const portalElement = atom<HTMLDivElement | null>(null);
-    const portalRefAtom = computed(() => ({ current: portalElement() }));
-    const toolbarElementAtom = atom<HTMLDivElement | null>(null);
-    const activeAtom = computed(() => !!propsAtom().active);
-
-    const toolbarHeightAtom = resizeObservedAtom(
-      toolbarElementAtom,
-      getElementHeight,
+export const CollapseFullscreen = factoryComponent<
+  HTMLDivElement,
+  CollapseFullscreenProps
+>((_, propsAtom) => {
+  const containerIsBodyAtom = computed(() => {
+    const { container } = propsAtom();
+    return (
+      container === window.document.body ||
+      ('current' in container && container.current === window.document.body)
     );
-
-    effect(() => {
-      if (activeAtom() && peek(containerIsBodyAtom)) {
-        bodyAddStyles();
-      }
-    });
-
-    abortVar.subscribe(bodyRemoveStyles);
-
-    return ({
-      active = false,
-      container,
-      zIndex,
-      rightSide,
-      onFullscreen,
-      children,
-      leftSide,
-    }) => {
-      const portalRef = portalRefAtom();
-      const containerIsBody = containerIsBodyAtom();
-
-      return (
-        <Transition
-          in={active}
-          unmountOnExit
-          timeout={animateTimeout}
-          onExited={bodyRemoveStyles}
-        >
-          {(animate) => (
-            <ThemeContext.Consumer>
-              {wrap(({ theme }) => (
-                <PortalWithTheme
-                  ref={portalRef}
-                  preset={theme}
-                  container={container}
-                  style={{
-                    zIndex,
-                    [`--collapse-toolbar-height` as string]: `${toolbarHeightAtom()}px`,
-                  }}
-                  className={cnCollapseFullscreen(
-                    { container: !containerIsBody },
-                    [
-                      cnMixPopoverAnimate({
-                        animate,
-                      }),
-                    ],
-                  )}
-                >
-                  <PortalWithThemeConsumer ignoreClicksInsideRefs={[portalRef]}>
-                    <div className={cnCollapseFullscreen('ToolbarWrapper')}>
-                      <Toolbar
-                        className={cnCollapseFullscreen('Toolbar')}
-                        ref={wrap(toolbarElementAtom.set)}
-                        leftSide={leftSide}
-                        form="brick"
-                        border="bottom"
-                        rightSide={[
-                          rightSide,
-                          <CollapseButton
-                            active={active}
-                            icon={CollapseFullscreenIcon}
-                            onClick={onFullscreen}
-                          />,
-                        ]}
-                      />
-                    </div>
-
-                    <div className={cnCollapseFullscreen('ChildrenWrapper')}>
-                      {children}
-                    </div>
-                  </PortalWithThemeConsumer>
-                </PortalWithTheme>
-              ))}
-            </ThemeContext.Consumer>
-          )}
-        </Transition>
-      );
-    };
   });
+
+  const portalElement = atom<HTMLDivElement | null>(null);
+  const portalRefAtom = computed(() => ({ current: portalElement() }));
+  const toolbarElementAtom = atom<HTMLDivElement | null>(null);
+  const activeAtom = computed(() => !!propsAtom().active);
+
+  const toolbarHeightAtom = resizeObservedAtom(
+    toolbarElementAtom,
+    getElementHeight,
+  );
+
+  effect(() => {
+    if (activeAtom() && peek(containerIsBodyAtom)) {
+      bodyAddStyles();
+    }
+  });
+
+  abortVar.subscribe(bodyRemoveStyles);
+
+  return ({
+    active = false,
+    container,
+    zIndex,
+    rightSide,
+    onFullscreen,
+    children,
+    leftSide,
+  }) => {
+    const portalRef = portalRefAtom();
+    const containerIsBody = containerIsBodyAtom();
+
+    return (
+      <Transition
+        in={active}
+        unmountOnExit
+        timeout={animateTimeout}
+        onExited={bodyRemoveStyles}
+      >
+        {(animate) => (
+          <ThemeContext.Consumer>
+            {wrap(({ theme }) => (
+              <PortalWithTheme
+                ref={portalRef}
+                preset={theme}
+                container={container}
+                style={{
+                  zIndex,
+                  [`--collapse-toolbar-height` as string]: `${toolbarHeightAtom()}px`,
+                }}
+                className={cnCollapseFullscreen(
+                  { container: !containerIsBody },
+                  [
+                    cnMixPopoverAnimate({
+                      animate,
+                    }),
+                  ],
+                )}
+              >
+                <PortalWithThemeConsumer ignoreClicksInsideRefs={[portalRef]}>
+                  <div className={cnCollapseFullscreen('ToolbarWrapper')}>
+                    <Toolbar
+                      className={cnCollapseFullscreen('Toolbar')}
+                      ref={wrap((el) => {
+                        toolbarElementAtom.set(el);
+                      })}
+                      leftSide={leftSide}
+                      form="brick"
+                      border="bottom"
+                      rightSide={[
+                        rightSide,
+                        <CollapseButton
+                          active={active}
+                          icon={CollapseFullscreenIcon}
+                          onClick={onFullscreen}
+                        />,
+                      ]}
+                    />
+                  </div>
+
+                  <div className={cnCollapseFullscreen('ChildrenWrapper')}>
+                    {children}
+                  </div>
+                </PortalWithThemeConsumer>
+              </PortalWithTheme>
+            ))}
+          </ThemeContext.Consumer>
+        )}
+      </Transition>
+    );
+  };
+});

@@ -72,7 +72,9 @@ export const TableData: TableDataComponent = factoryComponent(() => {
               lowHeadersAtom={lowHeadersAtom}
               zebraStriped={rowZebraStriped}
               tableElementAtom={tableElementAtom}
-              ref={wrap(rowsElements[rowIndex].set)}
+              ref={wrap((el) => {
+                rowsElements[rowIndex].set(el);
+              })}
               leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
               rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
               onRowMouseEnter={onRowMouseEnter}

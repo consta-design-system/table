@@ -13,16 +13,16 @@ import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 export const cnDataCell = cn('DataCell');
 
 export type DataCellProps = {
-  control?: React.ReactNode | JSX.Element[];
+  control?: React.ReactNode | React.JSX.Element[];
   icon?: IconComponent | IconComponent[];
-  children?: React.ReactNode | JSX.Element[];
+  children?: React.ReactNode | React.JSX.Element[];
   level?: number;
   view?: 'primary' | 'alert' | 'success' | 'warning';
   size?: 'm' | 's';
   indicator?: 'alert' | 'warning';
   truncate?: boolean;
   lineClamp?: number;
-} & JSX.IntrinsicElements['div'];
+} & React.JSX.IntrinsicElements['div'];
 
 const renderContentSlot = (
   children: DataCellProps['children'],

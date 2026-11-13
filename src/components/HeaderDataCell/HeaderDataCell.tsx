@@ -12,11 +12,11 @@ import { isNumber, isString } from '##/utils/type-guards';
 export const cnHeaderDataCell = cn('HeaderDataCell');
 
 export type HeaderDataCellProps = {
-  controlRight?: React.ReactNode | JSX.Element[];
-  controlLeft?: React.ReactNode | JSX.Element[];
-  children?: React.ReactNode | JSX.Element[];
+  controlRight?: React.ReactNode | React.JSX.Element[];
+  controlLeft?: React.ReactNode | React.JSX.Element[];
+  children?: React.ReactNode | React.JSX.Element[];
   size?: 'm' | 's';
-} & JSX.IntrinsicElements['div'];
+} & React.JSX.IntrinsicElements['div'];
 
 const renderContentSlot = (children: HeaderDataCellProps['children']) => (
   <div

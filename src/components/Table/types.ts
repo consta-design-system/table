@@ -9,14 +9,14 @@ export type TableColumnPropPinned = 'left' | 'right';
 export type TableRenderHeaderCell = (props: {
   title?: string;
   index: number;
-  tableRef: React.RefObject<HTMLDivElement>;
+  tableRef: React.RefObject<HTMLDivElement | null>;
 }) => React.ReactNode | null;
 
 export type TableRenderCell<T> = (props: {
   row: T;
   rowIndex: number;
   columnIndex: number;
-  tableRef: React.RefObject<HTMLDivElement>;
+  tableRef: React.RefObject<HTMLDivElement | null>;
 }) => React.ReactNode | null;
 
 export type TabletColSpan<ROW> = (props: {

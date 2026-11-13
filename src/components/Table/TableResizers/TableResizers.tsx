@@ -147,10 +147,12 @@ export const TableResizers: TableResizersComponent = memo(
                 <TableResizer
                   resizableAtom={resizableAtom}
                   key={index}
-                  ref={wrap(resizersElements[index].set)}
-                  virtualScrollHelperRef={wrap(
-                    virtualScrollHelperElements[index].set,
-                  )}
+                  ref={wrap((el) => {
+                    resizersElements[index].set(el);
+                  })}
+                  virtualScrollHelperRef={wrap((el) => {
+                    virtualScrollHelperElements[index].set(el);
+                  })}
                   maxWidth={maxWidth}
                   minWidth={minWidth}
                   pinned={pinned}

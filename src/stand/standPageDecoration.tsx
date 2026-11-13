@@ -1,9 +1,14 @@
 import { Group, Lib } from '@consta/stand';
-// import React, { StrictMode } from 'react';
+import { Theme } from '@consta/uikit/Theme';
+import React, { StrictMode } from 'react';
 
 export const StandPageDecoration: Lib<Group>['standPageDecoration'] = (
   props,
 ) => {
-  // return <StrictMode>{props.children}</StrictMode>;
-  return props.children as React.ReactElement;
+  const content = <Theme preset={props.theme}>{props.children}</Theme>;
+  if (process.env.NODE_ENV === 'development') {
+    return <StrictMode>{content}</StrictMode>;
+  }
+
+  return content;
 };

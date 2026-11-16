@@ -75,9 +75,17 @@ const getRender = () =>
     `*[data-test-block=${testRootId()}] *[data-testid=${testId}]`,
   ) as HTMLDivElement;
 
+/**
+ * Table рендерит сервисную колонку нулевой ширины перед колонками пользователя
+ * (она держит sticky-смещение и ref строки), и она первой идёт и в шапке, и в
+ * строках. Тесты ниже оперируют колонками пользователя, поэтому сервисную
+ * колонку отрезаем.
+ */
+const serviceColumnsCount = 1;
+
 const getHeaderCells = () =>
-  Array.from(
-    getRender().querySelectorAll(`.${cnTableHeader('Cell')}`),
+  Array.from(getRender().querySelectorAll(`.${cnTableHeader('Cell')}`)).slice(
+    serviceColumnsCount,
   ) as HTMLElement[];
 
 const getRows = () =>
@@ -86,7 +94,7 @@ const getRows = () =>
 const getRowCells = (rowIndex: number) =>
   Array.from(
     getRows()[rowIndex].querySelectorAll(`.${cnTableRowCell()}`),
-  ) as HTMLElement[];
+  ).slice(serviceColumnsCount) as HTMLElement[];
 
 const getStyleContent = () =>
   Array.from(getRender().querySelectorAll('style'))
@@ -184,6 +192,32 @@ describe('Компонент Table', () => {
       }));
   });
 
+  describe('сервисная колонка', () => {
+    test('рендерит нулевую колонку перед колонками пользователя', () =>
+      context.start(async () => {
+        renderComponent({});
+
+        const rawRowCells = Array.from(
+          getRows()[0].querySelectorAll(`.${cnTableRowCell()}`),
+        ) as HTMLElement[];
+
+        expect(rawRowCells.length).toBe(
+          defaultColumns.length + serviceColumnsCount,
+        );
+        expect(rawRowCells[0].textContent).toBe('');
+        expect(getComputedStyle(rawRowCells[0]).width).toBe('0px');
+
+        const rawHeaderCells = Array.from(
+          getRender().querySelectorAll(`.${cnTableHeader('Cell')}`),
+        ) as HTMLElement[];
+
+        expect(rawHeaderCells.length).toBe(
+          defaultColumns.length + serviceColumnsCount,
+        );
+        expect(rawHeaderCells[0].textContent).toBe('');
+      }));
+  });
+
   describe('свойство renderCell', () => {
     test('рендерит кастомное содержимое ячейки', () =>
       context.start(async () => {
@@ -235,7 +269,9 @@ describe('Компонент Table', () => {
 
         expect(call.row).toEqual(defaultRows[0]);
         expect(call.rowIndex).toBe(0);
-        expect(call.columnIndex).toBe(0);
+        // columnIndex считается вместе с сервисной колонкой, поэтому первая
+        // колонка пользователя имеет индекс 1
+        expect(call.columnIndex).toBe(serviceColumnsCount);
       }));
   });
 
@@ -280,7 +316,10 @@ describe('Компонент Table', () => {
 
         expect(renderHeaderCell).toHaveBeenCalled();
         expect(renderHeaderCell.mock.calls[0][0].title).toBe('Имя');
-        expect(renderHeaderCell.mock.calls[0][0].index).toBe(0);
+        // index считается вместе с сервисной колонкой шапки
+        expect(renderHeaderCell.mock.calls[0][0].index).toBe(
+          serviceColumnsCount,
+        );
       }));
   });
 
@@ -298,7 +337,9 @@ describe('Компонент Table', () => {
         const firstRowCells = getRowCells(0);
 
         expect(firstRowCells.length).toBe(2);
-        expect(firstRowCells[0].style.gridColumn).toBe('1 / span 2');
+        // сетка начинается с сервисной колонки, поэтому первая колонка
+        // пользователя занимает вторую grid-позицию
+        expect(firstRowCells[0].style.gridColumn).toBe('2 / span 2');
       }));
 
     test('растягивает ячейку до конца строки при colSpan = end', () =>
@@ -314,7 +355,7 @@ describe('Компонент Table', () => {
         const firstRowCells = getRowCells(0);
 
         expect(firstRowCells.length).toBe(1);
-        expect(firstRowCells[0].style.gridColumn).toBe('1 / span 3');
+        expect(firstRowCells[0].style.gridColumn).toBe('2 / span 3');
       }));
   });
 
@@ -693,6 +734,51 @@ describe('Компонент Table', () => {
         expect(onAfterResize).toHaveBeenCalledTimes(1);
 
         checkResizeResult(onAfterResize.mock.calls[0][0]);
+      }));
+  });
+
+  describe('свойство mergeCells', () => {
+    const mergeRows: Row[] = [
+      { id: 1, name: 'Антон', profession: 'Строитель', status: 'недоступен' },
+      { id: 2, name: 'Антон', profession: 'Отвечает', status: 'на связи' },
+      { id: 3, name: 'Василий', profession: 'Отвечает', status: 'на связи' },
+    ];
+
+    const mergeColumns: TableColumn<Row>[] = [
+      { title: 'Имя', accessor: 'name', mergeCells: ({ row }) => row.name },
+      { title: 'Профессия', accessor: 'profession' },
+      { title: 'Статус', accessor: 'status' },
+    ];
+
+    test('растягивает верхнюю ячейку и не рендерит перекрытые', () =>
+      context.start(async () => {
+        renderComponent({ rows: mergeRows, columns: mergeColumns });
+
+        expect(getRows().length).toBe(3);
+        expect(getRowCells(0).length).toBe(3);
+        expect(getRowCells(1).length).toBe(2);
+        expect(getRowCells(2).length).toBe(3);
+
+        expect(getRowCells(0)[0].style.gridRowEnd).toBe('span 2');
+      }));
+
+    test('не объединяет ячейки при undefined-признаке', () =>
+      context.start(async () => {
+        const columns: TableColumn<Row>[] = [
+          {
+            title: 'Имя',
+            accessor: 'name',
+            mergeCells: ({ row }) => (row.id === 1 ? row.name : undefined),
+          },
+          { title: 'Профессия', accessor: 'profession' },
+          { title: 'Статус', accessor: 'status' },
+        ];
+
+        renderComponent({ rows: mergeRows, columns });
+
+        expect(getRowCells(0).length).toBe(3);
+        expect(getRowCells(1).length).toBe(3);
+        expect(getRowCells(0)[0].style.gridRowEnd).toBe('');
       }));
   });
 });

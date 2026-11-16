@@ -33,5 +33,6 @@ export const { createStand } = createConfig({
     { id: 'sandbox', label: 'Песочница', sandbox: true },
     // свои табы
     { id: 'use', label: 'Как использовать' },
+    { id: 'examples', label: 'Примеры' },
   ],
 });

@@ -23,6 +23,7 @@ import { TableExampleLoadingRowWithLoader } from './examples/TableExampleLoading
 import { TableExampleLoadingRowWithSkeleton } from './examples/TableExampleLoadingRowWithSkeleton/TableExampleLoadingRowWithSkeleton';
 import { TableExampleLoadingNestedRowWithLoader } from './examples/TableExampleLoadingNestedRowWithLoader/TableExampleLoadingNestedRowWithLoader';
 import { TableExampleFilter } from './examples/TableExampleFilter/TableExampleFilter';
+import { TableExampleMergeCells } from './examples/TableExampleMergeCells/TableExampleMergeCells';
 import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
@@ -30,6 +31,8 @@ import {
 import { TableExampleOnScrollToBottom } from './examples/TableExampleOnScrollToBottom/TableExampleOnScrollToBottom';
 import { TableExampleOnAfterResize } from './examples/TableExampleOnAfterResize/TableExampleOnAfterResize';
 import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
+import { TableExampleMergeCellsVerticalAndHorizontal } from './examples/TableExampleMergeCellsVerticalAndHorizontal/TableExampleMergeCellsVerticalAndHorizontal';
+import { TableExampleMergeCellsActivated } from './examples/TableExampleMergeCellsActivated/TableExampleMergeCellsActivated';
 
 <MdxMenu>
 
@@ -46,7 +49,10 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Группировка колонок](#группировка-колонок)
   - [Представление данных в ячейке](#представление-данных-в-ячейке)
   - [Представление данных в ячейке в шапке](#представление-данных-в-ячейке-в-шапке)
-  - [Объединение ячеек](#объединение-ячеек)
+  - [Объединение ячеек по горизонтали](#объединение-ячеек-по-горизонтали)
+  - [Объединение ячеек по вертикали](#объединение-ячеек-по-вертикали)
+  - [Объединение ячеек по вертикали и горизонтали](#объединение-ячеек-по-вертикали-и-горизонтали)
+  - [Выделение строк с объединенными ячейками](#выделение-строк-с-объединенными-ячейками)
   - [Закрепление шапки](#закрепление-шапки)
   - [Таблица в полоску](#таблица-в-полоску)
   - [Управление шириной столбцов](#управление-шириной-столбцов)
@@ -130,7 +136,8 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
-  colSpan?: TabletColSpan<ROW>;
+  colSpan?: TableColSpan<ROW>;
+  mergeCells?: TableMergeCells<ROW>;
   accessor?: string;
   columns?: TableColumn<ROW>[];
 };
@@ -220,7 +227,8 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
-  colSpan?: TabletColSpan<ROW>;
+  colSpan?: TableColSpan<ROW>;
+  mergeCells?: TableMergeCells<ROW>;
   accessor?: string;
   columns?: TableColumn<ROW>[];
 };
@@ -238,7 +246,8 @@ export type TableColumn<ROW> = {
 | [`renderHeaderCell`](#представление-данных-в-ячейке-в-шапке) | Функция(компонент) для вывода данных ячейки в шапке                        |
 | `accessor`                                                   | Уникальный указатель содержимого для каждой колонки                        |
 | `columns`                                                    | Вложенные колонки                                                          |
-| [`colSpan`](#объединение-ячеек)                              | Функция для вывода количества занятых колонок ячейкой                      |
+| [`colSpan`](#объединение-ячеек-по-горизонтали)               | Функция для вывода количества занятых колонок ячейкой                      |
+| [`mergeCells`](#объединение-ячеек-по-вертикали)              | Слияние соседних строк с одинаковым ключом в одну ячейку по вертикали      |
 
 ## Внешний вид
 
@@ -712,7 +721,7 @@ export const TableExampleRenderHeaderCell = () => (
 
 </MdxTabs>
 
-### Объединение ячеек
+### Объединение ячеек по горизонтали
 
 Чтобы объединить несколько колонок в одной ячейке, используйте свойство `colSpan` в объекте колонки (columns). `colSpan` — это функция, которая возвращает одно из следующих значений:
 
@@ -933,6 +942,396 @@ export const TableExampleColSpan = () => {
     />
   );
 };
+```
+
+</MdxTabs>
+
+### Объединение ячеек по вертикали
+
+`mergeCells` отвечает за объединение ячеек внутри одной колонки по вертикали — это аналог `rowspan`. Функция `(props: { row: ROW }) => string | number | undefined` возвращает ключ строки: соседние строки с одинаковым ключом сливаются в одну ячейку, а `undefined` означает «эту строку не объединять».
+
+Как это работает:
+
+- Тело таблицы — CSS-grid. По каждой колонке с `mergeCells` таблица строит карту объединений для видимых строк: ячейка первой строки группы растягивается на всю группу через `grid-row-end: span <размер группы>`, а ячейки остальных строк группы просто не рисуются.
+- Ключ считается независимо для каждой колонки, поэтому колонки объединяются каждая по-своему и у них могут быть разные границы групп.
+- Сливается только **взаимно соседние** строки, поэтому данные нужно отсортировать так, чтобы группа шла подряд.
+- С `virtualScroll` карта объединений считается только по видимому срезу строк, а границы среза расширяются за пределы группы, чтобы объединённая ячейка не разрезалась при прокрутке.
+
+В примере 8618 строк олимпийских медалистов отсортированы по имени спортсмена, и каждая колонка объединяется по своему ключу:
+
+- «Имя» — ключ `athlete`: при 6956 разных спортсменах ячейка занимает все строки одного спортсмена, то есть все его медали. Колонка закреплена слева.
+- «Страна» — ключ `country`: сортировка идёт по имени, а не по стране, поэтому соседние спортсмены из одной страны дают одну ячейку страны на оба их блока.
+- «Возраст» — ключ `${age}-${athlete}`: у спортсмена в разные годы разный возраст, поэтому колонка почти не сливается — объединяются только 5 безымянных строк в начале (`age = null`, `athlete = ''`). Это показывает, что более точный ключ даёт более мелкие группы.
+
+<MdxTabs>
+
+<TableExampleMergeCells />
+
+```tsx
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '@consta/table/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+  year: number;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Имя',
+    accessor: 'athlete',
+    width: 'auto',
+    pinned: 'left',
+    mergeCells: ({ row }) => row.athlete,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    width: 'auto',
+    mergeCells: ({ row }) => `${row.country}`,
+  },
+  {
+    title: 'Возраст',
+    accessor: 'age',
+    minWidth: 100,
+    mergeCells: ({ row }) => `${row.age}-${row.athlete}`,
+  },
+];
+
+export const TableExampleMergeCells = () => (
+  <Table
+    style={{ maxHeight: 400 }}
+    rows={rows.sort((a, b) => a.athlete.localeCompare(b.athlete))}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+    resizable="outside"
+  />
+);
+```
+
+</MdxTabs>
+
+### Объединение ячеек по вертикали и горизонтали
+
+Таблица олимпийских призов: у спортсмена несколько строк — по медали на каждый год, и строки отсортированы по имени, поэтому строки одного спортсмена идут подряд. Ячейка с чекбоксом занимает всю группу строк спортсмена и сразу две колонки (поэтому внутри неё выводится имя), а «Страна» объединяется только внутри группы.
+
+Как реализовано:
+
+- `mergeCells` в колонке возвращает строку-ключ. Таблица группирует **соседние** строки с одинаковым ключом: верхняя ячейка растягивается вниз на всю группу, остальные не рисуются. Из-за этого строки нужно отсортировать — `rows.sort((a, b) => a.athlete.localeCompare(b.athlete))`. Вернуть `undefined` — значит не объединять конкретную строку.
+- `colSpan: () => 2` растягивает ячейку на две колонки сетки. В связке с `mergeCells` получается объединение сразу по вертикали и горизонтали.
+- Ключ колонки «Страна» — `${country}-${athlete}`, а не просто `country`: иначе объединение перешагнуло бы границу между спортсменами из одной страны.
+- «Медали» — группа вложенных колонок через `columns`.
+- С `virtualScroll` рисуется только видимый срез строк, и карта объединений считается по нему. Границы среза расширяют за границы группы, чтобы объединённые строки не разрезались посередине, — объединение остаётся корректным при прокрутке.
+
+<MdxTabs>
+
+<TableExampleMergeCellsVerticalAndHorizontal />
+
+```tsx
+import { Example } from '@consta/stand';
+import { Checkbox } from '@consta/uikit/Checkbox';
+
+import { DataCell } from '@consta/table/DataCell';
+import { Table, TableColumn } from '@consta/table/Table';
+import rows from '##/components/Table/__mocks__/olympic-winners.json';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+  year: number;
+  date: string;
+  sport: string;
+  gold: number;
+  silver: number;
+  bronze: number;
+  total: number;
+};
+
+const columns: TableColumn<ROW>[] = [
+  {
+    title: 'Checkbox',
+    accessor: 'checkbox',
+    colSpan: () => 2,
+    mergeCells: (props) => {
+      return props.row.athlete;
+    },
+    renderHeaderCell: () => {
+      return <DataCell control={<Checkbox checked={false} />} />;
+    },
+    renderCell: (props) => {
+      return (
+        <DataCell control={<Checkbox checked={false} />}>
+          {props.row.athlete || 'without a name'}
+        </DataCell>
+      );
+    },
+
+    minWidth: 56,
+    maxWidth: 56,
+  },
+  {
+    title: 'Имя',
+    accessor: 'athlete',
+    minWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    minWidth: 100,
+    mergeCells: ({ row: { country, athlete } }) => `${country}-${athlete}`,
+  },
+  {
+    title: 'Год',
+    accessor: 'year',
+    minWidth: 66,
+    maxWidth: 66,
+  },
+  {
+    title: 'Медали',
+    accessor: 'year',
+    columns: [
+      {
+        title: 'Золото',
+        accessor: 'gold',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+      {
+        title: 'Серебро',
+        accessor: 'silver',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+      {
+        title: 'Бронза',
+        accessor: 'bronze',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+    ],
+  },
+];
+
+export const TableExampleMergeCellsVerticalAndHorizontal = () => (
+  <Table
+    style={{ maxHeight: 600 }}
+    rows={rows.sort((a, b) => a.athlete.localeCompare(b.athlete))}
+    columns={columns}
+    stickyHeader
+    virtualScroll
+  />
+);
+```
+
+</MdxTabs>
+
+### Выделение строк с объединенными ячейками
+
+Те же данные, но чекбоксы работают: клик по чекбоксу выбирает не одну строку, а всю объединённую ячейку — все строки спортсмена. Выделение применено в колонке «Год», так как в этой колонке нет объединения по вертикали и через эту колонку возможно выделить все строки группы. Чекбокс в шапке показывает частичное выделение.
+
+Как реализовано:
+
+- Состояние — атом `checkedRowsAtom`: карта «индекс строки → выделена».
+- `getMergeRowsIndexs(rowIndex, rows, ({ athlete }) => athlete)` идёт вверх и вниз от строки, пока ключ совпадает, и возвращает индексы всей группы. Ключ тот же, что у `mergeCells`, поэтому выделение и объединение совпадают. В `onCheck` каждая строка группы инвертируется, и значения внутри группы всегда одинаковы.
+- `YearCell` читает `checkedRowsAtom()[rowIndex]` и ставит `data-row-active` на `DataCell` — так выделение видно на строках, где нет чекбокса.
+- Чекбокс в шапке: `checkedLengthAtom` считает число выделенных строк, `checked` — выделена хотя бы одна, `intermediate` — выделены не все. Клик выставляет все строки в `true` или `false`.
+- Ячейки объявлены через `reatomFactoryComponent`: каждая подписана только на те атомы, которые читает, поэтому при виртуальном скролле перерисовывается изменившаяся ячейка, а не вся таблица.
+- `abortVar.subscribe(() => checkedRowsAtom.set({}))` сбрасывает выделение при размонтировании: атом объявлен на уровне модуля и иначе пережил бы перемонтирование примера.
+
+<MdxTabs>
+
+<TableExampleMergeCellsActivated />
+
+```tsx
+import { Checkbox } from '@consta/uikit/Checkbox';
+import { abortVar, action, atom, computed } from '@reatom/core';
+import { reatomFactoryComponent } from '@reatom/react';
+import React from 'react';
+
+import { DataCell } from '@consta/table/DataCell';
+import {
+  getMergeRowsIndexs,
+  Table,
+  TableColumn,
+  TableRenderCell,
+  TableRenderHeaderCell,
+} from '@consta/table/Table';
+
+type ROW = {
+  athlete: string;
+  age: number | null;
+  country: string;
+  year: number;
+  date: string;
+  sport: string;
+  gold: number;
+  silver: number;
+  bronze: number;
+  total: number;
+};
+
+const checkedRowsAtom = atom<Record<string, boolean>>({});
+const rowsAtom = atom<ROW[]>(
+  rows.sort((a, b) => a.athlete.localeCompare(b.athlete)),
+);
+
+const YearCell = reatomFactoryComponent(
+  (props: { row: ROW; rowIndex: number }) => {
+    const { rowIndex } = props;
+    const checkedAtom = computed(() => Boolean(checkedRowsAtom()[rowIndex]));
+
+    return ({ row }) => (
+      <DataCell data-row-active={checkedAtom()}>{row.year}</DataCell>
+    );
+  },
+);
+
+const CheckboxCell: TableRenderCell<ROW> = reatomFactoryComponent((props) => {
+  const { rowIndex } = props;
+  const checkedAtom = computed(() => Boolean(checkedRowsAtom()[rowIndex]));
+
+  const onCheck = action(() => {
+    const indexs = getMergeRowsIndexs(
+      rowIndex,
+      rowsAtom(),
+      ({ athlete }) => `${athlete}`,
+    );
+
+    const newValue = { ...checkedRowsAtom() };
+
+    indexs.forEach((v) => {
+      newValue[v] = !newValue[v];
+    });
+
+    checkedRowsAtom.set(newValue);
+  });
+
+  return ({ row }) => (
+    <DataCell control={<Checkbox checked={checkedAtom()} onChange={onCheck} />}>
+      {row.athlete || 'without a name'}
+    </DataCell>
+  );
+});
+
+const CheckboxHeaderCell: TableRenderHeaderCell = reatomFactoryComponent(() => {
+  const checkedLengthAtom = computed(() => {
+    return Object.values(checkedRowsAtom()).filter(Boolean).length;
+  });
+
+  const intermediateAtom = computed(() => {
+    if (
+      checkedLengthAtom() === 0 ||
+      checkedLengthAtom() === rowsAtom().length
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const checkedAtom = computed(() => !!checkedLengthAtom());
+
+  const onCheck = action(() => {
+    const newValue = checkedLengthAtom() !== rowsAtom().length;
+
+    checkedRowsAtom.set(
+      rowsAtom().reduce(
+        (acc, _, index) => {
+          acc[index] = newValue;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      ),
+    );
+  });
+
+  return () => {
+    return (
+      <DataCell
+        control={
+          <Checkbox
+            checked={checkedAtom()}
+            onChange={onCheck}
+            intermediate={intermediateAtom()}
+          />
+        }
+      />
+    );
+  };
+});
+
+const columnsAtom = atom<TableColumn<ROW>[]>([
+  {
+    title: 'Checkbox',
+    accessor: 'checkbox',
+    colSpan: () => 2,
+    mergeCells: ({ row }) => `${row.athlete}`,
+    renderHeaderCell: CheckboxHeaderCell,
+    renderCell: CheckboxCell,
+    minWidth: 56,
+    maxWidth: 56,
+  },
+  {
+    title: 'Имя',
+    accessor: 'athlete',
+    minWidth: 200,
+  },
+  {
+    title: 'Страна',
+    accessor: 'country',
+    minWidth: 100,
+    mergeCells: ({ row: { country, athlete } }) => `${country}-${athlete}`,
+  },
+  {
+    title: 'Год',
+    accessor: 'year',
+    minWidth: 66,
+    maxWidth: 66,
+    renderCell: YearCell,
+  },
+  {
+    title: 'Медали',
+    accessor: 'year',
+    columns: [
+      {
+        title: 'Золото',
+        accessor: 'gold',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+      {
+        title: 'Серебро',
+        accessor: 'silver',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+      {
+        title: 'Бронза',
+        accessor: 'bronze',
+        minWidth: 96,
+        maxWidth: 96,
+      },
+    ],
+  },
+]);
+
+export const TableExampleMergeCellsActivated = reatomFactoryComponent(() => {
+  abortVar.subscribe(() => checkedRowsAtom.set({}));
+
+  return () => (
+    <Table
+      style={{ maxHeight: 600 }}
+      rows={rowsAtom()}
+      columns={columnsAtom()}
+      stickyHeader
+      virtualScroll
+    />
+  );
+});
 ```
 
 </MdxTabs>

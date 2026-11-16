@@ -9,6 +9,7 @@ import {
   AtomLike,
   computed,
   effect,
+  peek,
   sleep,
   withAbort,
   wrap,
@@ -22,6 +23,7 @@ import {
   getRefsSizes,
   getResizeResult,
   getSizesSum,
+  getValidValues,
   isSizesCalculate,
   minMax,
   sizesEq,
@@ -36,6 +38,7 @@ export const resizableColumns = (
     onAfterResize,
   ]: ResizableColumnsProps
 ) => {
+  const firstRenderAtom = atom(true);
   const blocksLengthAtom = computed(() => blocksAtom().length);
   const sizesAtom = computedSet(() => getRefsSizes(blocksAtom()));
   const activeIndexAtom = atom<number | null>(null);
@@ -103,7 +106,10 @@ export const resizableColumns = (
   });
 
   const containerResizeHandler = action(async (el: HTMLDivElement | null) => {
+    await wrap(sleep(10));
+
     const containerWidth = getContainerWidth(el);
+
     const newSizes = [...sizesAtom()];
 
     if (containerWidth && isSizesCalculate(newSizes)) {
@@ -126,16 +132,52 @@ export const resizableColumns = (
           index -= 1;
         }
       }
-      setSizes(newSizes);
-    }
 
-    await wrap(sleep(10));
+      setSizes(newSizes);
+
+      if (firstRenderAtom()) {
+        firstRenderAtom.set(false);
+      }
+    }
   }).extend(withAbort());
 
   resizeObservedAtom(
     containerAtom as AtomLike<HTMLDivElement>,
-    containerResizeHandler,
+    wrap(containerResizeHandler),
   );
+
+  // Фикс поджимает последнюю колонку в случае появления "Лишнего" горизонтального скролла
+
+  effect(async () => {
+    const firstRender = firstRenderAtom();
+    await wrap(sleep(0));
+    const el = peek(containerAtom);
+    const sizes = peek(sizesAtom);
+    const lastIndex = sizes.length - 1;
+    const lastSize = sizes[lastIndex];
+
+    if (!el || typeof lastSize !== 'number') {
+      return;
+    }
+
+    const newLastSize = lastSize - (el.offsetWidth - el.clientWidth);
+
+    if (!firstRender) {
+      setSizes(
+        addResult(
+          getValidValues(
+            newLastSize,
+            lastIndex,
+            peek(blocksAtom),
+            getContainerWidth(el) || 0,
+            sizes,
+            peek(resizableAtom),
+          ),
+          sizes,
+        ),
+      );
+    }
+  });
 
   effect(() => {
     if (resizableAtom()) {

@@ -2,9 +2,8 @@ import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
   propAction,
-  virtualScrollEffect,
 } from '@consta/uikit/__internal__/src/utils/state';
-import { action, computed } from '@reatom/core';
+import { action, wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import {
@@ -38,26 +37,13 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
       intersectingColumnsAtom,
       leftNoVisibleItemsAtom,
       rightNoVisibleItemsAtom,
-    } = headerDataModel(
-      computed(() => propsAtom().columns),
-      computed(() => propsAtom().virtualScroll),
-    );
-
-    const { listElementsAtom, scrollElementAtom, sliceAtom, spaceTopAtom } =
-      virtualScrollEffect({
-        length: computed(() => propsAtom().rows.length),
-        isActive: computed(() => {
-          const { virtualScroll, rows } = propsAtom();
-          if (rows.length === 0) return false;
-          return !!(Array.isArray(virtualScroll)
-            ? virtualScroll[1]
-            : virtualScroll);
-        }),
-        onEndReached: action((index: number) =>
-          propsAtom().onScrollToBottom?.(index),
-        ),
-        busy: headerHeightAtom,
-      });
+      listElementsAtom,
+      scrollElementAtom,
+      sliceAtom,
+      spaceTopAtom,
+      slicesRowsAtom,
+      mergeCellsAtom,
+    } = headerDataModel(propsAtom);
 
     const ref = action((el: HTMLDivElement | null) =>
       setRefs([scrollElementAtom.set, propsAtom().ref], el),
@@ -96,7 +82,7 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
           {...otherProps}
           topOffsetsAtom={resizerTopOffsetsAtom}
           spaceTopAtom={spaceTopAtom}
-          ref={ref}
+          ref={wrap(ref)}
           headerHeightAtom={headerHeightAtom}
           lowHeadersAtom={lowHeadersAtom}
           resizersElementsAtom={resizersElementsAtom}
@@ -119,7 +105,7 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
           body={
             <MemoTableData
               lowHeadersAtom={lowHeadersAtom}
-              rows={rows}
+              rowsAtom={slicesRowsAtom}
               rowsElementsAtom={listElementsAtom}
               sliceAtom={sliceAtom}
               zebraStriped={zebraStriped}
@@ -131,6 +117,7 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
               rowHoverEffect={rowHoverEffect}
               leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
               rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+              mergeCellsAtom={mergeCellsAtom}
             />
           }
         />

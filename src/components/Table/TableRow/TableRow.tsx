@@ -7,14 +7,17 @@ import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 
+import { getMergeCellsKey } from '../mergeCells';
 import { TableRowCell, TableRowCellComponent } from '../TableRowCell';
-import { TableColumn, TableRowMouseEvent } from '../types';
+import { TableColumn, TableMergeCellsMap, TableRowMouseEvent } from '../types';
 
 const TableRowCellMemo = memo(TableRowCell) as TableRowCellComponent;
 
 type TableRowProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
     lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
+    mergeCellsAtom: AtomLike<TableMergeCellsMap>;
+    rowKey: string | number;
     zebraStriped: boolean;
     index: number;
     row: ROW;
@@ -55,24 +58,29 @@ const getMiss = (
 export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
   const onMouseEnter = action(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      propsAtom().onRowMouseEnter?.(propsAtom().row, { e });
+      const { onRowMouseEnter, row, index } = propsAtom();
+      onRowMouseEnter?.(row, { e, index });
     },
   );
 
   const onMouseLeave = action(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      propsAtom().onRowMouseLeave?.(propsAtom().row, { e });
+      const { onRowMouseLeave, row, index } = propsAtom();
+      onRowMouseLeave?.(row, { e, index });
     },
   );
 
   const onClick = action((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    propsAtom().onRowClick?.(propsAtom().row, { e });
+    const { onRowClick, row, index } = propsAtom();
+    onRowClick?.(row, { e, index });
   });
 
   return ({
     className,
     index: rowIndex,
     lowHeadersAtom,
+    mergeCellsAtom,
+    rowKey,
     zebraStriped,
     row,
     tableElementAtom,
@@ -87,19 +95,25 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
     const lowHeaders = lowHeadersAtom();
     const leftNoVisibleItems = leftNoVisibleItemsAtom();
     const rightNoVisibleItems = rightNoVisibleItemsAtom();
+    const mergeCells = mergeCellsAtom();
 
     let miss = 0;
 
     const nodes: React.ReactNode[] = [];
 
     for (let columnIndex = 0; columnIndex < lowHeaders.length; columnIndex++) {
+      const mergeSpan = mergeCells[getMergeCellsKey(rowKey, columnIndex)];
+
+      const column = lowHeaders[columnIndex];
       const {
         isSeparator,
         accessor,
         pinned,
         renderCell: RenderCell,
         colSpan: getColSpan,
-      } = lowHeaders[columnIndex];
+      } = column;
+
+      const isHelper = columnIndex === 0;
 
       if (miss) {
         miss = miss ? miss - 1 : miss;
@@ -122,7 +136,8 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         (!pinned &&
           columnIndex !== 0 &&
           rightNoVisibleItems >= 0 &&
-          rightNoVisibleItems + columnIndex >= lowHeaders.length)
+          rightNoVisibleItems + columnIndex >= lowHeaders.length) ||
+        (typeof mergeSpan === 'number' && mergeSpan === 0)
       ) {
         continue;
       }
@@ -131,20 +146,24 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         <TableRowCellMemo
           key={cnTableRow('Cell', { key: accessor || columnIndex })}
           borderLeft={
-            columnIndex !== 0 &&
+            !isHelper &&
+            columnIndex !== 1 &&
             !(
               pinned !== 'left' &&
               lowHeaders[columnIndex - 1]?.pinned === 'left'
             )
           }
           borderRight={
-            pinned === 'left' && lowHeaders[columnIndex + 1]?.pinned !== 'left'
+            !isHelper &&
+            pinned === 'left' &&
+            lowHeaders[columnIndex + 1]?.pinned !== 'left'
           }
-          borderTop={!isSeparator && rowIndex !== 0}
+          borderTop={!isSeparator && !isHelper && rowIndex !== 0}
           ref={columnIndex === 0 ? ref : undefined}
           row={row}
           rowIndex={rowIndex}
           miss={miss}
+          mergeSpan={mergeSpan}
           index={columnIndex}
           tableElementAtom={tableElementAtom}
           accessor={accessor}

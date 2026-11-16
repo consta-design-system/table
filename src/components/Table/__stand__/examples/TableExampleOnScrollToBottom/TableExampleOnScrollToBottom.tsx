@@ -78,7 +78,7 @@ export const TableExampleOnScrollToBottom = () => {
   return (
     <Example col={1}>
       <Text size="m" weight="bold">
-        {isScrollToBottom ? 'Вы проскроллилили до конца' : 'Скрольте вниз'}
+        {isScrollToBottom ? 'Вы проскроллили до конца' : 'Скрольте вниз'}
       </Text>
       <Table
         style={{ maxHeight: 400 }}

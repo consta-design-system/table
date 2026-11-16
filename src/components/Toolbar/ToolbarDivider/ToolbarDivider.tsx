@@ -6,7 +6,7 @@ import { cn } from '##/utils/bem';
 
 const cnToolbarDivider = cn('ToolbarDivider');
 
-type ToolbarDividerProps = JSX.IntrinsicElements['div'] & {
+type ToolbarDividerProps = React.JSX.IntrinsicElements['div'] & {
   size?: 'xs' | 's' | 'm' | 'l';
 };
 

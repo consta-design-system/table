@@ -34,10 +34,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Установка зависимостей
-        run: yarn add "install-peers-cli@https://github.com/evless/install-peers-cli#fix-yarn-policies" && yarn --frozen-lockfile
+        run: yarn add "install-peers-cli@https://github.com/evless/install-peers-cli#fix-yarn-policies" && yarn --frozen-lockfile && yarn playwright install chromium
       - name: Проверка TS
-        run: yarn run tsc-dry-run
+        run: yarn run test:ts
       - name: Unit тесты
-        run: yarn run unit
+        run: yarn run test:unit
       - name: Проверка eslint & stylelint
         run: yarn run lint
+      - name: Проверка орфографии
+        run: yarn test:cspell

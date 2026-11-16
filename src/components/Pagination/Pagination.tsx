@@ -2,15 +2,17 @@ import './Pagination.css';
 
 import { IconArrowLeft } from '@consta/icons/IconArrowLeft';
 import { IconArrowRight } from '@consta/icons/IconArrowRight';
-import { withCtx } from '@consta/uikit/__internal__/src/utils/state/withCtx';
+import {
+  computedSet,
+  factoryComponent,
+} from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
 import { Button } from '@consta/uikit/Button';
 import { cnMixFlex } from '@consta/uikit/MixFlex';
 import { Select } from '@consta/uikit/SelectCanary';
 import { Text } from '@consta/uikit/Text';
-import { useMutableRef } from '@consta/uikit/useMutableRef';
-import { useAction, useAtom, useUpdate } from '@reatom/npm-react';
-import React, { forwardRef } from 'react';
+import { action } from '@reatom/core';
+import React from 'react';
 
 import { cn } from '##/utils/bem';
 import { isFunction, isNumber } from '##/utils/type-guards';
@@ -59,113 +61,110 @@ const guardOffset = (value: number, total: number | undefined) => {
   return Math.max(value, 0);
 };
 
-export const Pagination = withCtx(
-  forwardRef<HTMLDivElement, PaginationProps>((props, ref) => {
-    const {
-      label = 'Строк на странице',
-      step = 10,
-      steps = [10, 25, 50, 100],
-      total,
-      offset = 0,
-      offsetLabel = defaultOffsetLabel,
-      className,
-      buttonPrevRef,
-      buttonNextRef,
-      onStepChange,
-      onChange,
-      ...otherProps
-    } = props;
+export const Pagination = factoryComponent<HTMLDivElement, PaginationProps>(
+  (_, propsAtom) => {
+    const stepValueAtom = computedSet(() => propsAtom().step || 10);
+    const offsetValueAtom = computedSet(() => propsAtom().offset || 0);
 
-    const refs = useMutableRef([onStepChange, total, onChange] as const);
-
-    const [stepValue, , stepValueAtom] = useAtom(step);
-    const [offsetValue, , offsetValueAtom] = useAtom(
-      guardOffset(offset, total),
-    );
-
-    const onSelectChange = useAction(
-      (ctx, value: number | null, props: { e: React.SyntheticEvent }) => {
+    const onSelectChange = action(
+      (value: number | null, props: { e: React.SyntheticEvent }) => {
         if (isNumber(value)) {
-          stepValueAtom(ctx, value);
-          refs.current[0]?.(value, props);
+          stepValueAtom.set(value);
+          propsAtom().onStepChange?.(value, props);
         }
       },
     );
 
-    const nextPageFactory = useAction((ctx, e: React.SyntheticEvent) => {
+    const nextPageFactory = action((e: React.SyntheticEvent) => {
       const newValue = guardOffset(
-        ctx.get(offsetValueAtom) + ctx.get(stepValueAtom),
-        refs.current[1],
+        offsetValueAtom() + stepValueAtom(),
+        propsAtom().total,
       );
-      offsetValueAtom(ctx, newValue);
-      refs.current[2]?.(newValue, { e });
+      offsetValueAtom.set(newValue);
+      propsAtom().onChange?.(newValue, { e });
     });
 
-    const prevPageFactory = useAction((ctx, e: React.SyntheticEvent) => {
+    const prevPageFactory = action((e: React.SyntheticEvent) => {
       const newValue = guardOffset(
-        ctx.get(offsetValueAtom) - ctx.get(stepValueAtom),
-        refs.current[1],
+        offsetValueAtom() - stepValueAtom(),
+        propsAtom().total,
       );
-      offsetValueAtom(ctx, newValue);
-      refs.current[2]?.(newValue, { e });
+      offsetValueAtom.set(newValue);
+      propsAtom().onChange?.(newValue, { e });
     });
 
-    useUpdate(stepValueAtom, [step]);
-    useUpdate(offsetValueAtom, [offset]);
+    return (props) => {
+      const stepValue = stepValueAtom();
+      const offsetValue = offsetValueAtom();
 
-    return (
-      <div
-        ref={ref}
-        {...otherProps}
-        className={cnPagination(null, [
-          cnMixFlex({ align: 'center', gap: 'xl' }),
-          className,
-        ])}
-      >
-        <div className={cnMixFlex({ align: 'center', gap: 's' })}>
-          {label && (
-            <Text size="s" view="secondary">
-              {label}
+      const {
+        label = 'Строк на странице',
+        steps = [10, 25, 50, 100],
+        total,
+        offsetLabel = defaultOffsetLabel,
+        className,
+        buttonPrevRef,
+        buttonNextRef,
+        onStepChange,
+        onChange,
+        ref,
+        ...otherProps
+      } = props;
+
+      return (
+        <div
+          ref={ref}
+          {...otherProps}
+          className={cnPagination(null, [
+            cnMixFlex({ align: 'center', gap: 'xl' }),
+            className,
+          ])}
+        >
+          <div className={cnMixFlex({ align: 'center', gap: 's' })}>
+            {label && (
+              <Text size="s" view="secondary">
+                {label}
+              </Text>
+            )}
+            {steps && (
+              <Select
+                className={cnPagination('Select')}
+                items={steps}
+                getItemLabel={getItem}
+                getItemKey={getItem}
+                onChange={onSelectChange}
+                value={stepValue}
+                size="s"
+              />
+            )}
+          </div>
+          <div className={cnMixFlex({ align: 'center', gap: 's' })}>
+            <Text size="s" className={cnPagination('OffsetLabel')}>
+              {isFunction(offsetLabel)
+                ? offsetLabel(offsetValue, stepValue, total)
+                : offsetLabel}
             </Text>
-          )}
-          {steps && (
-            <Select
-              className={cnPagination('Select')}
-              items={steps}
-              getItemLabel={getItem}
-              getItemKey={getItem}
-              onChange={onSelectChange}
-              value={stepValue}
+            <Button
+              ref={buttonPrevRef}
+              iconLeft={IconArrowLeft}
+              onlyIcon
+              view="clear"
               size="s"
+              disabled={offsetValue <= 0}
+              onClick={prevPageFactory}
             />
-          )}
+            <Button
+              ref={buttonNextRef}
+              iconLeft={IconArrowRight}
+              onlyIcon
+              view="clear"
+              size="s"
+              onClick={nextPageFactory}
+              disabled={total ? offsetValue >= total - stepValue : undefined}
+            />
+          </div>
         </div>
-        <div className={cnMixFlex({ align: 'center', gap: 's' })}>
-          <Text size="s" className={cnPagination('OffsetLabel')}>
-            {isFunction(offsetLabel)
-              ? offsetLabel(offsetValue, stepValue, total)
-              : offsetLabel}
-          </Text>
-          <Button
-            ref={buttonPrevRef}
-            iconLeft={IconArrowLeft}
-            onlyIcon
-            view="clear"
-            size="s"
-            disabled={offsetValue <= 0}
-            onClick={prevPageFactory}
-          />
-          <Button
-            ref={buttonNextRef}
-            iconLeft={IconArrowRight}
-            onlyIcon
-            view="clear"
-            size="s"
-            onClick={nextPageFactory}
-            disabled={total ? offsetValue >= total - stepValue : undefined}
-          />
-        </div>
-      </div>
-    );
-  }),
+      );
+    };
+  },
 );

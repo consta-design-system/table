@@ -8,21 +8,21 @@ import React, { forwardRef, Fragment } from 'react';
 
 import { cn } from '##/utils/bem';
 import { cellVerticalSpaceMap } from '##/utils/maps/cellVerticalSpaceMap';
-import { isNumber, isString } from '##/utils/type-guards';
+import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
-const cnDataCell = cn('DataCell');
+export const cnDataCell = cn('DataCell');
 
 export type DataCellProps = {
-  control?: React.ReactNode | JSX.Element[];
+  control?: React.ReactNode | React.JSX.Element[];
   icon?: IconComponent | IconComponent[];
-  children?: React.ReactNode | JSX.Element[];
+  children?: React.ReactNode | React.JSX.Element[];
   level?: number;
   view?: 'primary' | 'alert' | 'success' | 'warning';
   size?: 'm' | 's';
   indicator?: 'alert' | 'warning';
   truncate?: boolean;
   lineClamp?: number;
-} & JSX.IntrinsicElements['div'];
+} & React.JSX.IntrinsicElements['div'];
 
 const renderContentSlot = (
   children: DataCellProps['children'],
@@ -101,7 +101,13 @@ export const DataCell = forwardRef<HTMLDivElement, DataCellProps>(
         ]
       : [];
 
-    const childrenSlots = children
+    // React не рендерит boolean-детей (`{cond && <Icon />}`), но `0` и `''` —
+    // валидные значения, поэтому children проверяются на null/undefined/boolean,
+    // а не на truthiness: иначе `<DataCell>{row.id}</DataCell>` с id = 0
+    // выводит пустую ячейку без слота.
+    const hasChildren = isNotNil(children) && typeof children !== 'boolean';
+
+    const childrenSlots = hasChildren
       ? [
           ...(Array.isArray(children)
             ? children.map((item) =>

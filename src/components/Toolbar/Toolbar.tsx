@@ -9,7 +9,7 @@ import { cn } from '##/utils/bem';
 
 const cnToolbar = cn('Toolbar');
 
-export type ToolbarProps = JSX.IntrinsicElements['div'] & {
+export type ToolbarProps = React.JSX.IntrinsicElements['div'] & {
   leftSide?: React.ReactNode;
   rightSide?: React.ReactNode;
   form?: 'default' | 'brick' | 'brickDefault' | 'defaultBrick';

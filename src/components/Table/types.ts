@@ -23,6 +23,10 @@ export type TabletColSpan<ROW> = (props: {
   row: ROW;
 }) => number | 'end' | undefined;
 
+export type TabletMergeCells<ROW> = (props: {
+  row: ROW;
+}) => string | number | undefined;
+
 export type TableColumn<ROW> = {
   title?: string;
   width?:
@@ -45,6 +49,7 @@ export type TableColumn<ROW> = {
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
   colSpan?: TabletColSpan<ROW>;
+  mergeCells?: TabletMergeCells<ROW>;
   accessor?: string;
   columns?: TableColumn<ROW>[];
 };

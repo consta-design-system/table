@@ -2,9 +2,8 @@ import { setRefs } from '@consta/uikit/__internal__/src/utils/setRef';
 import {
   factoryComponent,
   propAction,
-  virtualScrollEffect,
 } from '@consta/uikit/__internal__/src/utils/state';
-import { action, computed } from '@reatom/core';
+import { action, computed, wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import {
@@ -18,6 +17,7 @@ import { headerDataModel } from './model';
 import { TableBody } from './TableBody';
 import { TableData } from './TableData';
 import { TableHeader } from './TableHeader/TableHeader';
+import { virtualScrollEffect } from './virtualScrollEffect';
 
 const MemoTableHeader = memo(TableHeader) as TableHeaderComponent;
 const MemoTableData = memo(TableData) as TableDataComponent;
@@ -57,6 +57,8 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
           propsAtom().onScrollToBottom?.(index),
         ),
         busy: headerHeightAtom,
+        columnsAtom: lowHeadersAtom,
+        rowsAtom: computed(() => propsAtom().rows),
       });
 
     const ref = action((el: HTMLDivElement | null) =>
@@ -96,7 +98,7 @@ export const Table = factoryComponent<HTMLDivElement, TableProps>(
           {...otherProps}
           topOffsetsAtom={resizerTopOffsetsAtom}
           spaceTopAtom={spaceTopAtom}
-          ref={ref}
+          ref={wrap(ref)}
           headerHeightAtom={headerHeightAtom}
           lowHeadersAtom={lowHeadersAtom}
           resizersElementsAtom={resizersElementsAtom}

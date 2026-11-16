@@ -23,6 +23,7 @@ import { TableExampleLoadingRowWithLoader } from './examples/TableExampleLoading
 import { TableExampleLoadingRowWithSkeleton } from './examples/TableExampleLoadingRowWithSkeleton/TableExampleLoadingRowWithSkeleton';
 import { TableExampleLoadingNestedRowWithLoader } from './examples/TableExampleLoadingNestedRowWithLoader/TableExampleLoadingNestedRowWithLoader';
 import { TableExampleFilter } from './examples/TableExampleFilter/TableExampleFilter';
+import { TableExampleMergeCells } from './examples/TableExampleMergeCells/TableExampleMergeCells';
 import {
   TableExampleResizableInside,
   TableExampleResizableOutside,
@@ -46,7 +47,8 @@ import { MdxTabs, MdxMenu, MdxInformer } from '@consta/stand';
   - [Группировка колонок](#группировка-колонок)
   - [Представление данных в ячейке](#представление-данных-в-ячейке)
   - [Представление данных в ячейке в шапке](#представление-данных-в-ячейке-в-шапке)
-  - [Объединение ячеек](#объединение-ячеек)
+  - [Объединение ячеек по горизонтали](#объединение-ячеек-по-горизонтали)
+  - [Объединение ячеек по вертикали](#объединение-ячеек-по-вертикали)
   - [Закрепление шапки](#закрепление-шапки)
   - [Таблица в полоску](#таблица-в-полоску)
   - [Управление шириной столбцов](#управление-шириной-столбцов)
@@ -712,7 +714,7 @@ export const TableExampleRenderHeaderCell = () => (
 
 </MdxTabs>
 
-### Объединение ячеек
+### Объединение ячеек по горизонтали
 
 Чтобы объединить несколько колонок в одной ячейке, используйте свойство `colSpan` в объекте колонки (columns). `colSpan` — это функция, которая возвращает одно из следующих значений:
 
@@ -936,6 +938,10 @@ export const TableExampleColSpan = () => {
 ```
 
 </MdxTabs>
+
+### Объединение ячеек по вертикали
+
+<TableExampleMergeCells />
 
 ### Закрепление шапки
 

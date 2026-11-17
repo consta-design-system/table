@@ -1,20 +1,24 @@
 import './TableRow.css';
 
+import { setRef } from '@consta/uikit/__internal__/src/utils/setRef';
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { action, AtomLike } from '@reatom/core';
+import { action, AtomLike, peek } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
 
+import { getMergeCellsKey } from '../mergeCells';
 import { TableRowCell, TableRowCellComponent } from '../TableRowCell';
-import { TableColumn, TableRowMouseEvent } from '../types';
+import { TableColumn, TableMergeCellsMap, TableRowMouseEvent } from '../types';
 
 const TableRowCellMemo = memo(TableRowCell) as TableRowCellComponent;
 
 type TableRowProps<ROW> = PropsWithHTMLAttributesAndRef<
   {
     lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
+    mergeCellsAtom: AtomLike<TableMergeCellsMap>;
+    rowKey: string | number;
     zebraStriped: boolean;
     index: number;
     row: ROW;
@@ -69,10 +73,33 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
     propsAtom().onRowClick?.(propsAtom().row, { e });
   });
 
+  // const renderCellsAtom = computed(() => {
+  //   const { rowKey, lowHeadersAtom, mergeCellsAtom } = propsAtom();
+  //   const mergeCells = mergeCellsAtom();
+  //   const lowHeaders = lowHeadersAtom();
+  //   const cells: {
+  //     column: (typeof lowHeaders)[number];
+  //     index: number;
+  //     mergeSpan?: number;
+  //   }[] = [];
+
+  //   lowHeaders.forEach((column, index) => {
+  //     const mergeSpan = mergeCells[getMergeCellsKey(rowKey, index)];
+
+  //     if (mergeSpan !== 0) {
+  //       cells.push({ column, index, mergeSpan });
+  //     }
+  //   });
+
+  //   return cells;
+  // });
+
   return ({
     className,
     index: rowIndex,
     lowHeadersAtom,
+    mergeCellsAtom,
+    rowKey,
     zebraStriped,
     row,
     tableElementAtom,
@@ -87,19 +114,28 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
     const lowHeaders = lowHeadersAtom();
     const leftNoVisibleItems = leftNoVisibleItemsAtom();
     const rightNoVisibleItems = rightNoVisibleItemsAtom();
+    const mergeCells = mergeCellsAtom();
+
+    // const cells = renderCellsAtom();
+
+    // const refCellIndex = (cells.find(({ mergeSpan }) => !mergeSpan) || cells[0])
+    //   ?.index;
 
     let miss = 0;
 
     const nodes: React.ReactNode[] = [];
 
     for (let columnIndex = 0; columnIndex < lowHeaders.length; columnIndex++) {
+      const mergeSpan = mergeCells[getMergeCellsKey(rowKey, columnIndex)];
+
+      const column = lowHeaders[columnIndex];
       const {
         isSeparator,
         accessor,
         pinned,
         renderCell: RenderCell,
         colSpan: getColSpan,
-      } = lowHeaders[columnIndex];
+      } = column;
 
       if (miss) {
         miss = miss ? miss - 1 : miss;
@@ -127,6 +163,24 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         continue;
       }
 
+      // console.log(row);
+
+      // if (typeof mergeSpan === 'number') {
+      //   console.log(
+      //     `${rowKey}-${columnIndex}`,
+      //     'mergeSpan',
+      //     mergeSpan,
+      //     row.country,
+      //   );
+      // }
+
+      if (typeof mergeSpan === 'number' && mergeSpan === 0) {
+        setRef(ref, null);
+        // console.log(`${rowKey}-${columnIndex}`, 'mergeSpan', mergeSpan);
+
+        continue;
+      }
+
       nodes.push(
         <TableRowCellMemo
           key={cnTableRow('Cell', { key: accessor || columnIndex })}
@@ -145,6 +199,7 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
           row={row}
           rowIndex={rowIndex}
           miss={miss}
+          mergeSpan={mergeSpan}
           index={columnIndex}
           tableElementAtom={tableElementAtom}
           accessor={accessor}

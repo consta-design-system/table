@@ -27,6 +27,16 @@ export type TabletMergeCells<ROW> = (props: {
   row: ROW;
 }) => string | number | undefined;
 
+/**
+ * Карта объединений ячеек по вертикали.
+ *
+ * Ключ — `${rowKey}-${columnIndex}`, значение:
+ * - положительное число — на сколько ячеек вниз нужно растянуть ячейку;
+ * - `0` — ячейку рисовать не нужно, она перекрыта верхней;
+ * - отсутствие ключа — ячейка рисуется как обычно.
+ */
+export type TableMergeCellsMap = Record<string, number>;
+
 export type TableColumn<ROW> = {
   title?: string;
   width?:

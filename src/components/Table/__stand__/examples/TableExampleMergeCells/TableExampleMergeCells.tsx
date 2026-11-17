@@ -22,15 +22,15 @@ const columns: TableColumn<ROW>[] = [
     title: 'Имя',
     width: 'auto',
     accessor: 'athlete',
-    mergeCells: (props) => {
-      return props.row.athlete;
-    },
+    // mergeCells: (props) => {
+    //   return props.row.athlete;
+    // },
   },
   {
     title: 'Страна',
     accessor: 'country',
     width: 'auto',
-    mergeCells: ({ row: { country, athlete } }) => `${country}-${athlete}`,
+    mergeCells: ({ row: { country, athlete } }) => `${country}`,
   },
   {
     title: 'Возраст',
@@ -45,10 +45,15 @@ export const TableExampleMergeCells = () => (
     <div>
       <Table
         style={{ maxHeight: 400 }}
-        rows={rows.sort((a, b) => a.athlete.localeCompare(b.athlete))}
+        rows={rows
+          .slice(0, 300)
+          .sort((a, b) => a.athlete.localeCompare(b.athlete))}
         columns={columns}
         stickyHeader
         virtualScroll
+        // getRowKey={(row) =>
+        //   `${row.athlete}-${row.country}-${row.age}-${row.year}-${row.date}-${row.sport}-${row.gold}-${row.silver}-${row.bronze}-${row.total}`
+        // }
       />
     </div>
   </Example>

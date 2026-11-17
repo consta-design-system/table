@@ -23,6 +23,11 @@ type TableRowCellProps<ROW> = PropsWithHTMLAttributesAndRef<
     borderRight: boolean;
     borderTop: boolean;
     miss: number;
+    /**
+     * На сколько ячеек вниз нужно растянуть ячейку.
+     * `undefined` — обычная ячейка.
+     */
+    mergeSpan?: number;
     renderCell?: TableRenderCell<ROW> | undefined;
     rowIndex: number;
     tableElementAtom: AtomLike<HTMLDivElement | null>;
@@ -75,6 +80,7 @@ export const TableRowCell: TableRowCellComponent = factoryComponent(
       borderRight,
       borderTop,
       miss,
+      mergeSpan,
       renderCell: RenderCell,
       row,
       rowIndex,
@@ -111,6 +117,8 @@ export const TableRowCell: TableRowCellComponent = factoryComponent(
                 ? `var(--table-column-sticky-right-offset-${index})`
                 : undefined,
             gridColumn: `${index + 1} / span ${miss > 0 ? miss + 1 : 1}`,
+            gridRowEnd:
+              mergeSpan && mergeSpan > 0 ? `span ${mergeSpan + 1}` : undefined,
             ['--table-cell-grid-column-index' as string]: index,
             ['--table-cell-grid-row-index' as string]: rowIndex,
           }}

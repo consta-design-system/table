@@ -695,4 +695,49 @@ describe('Компонент Table', () => {
         checkResizeResult(onAfterResize.mock.calls[0][0]);
       }));
   });
+
+  describe('свойство mergeCells', () => {
+    const mergeRows: Row[] = [
+      { id: 1, name: 'Антон', profession: 'Строитель', status: 'недоступен' },
+      { id: 2, name: 'Антон', profession: 'Отвечает', status: 'на связи' },
+      { id: 3, name: 'Василий', profession: 'Отвечает', status: 'на связи' },
+    ];
+
+    const mergeColumns: TableColumn<Row>[] = [
+      { title: 'Имя', accessor: 'name', mergeCells: ({ row }) => row.name },
+      { title: 'Профессия', accessor: 'profession' },
+      { title: 'Статус', accessor: 'status' },
+    ];
+
+    test('растягивает верхнюю ячейку и не рендерит перекрытые', () =>
+      context.start(async () => {
+        renderComponent({ rows: mergeRows, columns: mergeColumns });
+
+        expect(getRows().length).toBe(3);
+        expect(getRowCells(0).length).toBe(3);
+        expect(getRowCells(1).length).toBe(2);
+        expect(getRowCells(2).length).toBe(3);
+
+        expect(getRowCells(0)[0].style.gridRowEnd).toBe('span 2');
+      }));
+
+    test('не объединяет ячейки при undefined-признаке', () =>
+      context.start(async () => {
+        const columns: TableColumn<Row>[] = [
+          {
+            title: 'Имя',
+            accessor: 'name',
+            mergeCells: ({ row }) => (row.id === 1 ? row.name : undefined),
+          },
+          { title: 'Профессия', accessor: 'profession' },
+          { title: 'Статус', accessor: 'status' },
+        ];
+
+        renderComponent({ rows: mergeRows, columns });
+
+        expect(getRowCells(0).length).toBe(3);
+        expect(getRowCells(1).length).toBe(3);
+        expect(getRowCells(0)[0].style.gridRowEnd).toBe('');
+      }));
+  });
 });

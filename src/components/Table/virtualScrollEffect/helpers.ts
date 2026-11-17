@@ -70,6 +70,7 @@ export const calculateSavedSizes = (savedSizes: number[], sizes: number[]) => {
   const newSavedSizes = [...savedSizes];
   for (let index = 0; index < sizes.length; index++) {
     const element = sizes[index];
+
     if (element > 0) {
       newSavedSizes[index] = element;
     }
@@ -99,9 +100,9 @@ const addCount = (
   return add;
 };
 
-export const isMergeCell = (
-  mergeCells: TabletMergeCells<{}>[],
-  rows: {}[],
+export const isMergeCell = <ROW>(
+  mergeCells: TabletMergeCells<ROW>[],
+  rows: ROW[],
   indexA: number,
   indexB: number,
 ) => {
@@ -113,13 +114,13 @@ export const isMergeCell = (
   );
 };
 
-export const calculateBounds = (
+export const calculateBounds = <ROW>(
   savedSizes: number[],
   sizes: number[],
   visiblePosition: [number, number],
   length: number,
-  mergeCells: TabletMergeCells<{}>[],
-  rows: {}[],
+  mergeCells: TabletMergeCells<ROW>[],
+  rows: ROW[],
 ): Bounds => {
   const pxs: [number, number] = [0, 0];
   const indexs: [number, number] = [0, 0];
@@ -147,6 +148,8 @@ export const calculateBounds = (
   if (indexs[1] > length) {
     indexs[1] = length;
   }
+
+  // console.log('indexs', indexs);
 
   // Добавляем объединенные строки  строки сверху
 

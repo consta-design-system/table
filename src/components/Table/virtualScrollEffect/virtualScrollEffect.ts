@@ -172,6 +172,13 @@ export const virtualScrollEffect = <
     }
   });
 
+  // effect(() => {
+  //   console.log('lengthAtom', lengthAtom());
+  //   console.log('visiblePosition', visiblePositionAtom());
+  //   console.log('sizesAtom', sizesAtom());
+  //   console.log('sliceAtom', sliceAtom());
+  // });
+
   return {
     listElementsAtom,
     scrollElementAtom,

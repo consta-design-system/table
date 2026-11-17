@@ -1,12 +1,12 @@
 import './TableData.css';
 
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
-import { wrap } from '@reatom/core';
+import { computed, effect, peek, wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
-import { isNotNil } from '##/utils/type-guards';
 
+import { getMergeCellsMap, getRowKeyValue } from '../mergeCells';
 import { TableRow, TableRowComponent } from '../TableRow';
 import { TableDataComponent } from '../types';
 
@@ -14,76 +14,74 @@ const TableRowMemo = memo(TableRow) as TableRowComponent;
 
 export const cnTableData = cn('TableData');
 
-const getKey = <ROW,>(
-  row: ROW,
-  getRowKey: (row: ROW) => string | number | undefined,
-  rowIndex: number,
-) => {
-  const key = getRowKey?.(row);
-  if (isNotNil(key)) {
-    return key;
-  }
-  if (
-    typeof row === 'object' &&
-    isNotNil(row) &&
-    'id' in row &&
-    (typeof row.id === 'string' || typeof row.id === 'number')
-  ) {
-    return row.id;
-  }
-  return rowIndex;
-};
+export const TableData: TableDataComponent = factoryComponent(
+  (_, propsAtom) => {
+    const mergeCellsAtom = computed(() => {
+      const { rows, getRowKey, lowHeadersAtom, sliceAtom } = peek(propsAtom);
+      return getMergeCellsMap(
+        rows.slice(...sliceAtom()),
+        lowHeadersAtom(),
+        getRowKey,
+      );
+    });
 
-export const TableData: TableDataComponent = factoryComponent(() => {
-  return ({
-    className,
-    rows,
-    lowHeadersAtom,
-    rowsElementsAtom,
-    sliceAtom,
-    zebraStriped = false,
-    onRowMouseEnter,
-    onRowMouseLeave,
-    onRowClick,
-    getRowKey,
-    tableElementAtom,
-    rowHoverEffect,
-    leftNoVisibleItemsAtom,
-    rightNoVisibleItemsAtom,
-    ...otherProps
-  }) => {
-    const rowsElements = rowsElementsAtom();
-    const slice = sliceAtom();
+    effect(() => {
+      console.log(mergeCellsAtom());
+    });
 
-    return (
-      <div
-        {...otherProps}
-        className={cnTableData({ rowHoverEffect }, [className])}
-      >
-        {rows.slice(...slice).map((row, index) => {
-          const rowIndex = index + slice[0];
-          const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
+    return ({
+      className,
+      rows,
+      lowHeadersAtom,
+      rowsElementsAtom,
+      sliceAtom,
+      zebraStriped = false,
+      onRowMouseEnter,
+      onRowMouseLeave,
+      onRowClick,
+      getRowKey,
+      tableElementAtom,
+      rowHoverEffect,
+      leftNoVisibleItemsAtom,
+      rightNoVisibleItemsAtom,
+      ...otherProps
+    }) => {
+      const rowsElements = rowsElementsAtom();
+      const slice = sliceAtom();
 
-          return (
-            <TableRowMemo
-              key={getKey(row, getRowKey, rowIndex)}
-              row={row}
-              index={rowIndex}
-              lowHeadersAtom={lowHeadersAtom}
-              zebraStriped={rowZebraStriped}
-              tableElementAtom={tableElementAtom}
-              ref={wrap((el) => {
-                rowsElements[rowIndex].set(el);
-              })}
-              leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
-              rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
-              onRowMouseEnter={onRowMouseEnter}
-              onRowMouseLeave={onRowMouseLeave}
-              onRowClick={onRowClick}
-            />
-          );
-        })}
-      </div>
-    );
-  };
-});
+      return (
+        <div
+          {...otherProps}
+          className={cnTableData({ rowHoverEffect }, [className])}
+        >
+          {rows.slice(...slice).map((row, index) => {
+            const rowIndex = index + slice[0];
+            const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
+            const rowKey = getRowKeyValue(row, getRowKey, rowIndex);
+
+            return (
+              <TableRowMemo
+                key={rowKey}
+                rowKey={rowKey}
+                mergeCellsAtom={mergeCellsAtom}
+                row={row}
+                index={rowIndex}
+                lowHeadersAtom={lowHeadersAtom}
+                zebraStriped={rowZebraStriped}
+                tableElementAtom={tableElementAtom}
+                ref={wrap((el) => {
+                  rowsElements[rowIndex].set(el);
+                })}
+                leftNoVisibleItemsAtom={leftNoVisibleItemsAtom}
+                rightNoVisibleItemsAtom={rightNoVisibleItemsAtom}
+                onRowMouseEnter={onRowMouseEnter}
+                onRowMouseLeave={onRowMouseLeave}
+                onRowClick={onRowClick}
+              />
+            );
+          })}
+        </div>
+      );
+    };
+  },
+);

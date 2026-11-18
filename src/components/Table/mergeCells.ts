@@ -53,7 +53,7 @@ export const getMergeCellsMap = <ROW>(
         continue;
       }
 
-      let groupEnd = groupStart;
+      let groupEnd = groupStart + 1;
 
       while (
         groupEnd < slice[1] &&

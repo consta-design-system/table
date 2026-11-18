@@ -1,6 +1,7 @@
 import { Example } from '@consta/stand';
 import React from 'react';
 
+import { DataNumberingCell } from '##/components/DataNumberingCell';
 import { Table, TableColumn } from '##/components/Table';
 import rows from '##/components/Table/__mocks__/olympic-winners.json';
 
@@ -18,14 +19,27 @@ type ROW = {
 };
 
 const columns: TableColumn<ROW>[] = [
+  // {
+  //   title: '№',
+  //   width: 'auto',
+  //   accessor: '№',
+  //   maxWidth: 46,
+  //   minWidth: 46,
+  //   pinned: 'left',
+  //   renderCell: ({ rowIndex }) => (
+  //     <DataNumberingCell style={{ minHeight: 48 }}>
+  //       {rowIndex + 1}
+  //     </DataNumberingCell>
+  //   ),
+  // },
   {
     title: 'Имя',
     width: 'auto',
     accessor: 'athlete',
-    // mergeCells: (props) => {
-    //   return props.row.athlete;
-    // },
-    renderCell: ({ row: { athlete }, rowIndex }) => `${rowIndex} ${athlete}`,
+    mergeCells: (props) => {
+      return props.row.athlete;
+    },
+    // renderCell: ({ row: { athlete }, rowIndex }) => `${rowIndex} ${athlete}`,
   },
   {
     title: 'Страна',
@@ -52,6 +66,7 @@ export const TableExampleMergeCells = () => (
         columns={columns}
         stickyHeader
         virtualScroll
+        resizable="outside"
       />
     </div>
   </Example>

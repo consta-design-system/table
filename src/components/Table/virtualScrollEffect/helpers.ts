@@ -1,4 +1,3 @@
-import { getElementSize } from '@consta/uikit/useResizeObserved';
 import { Atom, Computed } from '@reatom/core';
 
 import { TableMergeCells } from '../types';
@@ -20,7 +19,7 @@ export type Bounds = [[number, number], [number, number]];
 export const defaultItemsCalculationCount = 1;
 
 export const getElementHeight = (el: HTMLElement | SVGGraphicsElement | null) =>
-  getElementSize(el).height;
+  el?.getBoundingClientRect().height || 0;
 
 const roundPositionByGap = (position: number, gap: number) => {
   if (position <= 0) {
@@ -81,11 +80,13 @@ const addCount = (
   let add = 0;
 
   if (visiblePosition[1] < pxs[1] + add * average) {
+    console.log('add 1', add);
     return add;
   }
 
   while (visiblePosition[1] > pxs[1] + add * average) {
     add += defaultItemsCalculationCount;
+    console.log('add 2', add);
   }
 
   return add;
@@ -136,9 +137,13 @@ export const calculateBounds = <ROW>(
     indexs[1] += addCount(pxs, visiblePosition, savedSizes);
   }
 
+  console.log('indexs 1', indexs);
+
   if (indexs[1] > length) {
     indexs[1] = length;
   }
+
+  console.log('indexs 2', indexs);
 
   // Добавляем объединенные строки  строки сверху
 

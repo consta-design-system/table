@@ -1,28 +1,19 @@
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { Atom, AtomLike, Computed } from '@reatom/core';
+import { Atom, Computed } from '@reatom/core';
 
-import { TableColumn, TabletMergeCells } from '../types';
+import { TableMergeCells } from '../types';
 
-export type VirtualScrollProps<ROW> = {
-  length: AtomLike<number>;
-  isActive?: AtomLike<boolean>;
-  busy?: AtomLike<number>;
-  onEndReached?: (index: number) => void;
-  rowsAtom: AtomLike<ROW[]>;
-  columnsAtom: AtomLike<TableColumn<ROW>[]>;
-};
-
-export type VirtualScrollReturn<ITEM_ELEMENT, SCROLL_ELEMENT> = {
+export type VirtualScrollReturn<ITEM_ELEMENT, SCROLL_ELEMENT> = [
   listElementsAtom: Computed<
     Atom<ITEM_ELEMENT | null, [newState: ITEM_ELEMENT | null]>[]
-  >;
+  >,
   scrollElementAtom: Atom<
     SCROLL_ELEMENT | null,
     [newState: SCROLL_ELEMENT | null]
-  >;
-  sliceAtom: Computed<[number, number]>;
-  spaceTopAtom: Computed<number>;
-};
+  >,
+  sliceAtom: Computed<[number, number]>,
+  spaceTopAtom: Computed<number>,
+];
 
 export type Bounds = [[number, number], [number, number]];
 
@@ -101,7 +92,7 @@ const addCount = (
 };
 
 export const isMergeCell = <ROW>(
-  mergeCells: TabletMergeCells<ROW>[],
+  mergeCells: [number, TableMergeCells<ROW>][],
   rows: ROW[],
   indexA: number,
   indexB: number,
@@ -110,7 +101,7 @@ export const isMergeCell = <ROW>(
     return false;
   }
   return mergeCells.some(
-    (fn) => fn({ row: rows[indexA] }) === fn({ row: rows[indexB] }),
+    (arg) => arg[1]({ row: rows[indexA] }) === arg[1]({ row: rows[indexB] }),
   );
 };
 
@@ -119,7 +110,7 @@ export const calculateBounds = <ROW>(
   sizes: number[],
   visiblePosition: [number, number],
   length: number,
-  mergeCells: TabletMergeCells<ROW>[],
+  mergeCells: [number, TableMergeCells<ROW>][],
   rows: ROW[],
 ): Bounds => {
   const pxs: [number, number] = [0, 0];
@@ -148,8 +139,6 @@ export const calculateBounds = <ROW>(
   if (indexs[1] > length) {
     indexs[1] = length;
   }
-
-  // console.log('indexs', indexs);
 
   // Добавляем объединенные строки  строки сверху
 

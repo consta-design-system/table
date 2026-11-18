@@ -1,4 +1,6 @@
-import { TableColumn, TableMergeCellsMap } from './types';
+import { isNotNil } from '##/utils/type-guards';
+
+import { TableMergeCells, TableMergeCellsMap } from './types';
 
 export const getRowKeyValue = <ROW>(
   row: ROW,
@@ -7,16 +9,8 @@ export const getRowKeyValue = <ROW>(
 ): string | number => {
   const key = getRowKey?.(row);
 
-  if (key !== undefined && key !== null) {
+  if (isNotNil(key)) {
     return key;
-  }
-
-  if (row && typeof row === 'object' && 'id' in row) {
-    const { id } = row as { id?: unknown };
-
-    if (typeof id === 'string' || typeof id === 'number') {
-      return id;
-    }
   }
 
   return rowIndex;
@@ -36,24 +30,22 @@ export const getMergeCellsKey = (
  * - отсутствие ключа — ячейка рисуется как обычно.
  */
 
-// TODO: не верно считае rowKey, мы закидываем слайс а индекс слайса не учитывается
 export const getMergeCellsMap = <ROW>(
   rows: ROW[],
-  columns: TableColumn<ROW>[],
+  slice: [number, number],
+  columnsMergeCells: [number, TableMergeCells<ROW>][],
   getRowKey?: (row: ROW) => string | number | undefined,
 ): TableMergeCellsMap => {
   const mergeCellsMap: TableMergeCellsMap = {};
 
-  columns.forEach((column, columnIndex) => {
-    const { mergeCells } = column;
-
+  columnsMergeCells.forEach(([index, mergeCells]) => {
     if (!mergeCells) {
       return;
     }
 
-    let groupStart = 0;
+    let groupStart = slice[0];
 
-    while (groupStart < rows.length) {
+    while (groupStart < slice[1]) {
       const groupValue = mergeCells({ row: rows[groupStart] });
 
       if (groupValue === undefined) {
@@ -61,10 +53,11 @@ export const getMergeCellsMap = <ROW>(
         continue;
       }
 
-      let groupEnd = groupStart + 1;
+      let groupEnd = groupStart;
 
       while (
-        groupEnd < rows.length &&
+        groupEnd < slice[1] &&
+        // rows[groupEnd] &&
         mergeCells({ row: rows[groupEnd] }) === groupValue
       ) {
         groupEnd++;
@@ -79,13 +72,12 @@ export const getMergeCellsMap = <ROW>(
           groupStart,
         );
 
-        mergeCellsMap[getMergeCellsKey(firstRowKey, columnIndex)] =
-          groupLength - 1;
+        mergeCellsMap[getMergeCellsKey(firstRowKey, index)] = groupLength - 1;
 
         for (let rowIndex = groupStart + 1; rowIndex < groupEnd; rowIndex++) {
           const rowKey = getRowKeyValue(rows[rowIndex], getRowKey, rowIndex);
 
-          mergeCellsMap[getMergeCellsKey(rowKey, columnIndex)] = 0;
+          mergeCellsMap[getMergeCellsKey(rowKey, index)] = 0;
         }
       }
 

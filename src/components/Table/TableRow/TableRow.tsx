@@ -73,27 +73,6 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
     propsAtom().onRowClick?.(propsAtom().row, { e });
   });
 
-  // const renderCellsAtom = computed(() => {
-  //   const { rowKey, lowHeadersAtom, mergeCellsAtom } = propsAtom();
-  //   const mergeCells = mergeCellsAtom();
-  //   const lowHeaders = lowHeadersAtom();
-  //   const cells: {
-  //     column: (typeof lowHeaders)[number];
-  //     index: number;
-  //     mergeSpan?: number;
-  //   }[] = [];
-
-  //   lowHeaders.forEach((column, index) => {
-  //     const mergeSpan = mergeCells[getMergeCellsKey(rowKey, index)];
-
-  //     if (mergeSpan !== 0) {
-  //       cells.push({ column, index, mergeSpan });
-  //     }
-  //   });
-
-  //   return cells;
-  // });
-
   return ({
     className,
     index: rowIndex,

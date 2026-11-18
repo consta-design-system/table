@@ -19,11 +19,11 @@ export type TableRenderCell<T> = (props: {
   tableRef: React.RefObject<HTMLDivElement | null>;
 }) => React.ReactNode | null;
 
-export type TabletColSpan<ROW> = (props: {
+export type TableColSpan<ROW> = (props: {
   row: ROW;
 }) => number | 'end' | undefined;
 
-export type TabletMergeCells<ROW> = (props: {
+export type TableMergeCells<ROW> = (props: {
   row: ROW;
 }) => string | number | undefined;
 
@@ -58,8 +58,8 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
-  colSpan?: TabletColSpan<ROW>;
-  mergeCells?: TabletMergeCells<ROW>;
+  colSpan?: TableColSpan<ROW>;
+  mergeCells?: TableMergeCells<ROW>;
   accessor?: string;
   columns?: TableColumn<ROW>[];
 };
@@ -198,8 +198,9 @@ export type TableDataProps<ROW = TableDefaultRow> =
     HTMLDivElement
   > & {
     lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
-    rows: ROW[];
+    rowsAtom: AtomLike<ROW[]>;
     zebraStriped?: boolean;
+    mergeCellsAtom: Computed<TableMergeCellsMap>;
   };
 
 export type TableDataComponent = <ROW = TableDefaultRow>(

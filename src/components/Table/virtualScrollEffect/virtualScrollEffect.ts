@@ -3,9 +3,9 @@ import {
   rangeAtom,
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
-import { action, atom, computed, effect, peek } from '@reatom/core';
+import { action, atom, AtomLike, computed, effect, peek } from '@reatom/core';
 
-import { TabletMergeCells } from '../types';
+import { TableMergeCells } from '../types';
 import {
   Bounds,
   calculateBounds,
@@ -13,7 +13,6 @@ import {
   defaultItemsCalculationCount,
   getElementHeight,
   getVisiblePosition,
-  VirtualScrollProps,
   VirtualScrollReturn,
 } from './helpers';
 
@@ -21,17 +20,14 @@ export const virtualScrollEffect = <
   ROW,
   ITEM_ELEMENT extends HTMLElement = HTMLDivElement,
   SCROLL_ELEMENT extends HTMLElement = HTMLDivElement,
->({
-  length: lengthAtom,
-  onEndReached,
-  isActive: isActiveAtom,
-  busy: busyAtom,
-  rowsAtom,
-  columnsAtom,
-}: VirtualScrollProps<ROW>): VirtualScrollReturn<
-  ITEM_ELEMENT,
-  SCROLL_ELEMENT
-> => {
+>(
+  lengthAtom: AtomLike<number>,
+  rowsAtom: AtomLike<ROW[]>,
+  columnsMergeCellsAtom: AtomLike<[number, TableMergeCells<ROW>][]>,
+  isActiveAtom: AtomLike<boolean>,
+  busyAtom: AtomLike<number>,
+  onEndReached: (index: number) => void,
+): VirtualScrollReturn<ITEM_ELEMENT, SCROLL_ELEMENT> => {
   const visiblePositionAtom = atom<[number, number]>([0, 0]);
 
   const boundsAtom = atom<Bounds>([
@@ -116,15 +112,6 @@ export const virtualScrollEffect = <
     });
   });
 
-  const columnsMergeCellsAtom = computed(() => {
-    const mergeCells: TabletMergeCells<ROW>[] = [];
-    columnsAtom().forEach(
-      (column) => column.mergeCells && mergeCells.push(column.mergeCells),
-    );
-
-    return mergeCells;
-  });
-
   onEventEffect(scrollElementAtom, 'scroll', calculateVisiblePosition);
 
   effect(() => {
@@ -137,7 +124,6 @@ export const virtualScrollEffect = <
 
   effect(() => {
     const visiblePosition = visiblePositionAtom();
-
     const sizes = sizesAtom();
     const length = lengthAtom();
 
@@ -150,7 +136,7 @@ export const virtualScrollEffect = <
           sizes,
           visiblePosition,
           length,
-          peek(columnsMergeCellsAtom),
+          columnsMergeCellsAtom(),
           peek(rowsAtom),
         ),
       );
@@ -172,17 +158,5 @@ export const virtualScrollEffect = <
     }
   });
 
-  // effect(() => {
-  //   console.log('lengthAtom', lengthAtom());
-  //   console.log('visiblePosition', visiblePositionAtom());
-  //   console.log('sizesAtom', sizesAtom());
-  //   console.log('sliceAtom', sliceAtom());
-  // });
-
-  return {
-    listElementsAtom,
-    scrollElementAtom,
-    sliceAtom,
-    spaceTopAtom,
-  };
+  return [listElementsAtom, scrollElementAtom, sliceAtom, spaceTopAtom];
 };

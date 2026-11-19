@@ -25,7 +25,8 @@ const columns: TableColumn<ROW>[] = [
   //   accessor: '№',
   //   maxWidth: 46,
   //   minWidth: 46,
-  //   pinned: 'left',
+  //   // pinned: 'left',
+  //   // colSpan: (props) => 1,
   //   renderCell: ({ rowIndex }) => (
   //     <DataNumberingCell style={{ minHeight: 48 }}>
   //       {rowIndex + 1}
@@ -36,10 +37,10 @@ const columns: TableColumn<ROW>[] = [
     title: 'Имя',
     width: 'auto',
     accessor: 'athlete',
+    pinned: 'left',
     mergeCells: (props) => {
       return props.row.athlete;
     },
-    // renderCell: ({ row: { athlete }, rowIndex }) => `${rowIndex} ${athlete}`,
   },
   {
     title: 'Страна',

@@ -37,7 +37,13 @@ export const resizableColumns = (
   ]: ResizableColumnsProps
 ) => {
   const blocksLengthAtom = computed(() => blocksAtom().length);
+
   const sizesAtom = computedSet(() => getRefsSizes(blocksAtom()));
+
+  effect(() => {
+    console.log(sizesAtom());
+  });
+
   const activeIndexAtom = atom<number | null>(null);
   const resizingAtom = computed(() => typeof activeIndexAtom() === 'number');
   const setSizes = action((newSizes: (string | number | undefined)[]) => {
@@ -102,13 +108,20 @@ export const resizableColumns = (
     }));
   });
 
+  // TODO: мерить ширину полоски скроллбара и вычитать из последней колонки
   const containerResizeHandler = action(async (el: HTMLDivElement | null) => {
+    console.log('containerResizeHandler');
     const containerWidth = getContainerWidth(el);
+
+    console.log(containerWidth);
+
     const newSizes = [...sizesAtom()];
 
     if (containerWidth && isSizesCalculate(newSizes)) {
+      console.log('isSizesCalculate');
       const sizesSum = getSizesSum(newSizes);
       let gap = containerWidth - sizesSum;
+      console.log(gap);
 
       if (
         (resizableAtom() !== 'outside' && gap) ||
@@ -126,10 +139,12 @@ export const resizableColumns = (
           index -= 1;
         }
       }
+
+      console.log(newSizes);
       setSizes(newSizes);
     }
 
-    await wrap(sleep(10));
+    // await wrap(sleep(10));
   }).extend(withAbort());
 
   resizeObservedAtom(
@@ -144,6 +159,8 @@ export const resizableColumns = (
   });
 
   abortVar.subscribe(handleRelease);
+
+  // containerResizeHandler(containerAtom());
 
   return {
     handlersAtom,

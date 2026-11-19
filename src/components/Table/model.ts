@@ -375,7 +375,12 @@ const getHeaderStickyOffsets = <T>(
 };
 
 export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
-  const columnsAtom = computed(() => propsAtom().columns);
+  const columnsAtom = computed(() => [
+    {
+      pinned: 'left',
+    } as TableColumn<T>,
+    ...propsAtom().columns,
+  ]);
   const virtualScrollAtom = computed(() => propsAtom().virtualScroll);
   const rowsAtom = computed(() => propsAtom().rows);
   const verticalVirtualScrollAtom = computed(() => {
@@ -401,6 +406,7 @@ export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
 
   const flattenedHeadersAtom = computed(() => {
     const headers = headersAtom();
+
     const res = headers.flat().map((column) => ({
       ...column,
       position: {
@@ -493,6 +499,7 @@ export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
     ),
   );
 
+  // returned [left, right, top]
   const bordersFlattenedHeadersAtom = computed(() => {
     const flattenedHeaders = flattenedHeadersAtom();
     const lowHeaders = lowHeadersAtom();
@@ -511,16 +518,22 @@ export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
       );
 
       const lowIndex = lowHeaders.findIndex((col) => col.key === prevLowKey);
+
+      if (lowIndex === 0) {
+        return [false, false, false] as const;
+      }
+
       return [
         !flattenedHeadersColumn.position.isFirst &&
+          lowIndex - 1 !== 0 &&
           !(
             flattenedHeadersColumn.pinned !== 'left' &&
             lowHeaders[lowIndex - 1]?.pinned === 'left'
           ),
-        flattenedHeadersColumn.position.isLastPinnedLeft,
+        flattenedHeadersColumn.position.isLastPinnedLeft || false,
         flattenedHeadersColumn.position.level !== 0,
-      ];
-    }) as [boolean, boolean, boolean][];
+      ] as const;
+    });
   });
 
   const intersectingColumnsAtom = atom<boolean[]>([]);

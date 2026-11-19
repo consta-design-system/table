@@ -284,26 +284,39 @@ export const TableBody: TableBodyComponent = factoryComponent(
           { isSeparator, width, minWidth, maxWidth, title, accessor },
           index,
         ) => {
+          const isHelper = index === 0;
+
           const currentSeparatorWidth = title
             ? separatorLargeWidth
             : separatorWidth;
 
           const element = resizersElements[index]();
 
-          return isSeparator
-            ? {
-                element,
-                maxWidth: currentSeparatorWidth,
-                minWidth: currentSeparatorWidth,
-                width: currentSeparatorWidth,
-              }
-            : {
-                element,
-                minWidth: minWidth || columnDefaultMinWidth,
-                maxWidth,
-                width,
-                accessor,
-              };
+          if (isHelper) {
+            return {
+              element,
+              width: 0,
+              minWidth: 0,
+              maxWidth: 0,
+            };
+          }
+
+          if (isSeparator) {
+            return {
+              element,
+              width: currentSeparatorWidth,
+              minWidth: currentSeparatorWidth,
+              maxWidth: currentSeparatorWidth,
+            };
+          }
+
+          return {
+            element,
+            minWidth: minWidth || columnDefaultMinWidth,
+            maxWidth,
+            width,
+            accessor,
+          };
         },
       );
     });

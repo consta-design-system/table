@@ -39,14 +39,19 @@ export const getVisiblePosition = (
       ? height
       : elementMaxSize * defaultItemsCalculationCount;
 
+  const upGap = gap / 2 > 200 ? gap / 2 : 200;
+  const downGap = gap / 10 > 200 ? gap / 10 : 200;
+
   const visiblePosition: [number, number] = [
     Math.ceil(
       roundPositionByGap(
-        height < gap ? top - (gap + height) : top - (gap + height / 2),
-        height,
+        height < gap ? top - (gap + height) : top - upGap,
+        height / 5,
       ),
     ),
-    Math.ceil(roundPositionByGap(top === 0 ? gap : top + gap * 1.1, height)),
+    Math.ceil(
+      roundPositionByGap(top === 0 ? gap : top + gap + downGap, height / 5),
+    ),
   ];
 
   const visiblePositionStart = Math.max(visiblePosition[0] - busy, 0);
@@ -80,13 +85,11 @@ const addCount = (
   let add = 0;
 
   if (visiblePosition[1] < pxs[1] + add * average) {
-    console.log('add 1', add);
     return add;
   }
 
   while (visiblePosition[1] > pxs[1] + add * average) {
     add += defaultItemsCalculationCount;
-    console.log('add 2', add);
   }
 
   return add;
@@ -137,13 +140,13 @@ export const calculateBounds = <ROW>(
     indexs[1] += addCount(pxs, visiblePosition, savedSizes);
   }
 
-  console.log('indexs 1', indexs);
-
   if (indexs[1] > length) {
     indexs[1] = length;
   }
 
-  console.log('indexs 2', indexs);
+  // Добавляем 1 элемент сверху, исправляет ситуацию когда 1 элемент сильно больше других
+  indexs[0] -= indexs[0] ? 1 : 0;
+  pxs[0] -= savedSizes[indexs[0]] || 0;
 
   // Добавляем объединенные строки  строки сверху
 

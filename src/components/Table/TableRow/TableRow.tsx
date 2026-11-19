@@ -116,6 +116,8 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         colSpan: getColSpan,
       } = column;
 
+      const isHelper = columnIndex === 0;
+
       if (miss) {
         miss = miss ? miss - 1 : miss;
 
@@ -137,43 +139,35 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
         (!pinned &&
           columnIndex !== 0 &&
           rightNoVisibleItems >= 0 &&
-          rightNoVisibleItems + columnIndex >= lowHeaders.length)
+          rightNoVisibleItems + columnIndex >= lowHeaders.length) ||
+        (typeof mergeSpan === 'number' && mergeSpan === 0)
       ) {
         continue;
       }
 
-      // console.log(row);
+      // if (typeof mergeSpan === 'number' && mergeSpan === 0) {
+      //   setRef(ref, null);
 
-      // if (typeof mergeSpan === 'number') {
-      //   console.log(
-      //     `${rowKey}-${columnIndex}`,
-      //     'mergeSpan',
-      //     mergeSpan,
-      //     row.country,
-      //   );
+      //   continue;
       // }
-
-      if (typeof mergeSpan === 'number' && mergeSpan === 0) {
-        setRef(ref, null);
-        // console.log(`${rowKey}-${columnIndex}`, 'mergeSpan', mergeSpan);
-
-        continue;
-      }
 
       nodes.push(
         <TableRowCellMemo
           key={cnTableRow('Cell', { key: accessor || columnIndex })}
           borderLeft={
-            columnIndex !== 0 &&
+            !isHelper &&
+            columnIndex !== 1 &&
             !(
               pinned !== 'left' &&
               lowHeaders[columnIndex - 1]?.pinned === 'left'
             )
           }
           borderRight={
-            pinned === 'left' && lowHeaders[columnIndex + 1]?.pinned !== 'left'
+            !isHelper &&
+            pinned === 'left' &&
+            lowHeaders[columnIndex + 1]?.pinned !== 'left'
           }
-          borderTop={!isSeparator && rowIndex !== 0}
+          borderTop={!isSeparator && !isHelper && rowIndex !== 0}
           ref={columnIndex === 0 ? ref : undefined}
           row={row}
           rowIndex={rowIndex}

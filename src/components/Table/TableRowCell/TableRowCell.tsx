@@ -9,6 +9,7 @@ import { DataCell } from '##/components/DataCell';
 import { cn } from '##/utils/bem';
 import { isNotNil, isNumber, isString } from '##/utils/type-guards';
 
+import { virtualScrollHelperAccessor } from '../model';
 import { cnTableCell } from '../TableCell';
 import { TableRenderCell } from '../types';
 

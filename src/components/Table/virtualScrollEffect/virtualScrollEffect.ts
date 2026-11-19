@@ -43,9 +43,6 @@ export const virtualScrollEffect = <
     () => [sliceStartAtom(), sliceEndAtom()] as [number, number],
   );
 
-  // TODO: оптимизтровать расчет размеров, обходить только отредеренные в моменте элементы
-  const sliceLengthAtom = computed(() => sliceEndAtom() - sliceStartAtom());
-
   const listElementsAtom = rangeAtom<ITEM_ELEMENT | null>(lengthAtom, null);
 
   const subscribersElements = computed(() =>

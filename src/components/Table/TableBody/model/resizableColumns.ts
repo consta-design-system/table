@@ -9,6 +9,7 @@ import {
   AtomLike,
   computed,
   effect,
+  peek,
   sleep,
   withAbort,
   wrap,
@@ -108,6 +109,10 @@ export const resizableColumns = (
     }));
   });
 
+  const innerContainerWidthAtom = computed(() =>
+    getContainerWidth(containerAtom()),
+  );
+
   // TODO: мерить ширину полоски скроллбара и вычитать из последней колонки
   const containerResizeHandler = action(async (el: HTMLDivElement | null) => {
     console.log('containerResizeHandler');
@@ -144,13 +149,19 @@ export const resizableColumns = (
       setSizes(newSizes);
     }
 
-    // await wrap(sleep(10));
+    await wrap(sleep(10));
   }).extend(withAbort());
 
   resizeObservedAtom(
     containerAtom as AtomLike<HTMLDivElement>,
     containerResizeHandler,
   );
+
+  effect(() => {
+    innerContainerWidthAtom();
+    console.log('innerContainerWidthAtom');
+    // containerResizeHandler(peek(containerAtom));
+  });
 
   effect(() => {
     if (resizableAtom()) {

@@ -520,7 +520,7 @@ export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
       const lowIndex = lowHeaders.findIndex((col) => col.key === prevLowKey);
 
       if (lowIndex === 0) {
-        return [false, false, false] as const;
+        return [false, false, false] as [boolean, boolean, boolean];
       }
 
       return [
@@ -532,7 +532,7 @@ export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
           ),
         flattenedHeadersColumn.position.isLastPinnedLeft || false,
         flattenedHeadersColumn.position.level !== 0,
-      ] as const;
+      ] as [boolean, boolean, boolean];
     });
   });
 

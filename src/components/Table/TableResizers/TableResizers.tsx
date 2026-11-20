@@ -75,7 +75,6 @@ const TableResizer: TableResizerComponent = factoryComponent(
       index,
       lowHeadersLength,
       virtualScrollHelperRef,
-
       ref,
     }) => {
       const resizable = resizableAtom();

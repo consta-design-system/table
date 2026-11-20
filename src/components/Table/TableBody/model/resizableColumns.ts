@@ -23,6 +23,7 @@ import {
   getRefsSizes,
   getResizeResult,
   getSizesSum,
+  getValidValues,
   isSizesCalculate,
   minMax,
   sizesEq,
@@ -37,14 +38,9 @@ export const resizableColumns = (
     onAfterResize,
   ]: ResizableColumnsProps
 ) => {
+  const firstRenderAtom = atom(true);
   const blocksLengthAtom = computed(() => blocksAtom().length);
-
   const sizesAtom = computedSet(() => getRefsSizes(blocksAtom()));
-
-  effect(() => {
-    console.log(sizesAtom());
-  });
-
   const activeIndexAtom = atom<number | null>(null);
   const resizingAtom = computed(() => typeof activeIndexAtom() === 'number');
   const setSizes = action((newSizes: (string | number | undefined)[]) => {
@@ -109,24 +105,16 @@ export const resizableColumns = (
     }));
   });
 
-  const innerContainerWidthAtom = computed(() =>
-    getContainerWidth(containerAtom()),
-  );
-
-  // TODO: мерить ширину полоски скроллбара и вычитать из последней колонки
   const containerResizeHandler = action(async (el: HTMLDivElement | null) => {
-    console.log('containerResizeHandler');
-    const containerWidth = getContainerWidth(el);
+    await wrap(sleep(10));
 
-    console.log(containerWidth);
+    const containerWidth = getContainerWidth(el);
 
     const newSizes = [...sizesAtom()];
 
     if (containerWidth && isSizesCalculate(newSizes)) {
-      console.log('isSizesCalculate');
       const sizesSum = getSizesSum(newSizes);
       let gap = containerWidth - sizesSum;
-      console.log(gap);
 
       if (
         (resizableAtom() !== 'outside' && gap) ||
@@ -145,22 +133,50 @@ export const resizableColumns = (
         }
       }
 
-      console.log(newSizes);
       setSizes(newSizes);
-    }
 
-    await wrap(sleep(10));
+      if (firstRenderAtom()) {
+        firstRenderAtom.set(false);
+      }
+    }
   }).extend(withAbort());
 
   resizeObservedAtom(
     containerAtom as AtomLike<HTMLDivElement>,
-    containerResizeHandler,
+    wrap(containerResizeHandler),
   );
 
-  effect(() => {
-    innerContainerWidthAtom();
-    console.log('innerContainerWidthAtom');
-    // containerResizeHandler(peek(containerAtom));
+  // Фикс поджимает последнюю колонку в случае появления "Лишнего" горизонтального скролла
+
+  effect(async () => {
+    const firstRender = firstRenderAtom();
+    await wrap(sleep(0));
+    const el = peek(containerAtom);
+    const sizes = peek(sizesAtom);
+    const lastIndex = sizes.length - 1;
+    const lastSize = sizes[lastIndex];
+
+    if (!el || typeof lastSize !== 'number') {
+      return;
+    }
+
+    const newLastSize = lastSize - (el.offsetWidth - el.clientWidth);
+
+    if (!firstRender) {
+      setSizes(
+        addResult(
+          getValidValues(
+            newLastSize,
+            lastIndex,
+            peek(blocksAtom),
+            getContainerWidth(el) || 0,
+            sizes,
+            peek(resizableAtom),
+          ),
+          sizes,
+        ),
+      );
+    }
   });
 
   effect(() => {
@@ -170,8 +186,6 @@ export const resizableColumns = (
   });
 
   abortVar.subscribe(handleRelease);
-
-  // containerResizeHandler(containerAtom());
 
   return {
     handlersAtom,

@@ -1,9 +1,8 @@
 import './TableRow.css';
 
-import { setRef } from '@consta/uikit/__internal__/src/utils/setRef';
 import { factoryComponent } from '@consta/uikit/__internal__/src/utils/state';
 import { PropsWithHTMLAttributesAndRef } from '@consta/uikit/__internal__/src/utils/types/PropsWithHTMLAttributes';
-import { action, AtomLike, peek } from '@reatom/core';
+import { action, AtomLike } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
@@ -144,12 +143,6 @@ export const TableRow: TableRowComponent = factoryComponent((_, propsAtom) => {
       ) {
         continue;
       }
-
-      // if (typeof mergeSpan === 'number' && mergeSpan === 0) {
-      //   setRef(ref, null);
-
-      //   continue;
-      // }
 
       nodes.push(
         <TableRowCellMemo

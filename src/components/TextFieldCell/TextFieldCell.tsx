@@ -14,10 +14,10 @@ import {
 import {
   action,
   atom,
-  bind,
   computed,
   effect,
   reatomBoolean,
+  wrap,
 } from '@reatom/core';
 import React from 'react';
 
@@ -151,7 +151,7 @@ export const TextFieldCell = factoryComponent((_: SplitProps, propsAtom) => {
       onDoubleClick: editModeAtom.setTrue,
       value,
       type,
-      inputRef: bind(inputRef),
+      inputRef: wrap(inputRef),
       defaultValue,
       onChange,
       id,
@@ -205,7 +205,7 @@ export const TextFieldCell = factoryComponent((_: SplitProps, propsAtom) => {
       <DataCell
         {...restProps}
         className={cnTextFieldCell({ size }, [className])}
-        ref={bind(rootRef)}
+        ref={wrap(rootRef)}
         onDoubleClick={readonly ? undefined : editModeAtom.setTrue}
         size={size}
         lineClamp={lineClamp}

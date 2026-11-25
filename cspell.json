@@ -2,10 +2,17 @@
 /* cspell:enable */
 /* cspell:disable-next-line */
 {
-  "import": ["@cspell/dict-ru_ru/cspell-ext.json"],
-  "files": ["src/**"],
+  "import": [
+    "@cspell/dict-ru_ru/cspell-ext.json"
+  ],
+  "files": [
+    "src/**"
+  ],
   "language": "en, ru",
-  "ignorePaths": ["*.svg", "*.json"],
+  "ignorePaths": [
+    "*.svg",
+    "*.json"
+  ],
   "words": [
     "автодополнения",
     "автозаполнения",
@@ -187,14 +194,15 @@
     "тематизация",
     "типографики",
     "тулбар",
-    "тулбаре",
     "тулбара",
+    "тулбаре",
     "тултип",
     "тултипа",
     "тултипе",
     "тултипов",
     "тултипом",
     "тултипы",
+    "фолси",
     "фуллскрин",
     "Халку",
     "хелпер",

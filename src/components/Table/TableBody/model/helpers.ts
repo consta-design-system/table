@@ -28,11 +28,7 @@ export const sizesEq = (
 ) => newSizes.join('-') === sizes.join('-');
 
 export const getContainerWidth = (el?: HTMLElement | null) =>
-  el
-    ? Math.floor(
-        el.clientWidth - (el.offsetWidth - el.getBoundingClientRect().width),
-      )
-    : undefined;
+  el ? Math.floor(el.clientWidth) : undefined;
 
 export const getRefsSizes = (
   blocks: ResizableColumnsBlock[],
@@ -104,13 +100,13 @@ export const getResizeResult = (
     return result;
   }, []);
 
-const getValidValues = (
+export const getValidValues = (
   value: number,
   index: number,
   blocks: ResizableColumnsBlock[],
   containerWidth: number,
   sizes: ResizableColumnsSize[],
-  resizable: 'inside' | 'outside',
+  resizable: 'inside' | 'outside' = 'inside',
 ): GetValidValuesResult => {
   const currentMinMax = getBlockMaxSizes(blocks[index]);
 

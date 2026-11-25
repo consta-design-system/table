@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 22
+          node-version: 26
 
       - name: Установка yarn
         id: yarn-setup
@@ -34,7 +34,44 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Установка зависимостей
-        run: yarn add "install-peers-cli@https://github.com/evless/install-peers-cli#fix-yarn-policies" && yarn --frozen-lockfile && yarn playwright install chromium
+        run: yarn add "install-peers-cli@https://github.com/evless/install-peers-cli#fix-yarn-policies" && yarn --frozen-lockfile
+
+      # На Node 26 playwright зависает на этапе "extracting archive" —
+      # распаковка zip выполняется средствами Node (регрессия nodejs/node#64274).
+      # Обёртка yarn здесь не при чём, поэтому обходим Node-распаковку
+      # полностью: URL и каталог установки получаем через `install --dry-run`
+      # (мгновенно, без скачивания и распаковки), архив скачиваем через curl
+      # и распаковываем системным unzip, включая маркер INSTALLATION_COMPLETE,
+      # наличие которого проверяет playwright при запуске.
+      # (Vitest в headless-режиме требует только chrome-headless-shell,
+      # см. browser.headless: true в vite.config.ts — полный chromium не нужен.)
+      - name: Установка chromium (headless shell)
+        run: |
+          DRY_RUN=$(node ./node_modules/playwright/cli.js install --dry-run chromium --only-shell)
+          URL=$(echo "$DRY_RUN" | grep 'Download url:' | head -n 1 | awk '{print $NF}')
+          DIR=$(echo "$DRY_RUN" | grep 'Install location:' | head -n 1 | awk '{print $NF}')
+
+          if [ -z "$URL" ] || [ -z "$DIR" ]; then
+            echo "Не удалось получить URL/каталог из --dry-run:"
+            echo "$DRY_RUN"
+            exit 1
+          fi
+          echo "URL: $URL"
+          echo "DIR: $DIR"
+
+          rm -rf "$DIR"
+          mkdir -p "$DIR"
+          curl -fL --retry 3 --connect-timeout 30 "$URL" -o /tmp/chrome-headless-shell.zip
+          unzip -q /tmp/chrome-headless-shell.zip -d "$DIR"
+          touch "$DIR/INSTALLATION_COMPLETE"
+
+          SHELL_BIN=$(find "$DIR" -name chrome-headless-shell -type f | head -n 1)
+          if [ -z "$SHELL_BIN" ] || [ ! -x "$SHELL_BIN" ]; then
+            echo "chrome-headless-shell не установлен после распаковки"
+            exit 1
+          fi
+          echo "Установлен: $SHELL_BIN"
+
       - name: Проверка TS
         run: yarn run test:ts
       - name: Unit тесты

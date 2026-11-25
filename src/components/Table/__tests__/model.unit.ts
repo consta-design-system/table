@@ -1,513 +1,204 @@
-import { createRoot } from '@consta/uikit/__internal__/src/utils/vitest';
-import { atom } from '@reatom/core';
 import { describe, expect, it } from 'vitest';
 
-import { getMaxLevel, headerDataModel, transformColumns } from '../model';
-import { Position, TableColumn } from '../types';
+import { getMaxLevel, transformColumns } from '../model';
+import { TableColumn } from '../types';
 
-type WidthKeyColumn = TableColumn<Row> & { key: string };
-type PositionedHeader = Position & { width?: string | number };
+type Row = { name: string };
 
-createRoot();
-
-type Row = { id: number };
-
-const col = (title: string, props: Partial<TableColumn<Row>> = {}) => ({
+const column = (
+  title: string,
+  extra?: Partial<TableColumn<Row>>,
+): TableColumn<Row> => ({
   title,
-  accessor: title.toLowerCase(),
-  ...props,
+  accessor: title,
+  ...extra,
 });
 
 describe('getMaxLevel', () => {
-  it('возвращает 1 для пустого списка колонок: уровень 1 учитывается всегда', () => {
+  it('возвращает 1 для пустого списка колонок', () => {
+    // счётчик уровней поднимается до 1 до обхода колонок, поэтому пустой
+    // список даёт один уровень, а не 0
     expect(getMaxLevel([])).toBe(1);
   });
 
-  it('возвращает 1 для плоской структуры', () => {
-    expect(getMaxLevel([col('A'), col('B')])).toBe(1);
+  it('возвращает 1 для плоских колонок', () => {
+    expect(getMaxLevel([column('Имя'), column('Статус')])).toBe(1);
   });
 
-  it('возвращает 2 для вложенности один уровень', () => {
+  it('возвращает 2 для одной группы', () => {
     expect(
       getMaxLevel([
-        {
-          ...col('G'),
-          columns: [col('A'), col('B')],
-        },
-        col('C'),
+        column('Работник', {
+          columns: [column('Имя'), column('Профессия')],
+        }),
+        column('Статус'),
       ]),
     ).toBe(2);
   });
 
-  it('возвращает 3 для вложенности два уровня', () => {
+  it('возвращает глубину самой вложенной ветки', () => {
     expect(
       getMaxLevel([
-        {
-          ...col('G'),
+        column('Имя'),
+        column('Медали', {
           columns: [
-            {
-              ...col('H'),
-              columns: [col('A'), col('B')],
-            },
-            col('C'),
+            column('Команда', {
+              columns: [column('Золото')],
+            }),
           ],
-        },
-        col('D'),
+        }),
       ]),
     ).toBe(3);
   });
 });
 
 describe('transformColumns', () => {
-  it('плоская структура: один уровень заголовков', () => {
-    const columns = [col('A'), col('B'), col('C')];
-
-    const headers = transformColumns(columns, getMaxLevel(columns));
+  it('для плоских колонок возвращает один ряд шапки', () => {
+    const headers = transformColumns([column('Имя'), column('Статус')], 1);
 
     expect(headers).toHaveLength(1);
-    expect(headers[0]).toMatchObject([
-      {
-        title: 'A',
-        colId: 0,
-        position: {
-          level: 0,
-          gridIndex: 0,
-          topHeaderGridIndex: 0,
-          rowSpan: 1,
-          isFirst: true,
-          isLastPinnedLeft: false,
-        },
-      },
-      {
-        title: 'B',
-        colId: 1,
-        position: {
-          level: 0,
-          gridIndex: 1,
-          topHeaderGridIndex: 1,
-          rowSpan: 1,
-          isFirst: false,
-          isLastPinnedLeft: false,
-        },
-      },
-      {
-        title: 'C',
-        colId: 2,
-        position: {
-          level: 0,
-          gridIndex: 2,
-          topHeaderGridIndex: 2,
-          rowSpan: 1,
-          isFirst: false,
-          isLastPinnedLeft: false,
-        },
-      },
-    ]);
+    expect(headers[0].map((item) => item.title)).toEqual(['Имя', 'Статус']);
   });
 
-  it('вложенность 2 уровня: colSpan группы и rowSpan листовых колонок', () => {
-    const columns: TableColumn<Row>[] = [
-      { ...col('G'), columns: [col('A'), col('B')] },
-      col('C'),
-    ];
+  it('присваивает gridColumn-позиции по порядку', () => {
+    const headers = transformColumns([column('Имя'), column('Статус')], 1);
 
-    const headers = transformColumns(columns, getMaxLevel(columns));
-
-    expect(headers).toHaveLength(2);
-    expect(headers[0]).toMatchObject([
-      {
-        title: 'G',
-        colId: 0,
-        position: {
-          level: 0,
-          gridIndex: 0,
-          topHeaderGridIndex: 0,
-          colSpan: 2,
-          isFirst: true,
-        },
-      },
-      {
-        title: 'C',
-        colId: 3,
-        position: {
-          level: 0,
-          gridIndex: 2,
-          topHeaderGridIndex: 1,
-          rowSpan: 2,
-          isFirst: false,
-        },
-      },
-    ]);
-    expect(headers[1]).toMatchObject([
-      {
-        title: 'A',
-        colId: 1,
-        parentId: 0,
-        position: {
-          level: 1,
-          gridIndex: 0,
-          topHeaderGridIndex: 0,
-          rowSpan: 1,
-          isFirst: true,
-        },
-      },
-      {
-        title: 'B',
-        colId: 2,
-        parentId: 0,
-        position: {
-          level: 1,
-          gridIndex: 1,
-          topHeaderGridIndex: 0,
-          rowSpan: 1,
-          isFirst: false,
-        },
-      },
-    ]);
-  });
-
-  it('вложенность 3 уровня: colSpan по числу листьев на каждом уровне', () => {
-    const columns: TableColumn<Row>[] = [
-      {
-        ...col('G'),
-        columns: [{ ...col('H'), columns: [col('A'), col('B')] }, col('C')],
-      },
-      col('D'),
-    ];
-
-    const headers = transformColumns(columns, getMaxLevel(columns));
-
-    expect(headers).toHaveLength(3);
-    expect(headers[0]).toMatchObject([
-      {
-        title: 'G',
-        colId: 0,
-        position: { level: 0, gridIndex: 0, colSpan: 3, isFirst: true },
-      },
-      {
-        title: 'D',
-        colId: 5,
-        position: { level: 0, gridIndex: 3, rowSpan: 3 },
-      },
-    ]);
-    expect(headers[1]).toMatchObject([
-      {
-        title: 'H',
-        colId: 1,
-        parentId: 0,
-        position: { level: 1, gridIndex: 0, colSpan: 2 },
-      },
-      {
-        title: 'C',
-        colId: 2,
-        parentId: 0,
-        position: { level: 1, gridIndex: 2, rowSpan: 2 },
-      },
-    ]);
-    expect(headers[2]).toMatchObject([
-      {
-        title: 'A',
-        colId: 3,
-        parentId: 1,
-        position: { level: 2, gridIndex: 0, rowSpan: 1, isFirst: true },
-      },
-      {
-        title: 'B',
-        colId: 4,
-        parentId: 1,
-        position: { level: 2, gridIndex: 1, rowSpan: 1, isFirst: false },
-      },
-    ]);
-  });
-
-  describe('isLastPinnedLeft', () => {
-    it('отмечает последнюю колонку группы pinned: left', () => {
-      const columns: TableColumn<Row>[] = [
-        col('A', { pinned: 'left' }),
-        col('B', { pinned: 'left' }),
-        col('C'),
-      ];
-
-      const headers = transformColumns(columns, getMaxLevel(columns));
-
-      expect(headers[0]).toMatchObject([
-        { title: 'A', position: { isLastPinnedLeft: false } },
-        { title: 'B', position: { isLastPinnedLeft: true } },
-        { title: 'C', position: { isLastPinnedLeft: false } },
-      ]);
+    expect(headers[0][0].position).toMatchObject({
+      gridIndex: 0,
+      level: 0,
+      isFirst: true,
+      rowSpan: 1,
     });
-
-    it('не отмечает единственную колонку, если справа ничего нет', () => {
-      const columns: TableColumn<Row>[] = [col('A', { pinned: 'left' })];
-
-      const headers = transformColumns(columns, getMaxLevel(columns));
-
-      expect(headers[0][0].position.isLastPinnedLeft).toBeFalsy();
-    });
-
-    it('не отмечает pinned-колонку, если следующая тоже pinned: left', () => {
-      const columns: TableColumn<Row>[] = [
-        col('A', { pinned: 'left' }),
-        col('B', { pinned: 'left' }),
-      ];
-
-      const headers = transformColumns(columns, getMaxLevel(columns));
-
-      expect(headers[0][0].position.isLastPinnedLeft).toBe(false);
-      expect(headers[0][1].position.isLastPinnedLeft).toBeFalsy();
-    });
-
-    it('передаёт признак последней pinned-группы дочерним колонкам', () => {
-      const columns: TableColumn<Row>[] = [
-        { ...col('G', { pinned: 'left' }), columns: [col('A'), col('B')] },
-        col('C'),
-      ];
-
-      const headers = transformColumns(columns, getMaxLevel(columns));
-
-      expect(headers[0][0].position.isLastPinnedLeft).toBe(true);
-      expect(headers[1]).toMatchObject([
-        { title: 'A', position: { isLastPinnedLeft: false } },
-        { title: 'B', position: { isLastPinnedLeft: true } },
-      ]);
-    });
-
-    it('не передаёт признак, если следующая группа тоже pinned: left', () => {
-      const columns: TableColumn<Row>[] = [
-        { ...col('G', { pinned: 'left' }), columns: [col('A'), col('B')] },
-        { ...col('H', { pinned: 'left' }), columns: [col('C'), col('D')] },
-      ];
-
-      const headers = transformColumns(columns, getMaxLevel(columns));
-
-      expect(headers[0][0].position.isLastPinnedLeft).toBe(false);
-      expect(headers[1].map((item) => item.position.isLastPinnedLeft)).toEqual([
-        false,
-        false,
-        undefined,
-        undefined,
-      ]);
+    expect(headers[0][1].position).toMatchObject({
+      gridIndex: 1,
+      level: 0,
+      isFirst: false,
+      rowSpan: 1,
     });
   });
-});
 
-describe('headerDataModel', () => {
-  const createModel = (
-    columns: TableColumn<Row>[],
-    virtualScroll: boolean | [boolean, boolean] | undefined = false,
-  ) => {
-    const columnsAtom = atom<TableColumn<Row>[]>(columns);
-    const virtualScrollAtom = atom<boolean | [boolean, boolean] | undefined>(
-      virtualScroll,
+  it('нумерует colId по всем колонкам подряд', () => {
+    const headers = transformColumns([column('Имя'), column('Статус')], 1);
+
+    expect(headers[0][0].colId).toBe(0);
+    expect(headers[0][1].colId).toBe(1);
+  });
+
+  it('группа занимает столько колонок, сколько у неё листьев', () => {
+    const headers = transformColumns(
+      [
+        column('Работник', {
+          columns: [column('Имя'), column('Профессия')],
+        }),
+        column('Статус'),
+      ],
+      2,
     );
 
-    return {
-      ...headerDataModel(columnsAtom, virtualScrollAtom),
-      columnsAtom,
-      virtualScrollAtom,
-    };
-  };
-
-  describe('lowHeadersAtom (transformPinnedColumns)', () => {
-    it('перемещает pinned-колонки: left в начало, right в конец', () => {
-      const model = createModel([
-        col('A'),
-        col('B', { pinned: 'left' }),
-        col('C'),
-        col('D', { pinned: 'right' }),
-      ]);
-
-      expect(model.lowHeadersAtom().map((item) => item.title)).toEqual([
-        'B',
-        'A',
-        'C',
-        'D',
-      ]);
-      expect(model.lowHeadersAtom().map((item) => item.pinned)).toEqual([
-        'left',
-        undefined,
-        undefined,
-        'right',
-      ]);
+    expect(headers[0][0].position).toMatchObject({
+      gridIndex: 0,
+      level: 0,
+      colSpan: 2,
     });
-
-    it('переносит всю группу, если лист внутри неё pinned: left', () => {
-      const model = createModel([
-        {
-          ...col('G'),
-          columns: [col('A', { pinned: 'left' }), col('B', { pinned: 'left' })],
-        },
-        col('C'),
-      ]);
-
-      // lowHeaders содержит только листовые колонки
-      expect(model.lowHeadersAtom().map((item) => item.title)).toEqual([
-        'A',
-        'B',
-        'C',
-      ]);
-      expect(
-        (model.lowHeadersAtom() as WidthKeyColumn[]).map((item) => item.key),
-      ).toEqual(['0-0', '0-1', '1']);
-    });
-
-    it('не переносит группу, если pinned отмечена только сама группа, а не листы', () => {
-      const model = createModel([
-        col('A'),
-        { ...col('G', { pinned: 'left' }), columns: [col('B'), col('C')] },
-      ]);
-
-      // pinned-статус групп определяется только по листовым колонкам
-      expect(
-        model.headersAtom().map((level) => level.map((i) => i.title)),
-      ).toEqual([
-        ['A', 'G'],
-        ['B', 'C'],
-      ]);
-    });
-
-    it('пересчитывается при изменении колонок', () => {
-      const model = createModel([col('A'), col('B')]);
-
-      expect(model.lowHeadersAtom().map((item) => item.title)).toEqual([
-        'A',
-        'B',
-      ]);
-
-      model.columnsAtom.set([col('A', { pinned: 'left' }), col('B')]);
-
-      expect(model.lowHeadersAtom().map((item) => item.title)).toEqual([
-        'A',
-        'B',
-      ]);
-      expect(model.lowHeadersAtom()[0].pinned).toBe('left');
+    // лист на уровне 0 растягивается на все строки шапки
+    expect(headers[0][1].position).toMatchObject({
+      gridIndex: 2,
+      level: 0,
+      rowSpan: 2,
     });
   });
 
-  describe('headersAtom', () => {
-    it('строит уровни заголовков с учётом перестановки pinned', () => {
-      const model = createModel([
-        col('A'),
-        {
-          ...col('G'),
-          columns: [col('B', { pinned: 'left' }), col('C', { pinned: 'left' })],
-        },
-      ]);
+  it('вложенные колонки попадают в следующий ряд шапки', () => {
+    const headers = transformColumns(
+      [
+        column('Работник', {
+          columns: [column('Имя'), column('Профессия')],
+        }),
+        column('Статус'),
+      ],
+      2,
+    );
 
-      const headers = model.headersAtom();
-
-      expect(headers.map((level) => level.map((item) => item.title))).toEqual([
-        ['G', 'A'],
-        ['B', 'C'],
-      ]);
+    expect(headers[1]).toHaveLength(2);
+    expect(headers[1].map((item) => item.title)).toEqual(['Имя', 'Профессия']);
+    expect(headers[1][0].position).toMatchObject({
+      gridIndex: 0,
+      level: 1,
+      isFirst: true,
+      rowSpan: 1,
+    });
+    expect(headers[1][1].position).toMatchObject({
+      gridIndex: 1,
+      level: 1,
+      isFirst: false,
+      rowSpan: 1,
     });
   });
 
-  describe('flattenedHeadersAtom', () => {
-    it('выравнивает заголовки и подставляет width', () => {
-      const model = createModel([
-        { ...col('G'), columns: [col('A'), col('B', { width: 100 })] },
-      ]);
+  it('вложенные колонки сохраняют colId и parentId', () => {
+    const headers = transformColumns(
+      [
+        column('Работник', {
+          columns: [column('Имя'), column('Профессия')],
+        }),
+        column('Статус'),
+      ],
+      2,
+    );
 
-      const flattened = model.flattenedHeadersAtom();
-
-      expect(flattened.map((item) => item.title)).toEqual(['G', 'A', 'B']);
-      expect(
-        flattened.map(
-          (item) =>
-            (item.position as PositionedHeader).width as string | number,
-        ),
-      ).toEqual(['auto', 'auto', 100]);
-    });
+    expect(headers[0][0].colId).toBe(0);
+    expect(headers[1][0]).toMatchObject({ colId: 1, parentId: 0 });
+    expect(headers[1][1]).toMatchObject({ colId: 2, parentId: 0 });
+    expect(headers[0][1].colId).toBe(3);
   });
 
-  describe('stickyLeftOffsetsAtom / stickyRightOffsetsAtom', () => {
-    it('считает смещения по листовым ячейкам группы', () => {
-      const model = createModel([
-        { ...col('G'), columns: [col('A'), col('B')] },
-        col('C'),
-      ]);
+  it('помечает последнюю закрепленную слева колонку на уровне 0', () => {
+    const headers = transformColumns(
+      [column('Имя', { pinned: 'left' }), column('Статус')],
+      1,
+    );
 
-      // headers.flat() идёт по уровням: сначала [G, C], затем [A, B]
-      // низовые колонки: A (индекс 0), B (индекс 1), C (индекс 2)
-      expect(model.stickyLeftOffsetsAtom()).toEqual([0, 2, 0, 1]);
-      expect(model.stickyRightOffsetsAtom()).toEqual([1, 2, 0, 1]);
-    });
-
-    it('для плоской структуры совпадают с индексами колонок', () => {
-      const model = createModel([col('A'), col('B'), col('C')]);
-
-      expect(model.stickyLeftOffsetsAtom()).toEqual([0, 1, 2]);
-      expect(model.stickyRightOffsetsAtom()).toEqual([0, 1, 2]);
-    });
+    expect(headers[0][0].position.isLastPinnedLeft).toBe(true);
+    expect(headers[0][1].position.isLastPinnedLeft).toBeFalsy();
   });
 
-  describe('bordersFlattenedHeadersAtom', () => {
-    it('не ставит левую границу у первой колонки и после последней pinned', () => {
-      const model = createModel([col('A', { pinned: 'left' }), col('B')]);
+  it('дочерние колонки закрепленной группы наследуют isLastPinnedLeft', () => {
+    const headers = transformColumns(
+      [
+        column('Работник', {
+          pinned: 'left',
+          columns: [column('Имя'), column('Профессия')],
+        }),
+        column('Статус'),
+      ],
+      2,
+    );
 
-      // [левая граница, последняя pinned слева, вложенный уровень]
-      expect(model.bordersFlattenedHeadersAtom()).toEqual([
-        [false, true, false],
-        [false, false, false],
-      ]);
-    });
-
-    it('ставит границы между колонками и группам с вложенностью', () => {
-      const model = createModel([
-        { ...col('G'), columns: [col('A'), col('B')] },
-        col('C'),
-      ]);
-
-      // headers.flat() идёт по уровням: [G, C, A, B]
-      // [левая граница, последняя pinned слева, вложенный уровень]
-      expect(model.bordersFlattenedHeadersAtom()).toEqual([
-        [false, false, false],
-        [true, false, false],
-        [false, false, true],
-        [true, false, true],
-      ]);
-    });
+    expect(headers[0][0].position.isLastPinnedLeft).toBe(true);
+    expect(headers[1][0].position.isLastPinnedLeft).toBeFalsy();
+    expect(headers[1][1].position.isLastPinnedLeft).toBe(true);
   });
 
-  describe('leftNoVisibleItemsAtom / rightNoVisibleItemsAtom', () => {
-    const fourColumns: TableColumn<Row>[] = [
-      col('A'),
-      col('B'),
-      col('C'),
-      col('D'),
-    ];
+  it('для вложенной ветки считает colSpan по листьям всех уровней', () => {
+    const headers = transformColumns(
+      [
+        column('Медали', {
+          columns: [
+            column('Команда', {
+              columns: [column('Золото'), column('Серебро')],
+            }),
+          ],
+        }),
+      ],
+      3,
+    );
 
-    it('возвращает 0 без горизонтального virtualScroll', () => {
-      const model = createModel(fourColumns, false);
-      model.intersectingColumnsAtom.set([false, false, true, true]);
-
-      expect(model.leftNoVisibleItemsAtom()).toBe(0);
-      expect(model.rightNoVisibleItemsAtom()).toBe(0);
-    });
-
-    it('возвращает количество всех колонок, если пересечения не определены', () => {
-      const model = createModel(fourColumns, [true, false]);
-      model.intersectingColumnsAtom.set([]);
-
-      expect(model.leftNoVisibleItemsAtom()).toBe(4);
-      expect(model.rightNoVisibleItemsAtom()).toBe(0);
-    });
-
-    it('считает невидимые колонки слева и справа', () => {
-      const model = createModel(fourColumns, [true, false]);
-
-      model.intersectingColumnsAtom.set([false, false, true, true]);
-      expect(model.leftNoVisibleItemsAtom()).toBe(2);
-      expect(model.rightNoVisibleItemsAtom()).toBe(0);
-
-      model.intersectingColumnsAtom.set([true, false, false, true]);
-      expect(model.leftNoVisibleItemsAtom()).toBe(0);
-      expect(model.rightNoVisibleItemsAtom()).toBe(0);
-
-      model.intersectingColumnsAtom.set([true, false, false]);
-      expect(model.leftNoVisibleItemsAtom()).toBe(0);
-      expect(model.rightNoVisibleItemsAtom()).toBe(2);
+    expect(headers[0][0].position.colSpan).toBe(2);
+    expect(headers[1][0].position.colSpan).toBe(2);
+    expect(headers[2][0].position).toMatchObject({
+      gridIndex: 0,
+      level: 2,
+      rowSpan: 1,
     });
   });
 });

@@ -3,11 +3,19 @@ import {
   resizeObservedAtom,
 } from '@consta/uikit/__internal__/src/utils/state';
 import { getElementSize } from '@consta/uikit/useResizeObserved';
-import { atom, AtomLike, computed, peek } from '@reatom/core';
+import { action, atom, AtomLike, computed, peek } from '@reatom/core';
 
 import { get, set } from '##/utils/object/get';
 
-import { Header, Position, TableColumn } from './types';
+import { getMergeCellsMap } from './mergeCells';
+import {
+  Header,
+  Position,
+  TableColumn,
+  TableMergeCells,
+  TableProps,
+} from './types';
+import { virtualScrollEffect } from './virtualScrollEffect';
 
 export const columnDefaultMinWidth = 80;
 export const separatorWidth = 8;
@@ -366,10 +374,22 @@ const getHeaderStickyOffsets = <T>(
   );
 };
 
-export const headerDataModel = <T>(
-  columnsAtom: AtomLike<TableColumn<T>[]>,
-  virtualScrollAtom: AtomLike<boolean | undefined | [boolean, boolean]>,
-) => {
+export const headerDataModel = <T>(propsAtom: AtomLike<TableProps<T>>) => {
+  const columnsAtom = computed(() => [
+    {
+      pinned: 'left',
+    } as TableColumn<T>,
+    ...propsAtom().columns,
+  ]);
+  const virtualScrollAtom = computed(() => propsAtom().virtualScroll);
+  const rowsAtom = computed(() => propsAtom().rows);
+  const verticalVirtualScrollAtom = computed(() => {
+    const rows = rowsAtom();
+    const virtualScroll = virtualScrollAtom();
+    if (rows.length === 0) return false;
+    return !!(Array.isArray(virtualScroll) ? virtualScroll[1] : virtualScroll);
+  });
+
   const horizontalVirtualScrollAtom = computed(() => {
     const virtualScroll = virtualScrollAtom() || false;
     return Array.isArray(virtualScroll) ? virtualScroll[0] : virtualScroll;
@@ -386,6 +406,7 @@ export const headerDataModel = <T>(
 
   const flattenedHeadersAtom = computed(() => {
     const headers = headersAtom();
+
     const res = headers.flat().map((column) => ({
       ...column,
       position: {
@@ -478,6 +499,7 @@ export const headerDataModel = <T>(
     ),
   );
 
+  // returned [left, right, top]
   const bordersFlattenedHeadersAtom = computed(() => {
     const flattenedHeaders = flattenedHeadersAtom();
     const lowHeaders = lowHeadersAtom();
@@ -496,16 +518,22 @@ export const headerDataModel = <T>(
       );
 
       const lowIndex = lowHeaders.findIndex((col) => col.key === prevLowKey);
+
+      if (lowIndex === 0) {
+        return [false, false, false] as [boolean, boolean, boolean];
+      }
+
       return [
         !flattenedHeadersColumn.position.isFirst &&
+          lowIndex - 1 !== 0 &&
           !(
             flattenedHeadersColumn.pinned !== 'left' &&
             lowHeaders[lowIndex - 1]?.pinned === 'left'
           ),
-        flattenedHeadersColumn.position.isLastPinnedLeft,
+        flattenedHeadersColumn.position.isLastPinnedLeft || false,
         flattenedHeadersColumn.position.level !== 0,
-      ];
-    }) as [boolean, boolean, boolean][];
+      ] as [boolean, boolean, boolean];
+    });
   });
 
   const intersectingColumnsAtom = atom<boolean[]>([]);
@@ -548,6 +576,38 @@ export const headerDataModel = <T>(
     return intersectingColumns.length - offset - 1;
   });
 
+  const columnsMergeCellsAtom = computed(() => {
+    const mergeCells: [number, TableMergeCells<T>][] = [];
+    lowHeadersAtom().forEach((column, index) => {
+      if (column.mergeCells) {
+        mergeCells.push([index, column.mergeCells]);
+      }
+    });
+
+    return mergeCells;
+  });
+
+  const [listElementsAtom, scrollElementAtom, sliceAtom, spaceTopAtom] =
+    virtualScrollEffect(
+      computed(() => propsAtom().rows.length),
+      rowsAtom,
+      columnsMergeCellsAtom,
+      verticalVirtualScrollAtom,
+      headerHeightAtom,
+      action((index: number) => propsAtom().onScrollToBottom?.(index)),
+    );
+
+  const mergeCellsAtom = computed(() =>
+    getMergeCellsMap(
+      rowsAtom(),
+      sliceAtom(),
+      columnsMergeCellsAtom(),
+      peek(propsAtom).getRowKey,
+    ),
+  );
+
+  const slicesRowsAtom = computed(() => rowsAtom().slice(...sliceAtom()));
+
   return {
     headersAtom,
     flattenedHeadersAtom,
@@ -564,5 +624,11 @@ export const headerDataModel = <T>(
     intersectingColumnsAtom,
     rightNoVisibleItemsAtom,
     leftNoVisibleItemsAtom,
+    listElementsAtom,
+    scrollElementAtom,
+    sliceAtom,
+    spaceTopAtom,
+    slicesRowsAtom,
+    mergeCellsAtom,
   };
 };

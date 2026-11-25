@@ -5,8 +5,8 @@ import { wrap } from '@reatom/core';
 import React, { memo } from 'react';
 
 import { cn } from '##/utils/bem';
-import { isNotNil } from '##/utils/type-guards';
 
+import { getRowKeyValue } from '../mergeCells';
 import { TableRow, TableRowComponent } from '../TableRow';
 import { TableDataComponent } from '../types';
 
@@ -14,30 +14,10 @@ const TableRowMemo = memo(TableRow) as TableRowComponent;
 
 export const cnTableData = cn('TableData');
 
-const getKey = <ROW,>(
-  row: ROW,
-  getRowKey: (row: ROW) => string | number | undefined,
-  rowIndex: number,
-) => {
-  const key = getRowKey?.(row);
-  if (isNotNil(key)) {
-    return key;
-  }
-  if (
-    typeof row === 'object' &&
-    isNotNil(row) &&
-    'id' in row &&
-    (typeof row.id === 'string' || typeof row.id === 'number')
-  ) {
-    return row.id;
-  }
-  return rowIndex;
-};
-
 export const TableData: TableDataComponent = factoryComponent(() => {
   return ({
     className,
-    rows,
+    rowsAtom,
     lowHeadersAtom,
     rowsElementsAtom,
     sliceAtom,
@@ -50,6 +30,7 @@ export const TableData: TableDataComponent = factoryComponent(() => {
     rowHoverEffect,
     leftNoVisibleItemsAtom,
     rightNoVisibleItemsAtom,
+    mergeCellsAtom,
     ...otherProps
   }) => {
     const rowsElements = rowsElementsAtom();
@@ -60,13 +41,16 @@ export const TableData: TableDataComponent = factoryComponent(() => {
         {...otherProps}
         className={cnTableData({ rowHoverEffect }, [className])}
       >
-        {rows.slice(...slice).map((row, index) => {
+        {rowsAtom().map((row, index) => {
           const rowIndex = index + slice[0];
           const rowZebraStriped = zebraStriped && rowIndex % 2 !== 0;
+          const rowKey = getRowKeyValue(row, getRowKey, rowIndex);
 
           return (
             <TableRowMemo
-              key={getKey(row, getRowKey, rowIndex)}
+              key={rowKey}
+              rowKey={rowKey}
+              mergeCellsAtom={mergeCellsAtom}
               row={row}
               index={rowIndex}
               lowHeadersAtom={lowHeadersAtom}

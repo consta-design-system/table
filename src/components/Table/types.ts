@@ -19,9 +19,23 @@ export type TableRenderCell<T> = (props: {
   tableRef: React.RefObject<HTMLDivElement | null>;
 }) => React.ReactNode | null;
 
-export type TabletColSpan<ROW> = (props: {
+export type TableColSpan<ROW> = (props: {
   row: ROW;
 }) => number | 'end' | undefined;
+
+export type TableMergeCells<ROW> = (props: {
+  row: ROW;
+}) => string | number | undefined;
+
+/**
+ * Карта объединений ячеек по вертикали.
+ *
+ * Ключ — `${rowKey}-${columnIndex}`, значение:
+ * - положительное число — на сколько ячеек вниз нужно растянуть ячейку;
+ * - `0` — ячейку рисовать не нужно, она перекрыта верхней;
+ * - отсутствие ключа — ячейка рисуется как обычно.
+ */
+export type TableMergeCellsMap = Record<string, number>;
 
 export type TableColumn<ROW> = {
   title?: string;
@@ -44,7 +58,8 @@ export type TableColumn<ROW> = {
   isSeparator?: boolean;
   pinned?: TableColumnPropPinned;
   renderCell?: TableRenderCell<ROW>;
-  colSpan?: TabletColSpan<ROW>;
+  colSpan?: TableColSpan<ROW>;
+  mergeCells?: TableMergeCells<ROW>;
   accessor?: string;
   columns?: TableColumn<ROW>[];
 };
@@ -71,7 +86,7 @@ export type Position = {
 export type TablePropGetRowId<ROW> = (row: ROW) => string | number;
 export type TableRowMouseEvent<ROW> = (
   row: ROW,
-  props: { e: React.MouseEvent },
+  props: { e: React.MouseEvent; index: number },
 ) => void;
 export type TableDefaultRow = Record<string, unknown>;
 
@@ -183,8 +198,9 @@ export type TableDataProps<ROW = TableDefaultRow> =
     HTMLDivElement
   > & {
     lowHeadersAtom: AtomLike<TableColumn<ROW>[]>;
-    rows: ROW[];
+    rowsAtom: AtomLike<ROW[]>;
     zebraStriped?: boolean;
+    mergeCellsAtom: Computed<TableMergeCellsMap>;
   };
 
 export type TableDataComponent = <ROW = TableDefaultRow>(

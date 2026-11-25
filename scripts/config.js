@@ -8,5 +8,5 @@ module.exports = {
   lazyMdxTemaplatePath:
     'node_modules/@consta/stand/templates/lazydocs.tsx.template',
   standsPath: 'node_modules/@consta/stand/src/stands',
-  standTabs: ['dev', 'design', 'use'],
+  standTabs: ['dev', 'design', 'use', 'examples'],
 };

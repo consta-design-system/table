@@ -6,7 +6,7 @@ import {
 import { presetGpnDefault, Theme } from '@consta/uikit/Theme';
 import { clearStack, context, top, wrap } from '@reatom/core';
 import { reatomContext } from '@reatom/react';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { describe, expect, test, vi } from 'vitest';
@@ -669,8 +669,11 @@ describe('Компонент Table', () => {
 
         await wrap(tick());
 
+        await waitFor(() =>
+          expect(onScrollToBottom).toHaveBeenCalledWith(rows.length),
+        );
+
         expect(onScrollToBottom).toHaveBeenCalledTimes(1);
-        expect(onScrollToBottom).toHaveBeenCalledWith(rows.length);
       }));
   });
 

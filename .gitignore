@@ -19,7 +19,8 @@ __diff_output__
 
 # misc
 .idea
-.vscode
+.vscode/*
+!.vscode/mcp.json
 .DS_Store
 .env.local
 .env.development.local
@@ -35,4 +36,5 @@ build-storybook.log
 .yarn/
 .yarnrc
 .codegraph
+.roo
 

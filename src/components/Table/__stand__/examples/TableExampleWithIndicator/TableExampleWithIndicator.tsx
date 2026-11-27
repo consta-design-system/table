@@ -5,10 +5,10 @@ import {
   cnMixPopoverAnimate,
 } from '@consta/uikit/MixPopoverAnimate';
 import { Popover } from '@consta/uikit/Popover';
+import { Transition } from '@consta/uikit/Transition';
 import { useDebounce } from '@consta/uikit/useDebounce';
 import { useFlag } from '@consta/uikit/useFlag';
 import React, { useCallback, useRef } from 'react';
-import { Transition } from 'react-transition-group';
 
 import { DataCell } from '##/components/DataCell';
 import { Table, TableColumn } from '##/components/Table';
@@ -275,7 +275,6 @@ const DataCellWithInformer = ({
   tableRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const cellRef = useRef<HTMLDivElement>(null);
-  const popoverContentRef = useRef<HTMLDivElement>(null);
   const [informerVisible, setInformerVisible] = useFlag();
 
   const hoverStateRef = useRef<{
@@ -340,17 +339,11 @@ const DataCellWithInformer = ({
         {status === 'alert' ? '#ТИПДАННЫХ?' : data}
       </DataCell>
       {status && (
-        <Transition
-          in={informerVisible}
-          unmountOnExit
-          timeout={animateTimeout}
-          nodeRef={popoverContentRef}
-        >
+        <Transition in={informerVisible} unmountOnExit timeout={animateTimeout}>
           {(animate) => (
             <Popover
               className={cnMixPopoverAnimate({ animate })}
               viewportRef={tableRef}
-              ref={popoverContentRef}
               anchorRef={cellRef}
               style={{
                 zIndex: 'calc(var(--table-header-z-index) + 1)',

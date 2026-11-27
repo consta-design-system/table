@@ -19,8 +19,7 @@ __diff_output__
 
 # misc
 .idea
-.vscode/*
-!.vscode/mcp.json
+.vscode
 .DS_Store
 .env.local
 .env.development.local

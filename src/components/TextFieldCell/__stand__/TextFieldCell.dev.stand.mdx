@@ -260,12 +260,7 @@ const CellTypeTextArray: TableRenderCell<Row> = (row) => {
         inputRef={inputRef}
       />
 
-      <Transition
-        in={open}
-        unmountOnExit
-        timeout={animateTimeout}
-        nodeRef={popoverRef}
-      >
+      <Transition in={open} unmountOnExit timeout={animateTimeout}>
         {(animate) => {
           return (
             <Popover

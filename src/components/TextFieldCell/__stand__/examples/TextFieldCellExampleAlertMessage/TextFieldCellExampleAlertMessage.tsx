@@ -5,11 +5,11 @@ import {
   cnMixPopoverAnimate,
 } from '@consta/uikit/MixPopoverAnimate';
 import { Popover } from '@consta/uikit/Popover';
+import { Transition } from '@consta/uikit/Transition';
 import { useClickOutside } from '@consta/uikit/useClickOutside';
 import { useFlag } from '@consta/uikit/useFlag';
 import { useHover } from '@consta/uikit/useHover';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Transition } from 'react-transition-group';
 
 import { Table, TableColumn, TableRenderCell } from '##/components/Table';
 import { TextFieldCell } from '##/components/TextFieldCell';
@@ -77,12 +77,7 @@ const CellTypeTextArray: TableRenderCell<Row> = (row) => {
         inputRef={inputRef}
       />
 
-      <Transition
-        in={open}
-        unmountOnExit
-        timeout={animateTimeout}
-        nodeRef={popoverRef}
-      >
+      <Transition in={open} unmountOnExit timeout={animateTimeout}>
         {(animate) => {
           return (
             <Popover
